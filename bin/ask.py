@@ -41,11 +41,15 @@ def main(args):
     LOGGER = logging.getLogger()
     level = logging.INFO
     if args.clean:
-        level = logging.CRITICAL # to suppress all logs
+        level = logging.INFO # to suppress all logs
     if args.debug:
         level = logging.DEBUG
-    logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=level)
     LOGGER.setLevel(level)
+    
+    formatter = logging.Formatter('[%(asctime)s] - %(levelname)s-[%(pathname)s:%(lineno)d]: %(message)s')
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    LOGGER.addHandler(handler)
 
     a = ChatbotAgent()
     a.kwargs['messages'] = [{'role': 'user', 'content': args.query}]
