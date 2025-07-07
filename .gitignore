@@ -4,3 +4,8 @@
 faissdbs
 *.pdf
 .*
+feedback/
+79/
+stodcmds/
+__pycache__/
+run*
