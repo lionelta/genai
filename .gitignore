@@ -9,3 +9,5 @@ feedback/
 stodcmds/
 __pycache__/
 run*
+*.jpeg
+*.png
