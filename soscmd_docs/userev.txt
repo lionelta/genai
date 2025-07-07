@@ -1,0 +1,65 @@
+----------------------------------------------------------------
+soscmd userev - bring the selected revision into your workarea
+----------------------------------------------------------------
+USAGE
+    soscmd userev [-rso] [-t<time>] [select options] [pathnames]
+
+DESCRIPTION
+    Bring the selected revisions of the selected files into
+    your workarea. 
+
+    You need to use this command only if you want to pick a 
+    revision of a file which does not match your revision 
+    search order or if you want to get new revisions of only
+    some select files without updating your entire workarea.
+
+ARGUMENTS
+    -rso
+        This will apply the current revision search order
+        used by update cmd to the selected file(s) and bring
+        that revision into your workarea. This option is 
+        similar to the update cmd except that it only updates
+        the selected files and not the entire workarea.
+        If this option is used any specific revision number
+        specified after the pathnames is ignored.
+    
+     -t<time>
+        Bring the selected object's  revision into the
+        workarea based on the current RSO AND  with a check
+        in time just before the time specified in 
+        <YYYY/MM/DD HH:MM:SS> format.
+       
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+   
+EXAMPLES
+    soscmd userev
+        Bring the revisions of files selected in the SOS window
+        into your workarea.
+
+    soscmd userev .synopsys/main
+        Get the latest revision of '.synopsys' into your 
+        workarea.
+
+    soscmd use usbcore.v/7  usbcore.scr/3
+        Get revision '7' of file 'usbcore.v' and revision '3'
+        of 'usbcore.scr' into your workarea.
+
+    soscmd userev -rso README/2
+        Apply the current Revision Search Order and get the
+        updated revision of 'README' into your workarea. This
+        is like updating only the file 'README'. The specific
+        revision (specified as /2) is ignored when -rso is
+        present.
+        
+    soscmd userev -rso -sr DOCS_DIR
+        This is like updating the entire dir 'DOCS_DIR'.
+----------------------------------------------------------------

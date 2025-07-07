@@ -1,0 +1,178 @@
+-------------------------------------------------------------------
+soscmd status - Show status and version information of specified 
+ 		  object(s) in workarea. 
+-------------------------------------------------------------------
+USAGE
+    soscmd status [-v -f<formatstr>] [select options]
+    	 [-P<project-name>] [-hdr] [-Nhdr]  [pathnames]
+
+DESCRIPTION
+    This command displays the status of the objects specified by pathname(s),selected 
+    in current workarea. The output of the command is a table listing the 
+    status information of the objects requested. The column headers are.
+
+	  T   S  D   C   L   N   R   V   P  A  I  O
+	  --  -- --  --  --	 --  --	 -- -- 	-- -- --
+
+    T => Type of object in workarea. Possible values :
+      f -> File.
+      p -> Package.
+      d -> Directory.
+      s -> Symbolic Link.
+      F -> Reference File.
+      P -> Reference Package.
+      D -> Reference Dir.
+      S -> Reference Symbolic Link.
+          
+    S => State of the object selected in the workarea. Possible values:
+      O -> Checked out.                    
+      - -> Checked In.                     
+      W -> Checked out without Lock.       
+      N -> Unpopulated.                    
+      X -> Read access denied.             
+      C -> Dir populated non-recursive.    
+      ? -> Unmanaged.                      
+
+    D => Specific to directory objects to indicate if partially populated. Possible values:
+      P -> Partially Populated.                    
+      N -> Unpopulated
+      - -> Populated for dirs and not applicable for objects other than dir. 
+
+      For dir the value is used in conjunction with column S value.
+                 column S  | column D |     state
+                    -           -         dir and all underneath objects are populated.
+                    -           P         dir is populated and atleast one
+                                              underneath object is unpopulated.                          
+                    C           -         dir is non-recursively populated and
+                                              all of the underneath objects are populated.
+                    C           P         dir is non-recursively populated and atleast one  
+                                              of the underneath object is unpopulated.
+                    N           N         dir and all underneath objects are unpopulated.
+                    N           P         dir is unpopulated and atleast one  
+                                              of the underneath object is populated.
+
+    C => Change status of the selected object in workarea. Possible values:
+      M -> Modified in this workarea. This could mean any of the following:-
+			    a) If the object is a file, dir or package, it was
+			       checked out in workarea and modified. 
+			    b) If the object is a file or package, it was NOT
+			       checked out, but made writable in workarea and modified.
+			    c) If the object is a file or package, it was not checked out,
+			       not made writable but modified anyway and the preference setting
+			       for 'Check Read-only for modification' was 'Yes'.
+      	           ! -> Deleted in workarea.
+      	           - -> Not modified.
+      	           ? -> Not applicable.
+
+    L => Lock status of the object. 
+      L -> Locked. This means the object is Checked Out in some other workarea.
+      - -> Not locked.	
+      ? -> Not applicable.
+
+    N => Prints whether a  revision exists in the repository which is newer than the 
+         rev present in the workarea.
+      Possible values:
+        - -> No i.e. workarea has  the latest revision. 
+      N -> Not using latest revision i.e. a newer revision exists in the repository. 
+      ? -> Not applicable.
+
+    R  => Current revision of object DOES NOT match the RSO. Possible values:
+      - -> Workarea revision matches RSO.
+      R -> Does not match RSO.	
+      ? -> Not applicable.
+
+    V  => Revision number of object selected . Possible values:
+		  Revision number OR "?" if object is unmanaged or no revision matches RSO.
+
+    P  => Path of object in workarea relative to workarea root.
+    A  => Author name. Name of the user who checked in or checked out the object.
+    I  => Check in or Check out time.
+    O  => Check in or check out log.
+ 
+NOTES
+    An update of flags and attributes is done from the server before displaying 
+    status if any of  the following columns are requested :
+    Lock status (L), New revision (N), Match RSO (M). 
+    For the remaining columns the status is obtained  from the workearea.
+
+    The status command returns the current status and version of object in workarea so
+    it will Not support a version/tag/branch selection.
+
+ARGUMENTS
+
+  -f<Format string> 
+      Specify a format string for column display. The name of each column is the 
+      column header i.e. any of the chars->  T,S,D,N,R,L,V,P,A,I,O  preceded by a percentage 
+      symbol.  eg. -f"%T  %P" would display only the two columns-type and Path delimited 
+      by 2 spaces. If this option is not specified then the default format string is 
+      "%T%S%D%C%L%N%R\t%V\t%A\t%I\t%O\t%P".
+
+  -v
+      Verbose. Prints a brief explanation of the status output columns and the 
+      codes at the end of the output. 
+
+	
+  -P<project name>
+      If an update of flags and attributes is to be done then update the
+      specified project. Multiple -P options can be used. If -P contains the 
+      keyword 'All' , then all primary and reference projects are updated
+      for flags and attributes. If no -P option is specified then the default
+      is to update ALL the primary and reference projects ( same as -pAll
+      option).
+
+  -Nhdr 
+      Display status output without column header names. This is the default
+      option.
+
+  -hdr
+      Display status output with column headers.
+
+   
+  The select option flags are the same as those for the select command 
+  without the -A and -V options. Refer to the help on select command for an  
+  explanation on the flags/filters. If multiple filters are specified then the result 
+  is an OR of each  filter as opposed to an AND in select command.  If no filters
+  are specified, the status command applies to ALL objects in the workarea and
+  returns ALL columns.
+
+
+pathname
+   The path to a file/directory/package in the workarea. Refer to pathname 
+   section in help of select command. You can specify multiple pathnames.
+
+EXAMPLES
+    soscmd status -sr  -snt -snl .
+        Print the status information of all objects under the current
+        directory recursively that do not match the rso or have an older
+        revision in the workarea.  This command is useful when executed from
+        workarea root because  users can know the extent to which their
+        workarea is in sync with the repository before  doing an actual update 
+        of objects. 
+
+    soscmd status -v -f"%T\t%S\t%L\t%P" -sfo  .
+	Prints status information  containing the 1 tab space 
+        delimited columns - type, workarea status, lock status and path of 
+        object for ALL files under current directory recursively. Prints 
+        the description of output ( columns and status codes) at the end.
+	
+    soscmd status -sm -hdr  -f"%T\t%V\t%S\t%C\t%P"
+        Prints the workarea-only status information of managed objects. No
+        update of flags and attributes from server is done since none of the 
+        L,N,R columns were requested. This command can be used if you have large 
+        number of objects in your workarea and just want to check the integrity 
+        of the workarea objects without requiring to compare against the repository.
+
+    soscmd status -sm  -f"%T\t%A\t%I\t%P\t\t\t%O" foo
+        Prints the type ,author, check in time , path and check in log summary
+        of all managed objects under foo. 
+           
+    soscmd status -sr  .
+        Prints the entire non verbose status information of all objects 
+     	in the current directory recursively.
+
+    soscmd status 
+        Prints the status information  showing  all columns for the objects
+        already selected. The attribute columns i.e. the A (Author) , I(Time)
+        and O (Log) are not displayed by default.
+ 
+--------------------------------------------------------------------

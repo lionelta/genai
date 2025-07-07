@@ -1,0 +1,37 @@
+----------------------------------------------------------------
+soscmd deleteworkarea - delete the SOS workarea
+----------------------------------------------------------------
+USAGE
+    soscmd deleteworkarea [-F] [-U] [-K]
+
+DESCRIPTION
+    Delete the SOS workarea. The command should be run in an
+    existing workarea.
+    By default, only managed files are deleted.
+
+ARGUMENTS
+    -F
+        Do not prompt for confirmation before deleting the
+        workarea.
+
+    -U
+        Delete unmanaged files in the workarea also.
+
+    -K
+        Do not delete files when the workarea is deleted.
+
+NOTE
+    The '-U' and '-K' options are mutually exclusive.
+
+EXAMPLES
+    soscmd deleteworkarea
+        Delete the workarea but prompt for confirmation before
+        deleting.
+
+    soscmd deleteworkarea -F
+        Delete the workarea without prompting for confirmation.
+
+    soscmd deleteworkarea -U -F
+        Delete the workarea without prompting for confirmation
+        and delete all unmanaged files also.
+----------------------------------------------------------------

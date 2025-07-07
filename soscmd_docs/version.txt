@@ -1,0 +1,17 @@
+----------------------------------------------------------------
+soscmd version - prints version of SOS
+----------------------------------------------------------------
+USAGE
+    soscmd version
+
+DESCRIPTION
+    Print version number of soscmd.
+
+ARGUMENTS
+    none
+
+EXAMPLES
+    soscmd version
+        Display version of soscmd.
+
+----------------------------------------------------------------

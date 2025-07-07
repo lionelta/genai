@@ -1,0 +1,43 @@
+----------------------------------------------------------------
+soscmd rename - rename an existing file or directory
+----------------------------------------------------------------
+USAGE
+    soscmd rename [oldname] [newname]
+
+DESCRIPTION
+    Rename a file or directory in your workarea and
+    in the project if it is under SOS control.
+
+    If the renamed object is under SOS control then it is 
+    actually NOT renamed in the project repository itself.
+    This file will exist with this new name in the new revision 
+    of the parent directory.
+
+ARGUMENTS
+    oldname
+        Name under which the object exists now.
+
+    newname
+        The new name to assign to it.
+
+NOTES
+    You MUST check out the parent directory before renaming
+    objects under it. 
+    Remember to check it in after you are done modifying 
+    the directory.
+
+    To rename a package, you must check out the package.
+    Remember to check it in after the rename is done
+    and you are checking in the parent directory.
+
+    You cannot use the rename command to move an object to a
+    different directory.
+    To move an object use the 'move' command.
+
+EXAMPLES
+    soscmd rename add.v adder.v
+        Rename the file 'add.v' to 'adder.v'.
+
+    soscmd rename source verilog_src
+        Rename the directory 'source' to 'verilog_src'.
+----------------------------------------------------------------

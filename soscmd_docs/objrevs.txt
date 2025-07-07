@@ -1,0 +1,23 @@
+----------------------------------------------------------------
+soscmd objrevs - return the version history of
+                 specified file or directory
+----------------------------------------------------------------
+USAGE
+    soscmd objrevs [pathname]
+
+DESCRIPTION
+    This command displays the revision history of the file or
+    directory specified by pathname in a format used by the
+    sos shared library.
+
+ARGUMENTS
+    pathname
+        Name of file or directory to get the status of.
+        This argument is mandatory and only one path can be
+        specified.
+
+EXAMPLES
+    soscmd objrevs ./alu.txt
+        Print the version history of the file 'alu.txt' in the
+        format used by the sos shared library.
+----------------------------------------------------------------

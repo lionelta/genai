@@ -1,0 +1,146 @@
+----------------------------------------------------------------
+soscmd create - add new files and/or dirs to the project
+----------------------------------------------------------------
+USAGE
+    soscmd create [-a<attrname>=<attrvalue>]
+           [-prj<ref_proj_name> [-d<ref_parent_dir>] [-cd<ref_parent_dir>] [-q]]
+           [pathnames]
+
+DESCRIPTION
+    Adds the specified files and directories in the workarea
+    to the project and places them under SOS control.
+
+    Selected objects are created in the project repository and the 
+    current object in the workarea is checked in and the first 
+    revision of the object is created.
+
+ARGUMENTS
+    -a<attrname>=<attrvalue>
+        This option is used to specify values to attributes
+        with this command.
+        The attribute name and value are separated by the '='
+        character with no spaces in between.
+        The attribute name and value must immediately
+        follow this option with no spaces.
+        If the attribute value has spaces then you must enclose
+        the value in double quotes '"'.
+
+        Attribute names may be abbreviated provided there is no
+        ambiguity.
+
+    -prj<ref_proj_name>
+        Create the objects in the given reference project. These
+        objects get added as a reference in the primary project.
+        This option is Not required if the parent of the object
+        already belongs to the reference project.
+
+    -d<ref_parent_dir>
+        Create the objects in the reference project under
+        the path specified by <ref_parent_dir>. If the path
+        does not exist, sos will generate an error.
+
+    -cd<ref_parent_dir>
+        Create the objects in the reference project under
+        the path specified by <ref_parent_dir>. If the path
+        does not exist, it will be created in the reference project.
+     -q
+        Quiet or non-verbose  mode. Do not print create status per
+	object. Only command summary is printed along with the created
+	object count. 
+
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+
+        Names of 'temporary' files and directories in the
+        workarea to be placed under SOS control.
+
+    For setting file access control following three attributes
+    can be used.
+        1) Owner                to define the ownership of the file/dir
+        2) ReadAccess           to set read access permissions
+        3) WriteAccess          to set write access permissions
+
+NOTES
+    The files and directories must already exist in the workarea
+    before they can be placed under SOS control using this 
+    command.
+
+    The access control attribute names are case sensitive.
+
+    Owner can have any string value.
+
+    ReadAccess and WriteAccess can have only the following
+    three values  (all lower case only)
+         o owner            Only the owner has access.
+         o group            All admins and members of the
+                            group or groups the owner belongs
+                            to, have access.
+                            To define groups please refer to
+                            server configuration file "sosd.cfg".
+         o world            Any one can have access.
+
+    Options -prj and -d go together, so both must be present to create
+    an object in a reference project.
+
+EXAMPLES
+    soscmd create -aDescription="Stimulus file for testbench" stim.dat
+        Add the file 'stim.dat' to the project with the
+        given description.
+
+    soscmd create pci pci/*.v
+        Add the directory 'pci' and all the files with the 
+        '.v' extension in it into the project. Make sure to
+        check in the directory 'pci' after you are done
+        'creating' files and dirs under it.
+
+    soscmd create -aRCPgm=gzip_copy -aIcon=Waveform full.sdf
+        Add the file 'full.sdf' to the project but use the
+        'gzip_copy' method to keep the revisions of this file.
+        Since SDF files are generated and are completely 
+        different in each revision it is better to compress
+        and store each revision rather than use RCS.
+        Also use the 'Waveform' icon for this file instead of
+        the generic file icon.
+
+    soscmd create -aRCPgm=file_copy -aIcon=Waveform full.sdf
+        Add the file 'full.sdf' to the project but use the
+        'file_copy' method to keep the revisions of this file.
+        This is another method to store revisions in the repository
+        if you do not want to compress/uncompress files nor use RCS.
+        This method stores each revision as a separate file.
+
+    soscmd create -aOwner="user1" mult.v
+        Add file mult.v with owner as "user1".
+        
+    soscmd create -aReadAccess="world" mult.v
+        Add file mult.v with read access permissions to any user.
+        
+    soscmd create -aGroup="sos_dev_grp" -aWriteAccess="group" mult.v
+        Add file mult.v with write access permissions to group and
+        group to sos_dev_grp.
+        Assume here that the owner of mult.v is "user1" and he is
+        a MEMBER of groups 'sos_dev_grp' and 'sos_test_grp'.
+        Thus after this any MEMBER or ADMIN of either 'sos_dev_grp'
+        or 'sos_test_grp' group will have write access to mult.v
+
+    soscmd create -aReadAccess="owner" -aWriteAccess="owner" add.v
+        Add file add.v, only owner has read and write access.
+
+    soscmd create -prjIP -d./mult add.v mult.v
+        Add files add.v and mult.v to reference project IP in the
+        ./mult directory. "add.v" and "mult.v" get added as a reference
+        object in the primary project.
+
+    soscmd create -sr -prjIP -d./mult LIB_1
+        Add directory LIB_1 and the sub tree below it to
+        reference project "IP" in the "./mult" directory.
+        LIB_1 gets added as a reference object in the primary project.
+----------------------------------------------------------------

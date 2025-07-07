@@ -1,0 +1,68 @@
+----------------------------------------------------------------
+soscmd populate - populate the specified directories
+----------------------------------------------------------------
+USAGE
+    soscmd populate [-Nr] [ -n | -u | -s | -fs | -fn ]  [directory pathnames]
+
+DESCRIPTION
+    Populates the specified directory tree using the current
+    revision search order.
+
+    The entire directory tree under the selected directory will
+    be created. The current revision search order for the 
+    workarea will be used to select which revision of each file
+    or directory will be placed in your work area.
+
+    If the directory is already populated then no action is 
+    taken.
+
+ARGUMENTS
+    -Nr
+        Do NOT recursively descend the directory to populate
+        the sub-directories i.e. only populate the files in the
+        selected directories.
+        
+    -n 
+        Mark the objects selected to be never populated.
+        
+    -s 
+        Mark the objects selected to be sparse populated.
+        
+    -u 
+        Mark the objects selected to be un-populated.
+        
+    -fs 
+        Mark the objects selected to be fully populated. This 
+        will also populate any sparse populated objects in the
+        selection.
+        
+    -fn 
+        Mark the objects selected to be fully populated. This 
+        will also populate any never populated objects in the
+        selection.
+
+    directory pathnames
+        The pathnames to the directories to populate.
+        Refer to help for the 'select' command for more details.
+
+EXAMPLES
+    soscmd populate alu  mult
+        Populate the 'alu' and 'mult' directories.
+
+    soscmd populate .
+        Populate the entire project tree.
+
+    soscmd populate -Nr .
+        Populate only the files in the root directory but none
+        of the sub-directories below.
+        
+    soscmd populate -s ./alu
+        Sparse populate the alu directory.
+        
+    soscmd populate -s ./alu
+        Never populate the alu directory.
+
+    soscmd populate alu  mult -ccr
+        Populate the 'alu' and 'mult' directories with consistency
+        check turned ON.
+----------------------------------------------------------------

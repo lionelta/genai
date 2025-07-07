@@ -1,0 +1,187 @@
+----------------------------------------------------------------
+soscmd ci - check in files and directories
+----------------------------------------------------------------
+USAGE
+    soscmd ci [-D]
+              [-F]
+              [-a<attrname>=<attrvalue>]
+              [-ma mm -mo]
+              [-Nco -kco]
+              [-T<tagName> [-ft] [-Na]]
+              [-rev<rev num>]
+              [select options]
+	      [-q] 
+              [pathnames]
+
+DESCRIPTION
+    Checks in previously checked out files and directories.
+    When an object is checked in a new revision of the object
+    is created. The check out lock placed on the file or 
+    directory is removed allowing others to check it out.
+    The permissions of the file in your workarea is changed to 
+    read only.
+
+    If a file or directory has NOT been modified then it is
+    not checked in and a warning is issued unless the '-F' 
+    or '-D' options are provided.
+
+    If no value is provided for the 'Log' attribute then you
+    WILL be prompted to enter a log of your changes.
+
+ARGUMENTS
+    -D
+        Discard the check out of any file or directory to which
+        NO changes have been made. Without this option unchanged 
+        files will not be discarded.
+
+    -F
+        Check in the file or directory even if NO changes have 
+        been made. Without this option unchanged files will not
+        be checked in.
+
+    -a<attrname>=<attrvalue>
+        This option is used to specify values to attributes
+        with this command.
+        The attribute name and value are separated by the '='
+        character with no spaces in between.
+        The attribute name and value must immediately
+        follow this option with no spaces.
+        If the attribute value has spaces then you must enclose
+        the value in double quotes '"'.
+
+        Attribute names may be abbreviated provided there is no
+        ambiguity.
+
+    -ma  -mm  -mo
+        These are mutually exclusive options. They specify what
+        sort of merge to do when you are trying to checkin a
+        file and new revisions of this file have been introduced
+        since you checked it out. This situation can only arise
+        if the concurrent checkout capability is being used.
+          -ma --> Do an automatic merge with the latest revision
+                  Checkin will be aborted if conflicting changes
+                  are detected.
+          -mm --> You have already done a manual merge with the
+                  latest revision and would just like to record
+                  that a merge was done.
+          -mo --> You are not interested in merging and would
+                  like to check in your file as is. If you use
+                  this option you are probably over riding 
+                  changes made by someone else.
+        
+    -Nco
+        This will allow a file or directory to be checked in
+        even if it is not checked out.
+
+    -kco
+        This will leave the file or directory checked out after the
+        check in.
+
+    -T<tagNames>
+        Attach the tags to the new revision created on checkin.
+
+    -ft
+        This option is only used if -T<tagName> is specified.
+        Force tag even if the tag moves from newer to older version
+        on the same branch for implicitly tagged ancestor directories.
+
+    -Na
+        This option is only used if -T<tagName> is specified.
+        Do not tag ancestor directories. If this option is not specified
+        then ancestor directories are tagged.
+
+    -rev<rev num>
+        Specify an integer revision number to be assigned to the
+        checked in revision. Note that the revision number must
+        be an integer greater than the latest revision on the
+        branch the file is checked out on.
+    -q
+        Quiet or non-verbose  mode. Do not print per object checkin   status message. Only
+        command summary is printed along with the checked in  object count. 
+
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+
+NOTES
+    If multiple files are to be checked in by the same command
+    then you will NOT be prompted to enter a separate log message
+    for each file. The same log message and other attribute values
+    will be used for all the files checked in.
+
+    The '-D' and '-F' options are mutually exclusive. You may use
+    one or the other but not both.
+
+    If the 'change_summary' attribute in not specified but the 
+    'Log' attribute is provided then the FIRST LINE of the 'Log'
+    will be used as the 'change_summary'.
+
+EXAMPLES
+    soscmd ci
+        Check in all files and directories which are currently
+        selected in the SOS window.
+
+    soscmd ci .synopsys
+        Check in the file '.synopsys'.
+
+    soscmd ci alu/mult/booth.vhd
+        Check in the file 'booth.vhd' in the directory 'mult'
+        contained in the directory 'alu'.
+
+    soscmd ci *.vhd
+        Check in all the files with the '.vhd' extension in the
+        current working directory.
+
+    soscmd ci -F *.vhd
+        Check in all the files with the '.vhd' extension in the
+        current working directory even if no changes have been
+        made.
+
+    soscmd ci -D -sco
+        Check in all the files checked out in this workarea.
+        If a file has not been changed then do not check it
+        in but instead cancel the check out.
+
+    soscmd ci .
+        Check in the current directory.
+
+    soscmd ci -achange_summary="Instantiated adder." top.vhd
+        Check in 'top.vhd' and assign the 'change_summary'
+        attribute the value:
+            Instantiated adder.
+
+    soscmd ci -sco -aLog="Got rid of synthesis warnings."
+        Check in all files which are currently checked out in
+        this work area and assign the 'Log' attribute the value:
+            Got rid of synthesis warnings.
+
+    soscmd ci -achange_summary="Instantiated adder." -rev101 top.vhd
+        Check in 'top.vhd' and assign the 'change_summary'
+        attribute the value:
+            Instantiated adder.
+        Make the number of the new revision to be 101 without
+        regard to what the current revision is.
+
+    soscmd ci -sco -achange_summary="No warnings!" \
+              -aLog="Got rid of synthesis warnings."
+        Check in all files which are currently checked out in
+        this work area and assign the 'Log' attribute the value:
+            Got rid of synthesis warnings.
+        and the 'change_summary' attribute the value:
+            No warnings!
+
+    soscmd ci -Nco -sw -F -T"gold silver" -achange_summary="Test" -aLog="Test"
+        Check in all files that are writable even if they are not
+        checked out (-sw will only select writable files).
+        Force if there is no change.
+        Attach the tags 'gold' and 'silver' to the new revision
+        after checkin.
+        Do not print any information messages.
+----------------------------------------------------------------

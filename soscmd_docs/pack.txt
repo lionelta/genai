@@ -1,0 +1,84 @@
+----------------------------------------------------------------
+soscmd pack - manage sos composite object 'package' 
+----------------------------------------------------------------
+USAGE
+    soscmd pack [-C | -A | -U | -show ] [pkg path] [[component names] | [-sfile<file name containing component names>]]
+
+DESCRIPTION
+    Create new package, Append files to an existing package,
+    Remove files from an existing package or List contents
+    of a package.
+
+    The package object is provided to support the requirement
+    of several EDA tools to treat multiple files as part of a
+    single design object.
+
+
+ARGUMENTS
+    -C
+        This option is used to create a new package or re-pack
+        an existing package.
+
+    -A
+        This option is used to append new file(s) to an existing
+        package.
+
+    -U
+        This option is used to unpack an unmanaged package.
+        A package added to sos revision control cannot be
+        unpacked.
+
+    -show
+        This option is used to display the contents of a package.
+
+    pkg path
+        Create the composite object with this name. The object is
+        created in sos and does not exist on disk. The name of the
+        object can be the name of an existing directory or file.
+        This directory or file will no longer be accessible from
+        sos for data management operations once the package is 
+        created.
+
+    -sfile<file>
+          
+         Package object component files  whose paths are specified in the file
+         <file>. <file> should contain one path per line.
+         Paths in the file can be absolute or relative to the
+         workarea root. All paths should be from the same workarea. 
+
+    component names
+        Names of 'temporary' files in the workarea that should be
+        part of the composite object.
+        All component pathnames should be specified relative
+        to the parent directory of the package file.
+
+NOTES
+    The '-C', '-A', '-U' and '-show' options are mutually exclusive.
+    One of the above options must be specified.
+
+    A package can only consist of files at the same level or below
+    the package path itself.
+    The component files must be unmanaged. They cannot be separately
+    managed under sos.
+
+
+EXAMPLES
+    soscmd pack -C libn/celln celln/file1 celln/file2
+        Create package celln whose components are file1 and file2
+        files under celln directory.
+
+    soscmd pack -A libn/celln celln/file3 celln/file4
+        Append files file3 and file4 to the existing package
+        'libn/celln' that was created in the previous example.
+
+    soscmd pack -show mypack
+        List the components of the mypack package.
+
+    soscmd pack -U mypack.v
+        Unpack the mypack.v package.
+
+    soscmd pack -C big_pdk -sfile./packcomps
+        Create a package big_pdk whose components are specified in the file
+	packcomps.
+
+----------------------------------------------------------------

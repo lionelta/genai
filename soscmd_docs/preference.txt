@@ -1,0 +1,155 @@
+----------------------------------------------------------------
+soscmd preference - set and get user preference settings
+----------------------------------------------------------------
+USAGE
+    soscmd preference [-get<preference?> ...]
+                      [-set<preference>=<value?> ...]
+                      [-reset<preference?> ...]
+                      [-P<project name>]
+
+
+DESCRIPTION
+    Sets/resets the values of the given user preferences in SOS
+    or prints the current value.
+
+    If no arguments are specified then print the value of
+    ALL the preferences as 'name=value' pairs.
+
+    The preferences are:
+      AUTO_POPUP           --> Hide/Show dialog for Auto Update of 
+                               Attrs and Flags
+      AUTO_UPDATE          --> The number of minutes of idle time after which
+                               SOS will do an automatic update.
+                               -1 = Immediate auto update
+                                0 = Never auto update
+                               >0 = Idle minutes
+      AUTO_UPDATE_PROJECT  --> 0 = Primary Project 1 = Primary & Reference Projects
+      AUTO_UPDATE_TYPE     --> 0 = Flags & Attrs   1 = Changed Files & Dirs
+      BRANCH_DIRS          --> Should Dirs be CO using the default branch.
+                               0 = No    1 = Yes
+      CO_LOCK_OPTION       --> Default options turned on during Checkout.
+                               0 = Lock: Lock file in server. No option necessary.
+                               1 = No lock: Do not lock file in server. -Nlock option
+                                   turned on by default.
+                               2 = Concurrent lock: Enable concurrent checkout.
+                                   -C option turned on by default..
+      CRS_DIR              --> Directory for managing change requests.
+      DEFAULT_BRANCH       --> Default branch to be used while CO objects.
+      DEFAULT_GROUP        --> Default group name to use when creating
+                               new objects.
+      DIFF_OPTIONS         --> Options passed on to the 'diff' utility.
+      EDITOR               --> The default editor to use for the Edit button.
+      HIDE_EXCLUDED        --> Show/Hide unmananged objects that match the 
+                               "exclude list" in sos.cfg
+      KEYWORD_SUB          --> 0 = Turn OFF keyword substitution.
+                               1 = Turn ON keyword substitution.
+      LOG_CMD_NAME         --> Log soscmd command with '#Begin cmd <command>'
+                               in sos.log file.
+                               0 = Do not log.
+                               1 = Log only command name.
+                               2 = Log complete command.
+      SERVERS_DIR          --> An alternate directory for $CLIOSOFT_DIRS/SERVERS
+      UPDATE_IF_WRITE      --> Should files with write permissions create a 
+                               backup (*.SVM) when being updated.
+                               0 = No    1 = Yes
+      UPDATE_KEEP_NEWER_REV--> 0 = Do not keep data newer than RSO
+                               1 = Keep data newer than RSO. 
+      UPDATE_SUMMARY       --> Pop up update summary after workarea update from the 
+                               SOS GUI. 
+                               0 = Do not pop up update summary dialog. 
+                               1 = Pop up update summary dialog. 
+
+      TAG_ERROR            --> Throw error when selection includes unmanaged or
+                               checked out objects.
+                               0 = Do not throw error
+                               1 = Error for both unmanaged and checked out
+                               2 = Error for unmanaged only
+                               3 = Error for checked out only
+                               
+
+      Preference          Defaults used by -reset
+      --------------------------------------------
+      AUTO_POPUP             "0"
+      AUTO_UPDATE            "60"
+      AUTO_UPDATE_PROJECT    "0"
+      AUTO_UPDATE_TYPE       "0"
+      BRANCH_DIRS            "0"
+      CO_LOCK_OPTION         "0"
+      CRS_DIR                "CRs"
+      DEFAULT_BRANCH         ""
+      DEFAULT_GROUP          ""
+      DIFF_OPTIONS           "-w"
+      EDITOR                 "vi"
+      HIDE_EXCLUDED          "0"
+      KEYWORD_SUB            "1"
+      LOG_CMD_NAME           "1"
+      SERVERS_DIR            ""
+      UPDATE_IF_WRITE        "1"
+      UPDATE_KEEP_NEWER_REV  "0"
+      UPDATE_SUMMARY         "1"
+      TAG_ERROR              "2"
+
+ARGUMENTS
+    -get<preference?> ...
+        Prints 'name=value' of the given preference.
+
+        You can use the get option multiple times to specify
+        multiple preference items.
+
+        If no preference is specified then print the value of
+        ALL the preferences as 'name=value' pairs.
+
+    -set<preference>=<value?> ...
+        Set the value of the given preference to the given
+        value and print the 'name=value' of the set preference.
+        If no value is specified then it is to an empty string.
+        If the empty string is not a valid value then it is
+        to the default SOS value.
+
+        You can use the set option multiple times to specify
+        multiple preference items to set.
+
+    -reset<preference?> ...
+        Resets the value of the given user preference to the
+        SOS built-in default value.
+
+        You can use the reset option multiple times to specify
+        multiple preference items.
+
+        If no preference is specified then reset the value of
+        ALL the preferences to the built-in SOS defaults.
+
+    -P<project name>
+        Get/Set preference for the specified project. This can be
+        the primary project or a reference project. If this
+        option is not specified, the preference will be set
+        for the primary project.
+        Multiple '-P' options may NOT be specified.
+        Only the following preferences are project specific :
+        DEFAULT_GROUP
+        DEFAULT_BRANCH
+        BRANCH_DIRS
+
+NOTES
+    Preference values can also be set before starting SOS by
+    setting environment variables with the preference name
+    with an 'SOS_' prefix.
+    Example: setenv SOS_DEFAULT_BRANCH low_power_branch
+
+EXAMPLES
+    soscmd preference
+      Get a list of all the preferences and their current value.
+
+    soscmd preference -getDEFAULT_GROUP -getDEFAULT_BRANCH
+      Print the default group and branch environment variables.
+
+    soscmd preference -resetDEFAULT_BRANCH
+      Set the default branch name to be the built-in default
+      of 'main'.
+
+    soscmd preference -setDEFAULT_BRANCH=low_power -setDEFAULT_GROUP=portable
+      Set the default branch to low_power. Unless a different
+      branch name is specified when checking out a file, all 
+      subsequent checkouts will be made on the 'low_power' branch.
+      Any new objects created will be owned by the 'portable' group.
+----------------------------------------------------------------

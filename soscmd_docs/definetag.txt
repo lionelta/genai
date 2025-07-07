@@ -1,0 +1,101 @@
+----------------------------------------------------------------
+soscmd definetag - define/declare new tags or modify tags
+----------------------------------------------------------------
+USAGE
+    soscmd definetag [-aDescription="comment"] [-aTagState="normal|sticky|locked"]
+           [-aExport="yes|no"] [-mod] [-P<projectname>] [-aTagAncestor="yes|no"] <tag names>
+
+DESCRIPTION
+    Before you tag a revision with a symbolic name the tag name 
+    must be defined or declared. This ensures that you do not 
+    accidentally use an incorrect name.
+
+    This command lets you define new tag names or modify existing
+    tag names.
+    
+ARGUMENTS
+    -aDescription="comment"
+        Optional description comments to be associated with 
+        the tag to be created or modified.
+
+    -aTagState="normal|sticky|locked"
+        Optional attribute TagState to be associated with 
+        the tag to be created or modified. If attribute value
+        is set to "sticky" then a tag once applied cannot be moved
+        by using the tag command. User would have to first backoff
+        the tag and then retag. So if admin wants to control
+        retagging of sticky tags then they can remove definetag
+        and backoff-tag from the MEMBER role.
+        Attribute value "locked" can only be specified with -mod option.
+        If the value is set to "locked" then the tag cannot be applied to
+        any other revision of the same object or to any other object. MEMBER
+        role can lock the tag but only admin can unlock a locked tag.
+        Locked tags cannot be backed off. 
+        Default value if this option is not specified is "normal".
+
+    -aExport="yes|no"
+        Optional attribute to indicate whether a true or false 
+        attribute is exported for this tag on each object. If set
+        to yes, then an attribute called Tag_<tag name> is set to 
+        "T" or "" for true and false respectively.  
+        Default value if this option is not specified is "no".
+
+    -aTagAncestor="yes|no"
+        Optional attribute to make the default tag behavior tag all the way up to the project root.
+
+    -mod
+        Argument to specify that a tag is being modified and not
+        created. If this argument is not specified it is assumed
+        that the tag is to be created.
+
+    -P<project name>
+        Define tag for the specified project(s).
+        If project name is the special keyword 'All', then
+        tags are defined for all projects (primary and reference).
+        Multiple '-P' options are allowed.
+        If this option is not specified, the tags will be defined
+        in the primary project.
+
+    <tag names>
+        List of space separated tag names to be created.
+
+NOTES
+    Once a tag is defined you can associate this symbolic name
+    with any revision of files or directories.
+
+    Tags, branches, and snapshots are in the same name space
+    and are referred to as 'labels'. So names of tags, 
+    branches, and snapshots have to be unique.
+
+EXAMPLES
+    soscmd definetag tested
+        Define a tag with the name 'tested'. TagState attribute
+        defaults to "normal".
+
+    soscmd definetag -aTagState="sticky" sticky_test
+        Define a tag with the name 'sticky_test' and also make it
+        a sticky tag.
+
+    soscmd definetag -aTagAncestor="yes" design_done
+        Define a tag with the name 'design_done' and also make its default
+        tag behavior to tag its ancestor directories all the way up to its project root.
+        
+    soscmd definetag -aExport=yes export_test
+        Define a tag with the name 'export_test' and also make it
+        an exportable tag.
+
+    soscmd definetag gold silver bronze
+        Define three tags with the names 'gold', 'silver', 
+        and 'bronze'.
+
+    soscmd definetag -mod -aDescription="Rev has passed unit tests" 
+           unit_tested
+        Modify the description of a tag with the name 'unit_tested'
+        with the given description.
+
+    soscmd definetag tested -mod aTagState="locked"
+        Modify tag 'tested' by making the TagState attribute as "locked".
+        This tag cannot be applied to any other object or to any other
+        revision of the applied objects until an admin unlocks it by
+        modifying the TagState to either "normal" or "sticky".
+----------------------------------------------------------------

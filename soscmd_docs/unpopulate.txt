@@ -1,0 +1,37 @@
+----------------------------------------------------------------
+soscmd unpopulate - unpopulate the specified directories
+----------------------------------------------------------------
+USAGE
+    soscmd unpopulate [-Nr] [directory pathnames]
+
+DESCRIPTION
+    Unpopulates the specified directory tree.
+
+    The entire directory tree under the selected directory will
+    be unpopulated and all the populated files will be removed
+    from the work area. 
+
+NOTES
+    Files NOT under SOS control will not be removed.
+
+    You must not have any files checked out in the sub-tree you
+    are trying to unpopulate.
+
+ARGUMENTS
+    -Nr
+        Do NOT recursively descend the directory to unpopulate
+        the sub-directories i.e. only unpopulate the files in the
+        selected directories.
+
+    directory pathnames
+        The pathnames to the directories to unpopulate.
+        Refer to help for the 'select' command for more details.
+
+EXAMPLES
+    soscmd unpopulate alu  mult
+        Unpopulate the 'alu' and 'mult' directories.
+
+    soscmd unpopulate -Nr alu
+        Unpopulate the diectory 'alu' and the files in this
+        directory. Leave the sub-directories untouched.
+----------------------------------------------------------------

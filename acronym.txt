@@ -1,0 +1,9 @@
+DI Design Intent
+ROAP Repository Of Analysis Parameter
+BCM Block Configuration Model
+RBC Rule Based Constraint
+RDF Register Definition File
+RDL Register Definition Language
+DIPI2 DEsign Intent Programming Interface 2
+PDIM Parameterzied Design Intent Methodology
+SF Standard Function

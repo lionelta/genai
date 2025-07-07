@@ -1,0 +1,14 @@
+### stream=false
+set query="$1"
+
+echo "+++++++++++[openai no stream]+++++++++++++++++++++++++++++++++++++++++++++++"
+env AZURE_OPENAI_API_KEY='show me the money' ask.py -q "$query" -sm
+echo "+++++++++++[ollama no stream]+++++++++++++++++++++++++++++++++++++++++++++++"
+ask.py -q "$query" -sm
+
+### stream=true
+echo "+++++++++++[openai streaming]+++++++++++++++++++++++++++++++++++++++++++++++"
+env AZURE_OPENAI_API_KEY='show me the money' ask.py -q "$query"
+echo "+++++++++++[ollama streaming]+++++++++++++++++++++++++++++++++++++++++++++++"
+ask.py -q "$query"
+

@@ -1,0 +1,53 @@
+---------------------------------------------------------------------
+soscmd terminate - Terminate/Activate a branch on a file
+---------------------------------------------------------------------
+USAGE
+    soscmd terminate [-b<branchname>] [-T -unT] [pathnames]
+
+DESCRIPTION
+    Terminate/Activate the specified branches on the selected
+    files and directories.
+
+    Terminate a branch if no more development is expected to be
+    done on the branch or makes a terminated branch active.
+
+ARGUMENTS
+
+    -b<branchname>
+        Specify the name of the branch to terminate/activate on the
+        pathnames which are mentioned on the commandline.
+    
+        If specifying paths on the commandline at least one branch
+	name must be provided with the terminate command. You may
+	use multiple '-b' options.
+
+    -T  -unT
+        These are mutually exclusive options. They specify whether
+        to terminate or unterminate (activate) the specified branches.
+
+        To unterminate the branch, it should have been terminated
+        previously on the file/directory.
+
+        If neither option is specified, default is terminate (-T).
+
+    pathnames
+        Refer to help for the 'select' command for more information
+        on pathnames.
+
+        The selections in the SOS window will change to these
+        pathnames.
+
+        If no pathnames are provided then the command will be
+        performed on the current selections in the SOS window.       
+
+EXAMPLES
+
+    soscmd terminate -bbugfix -T alu/booth.vhd
+        Terminate the branch 'bugfix' on the file 'alu/booth.vhd'.
+
+    soscmd select -slblspeedup
+    soscmd terminate  -T
+        Select the branch 'speedup' on all files and directories
+        and terminate the branch.
+
+----------------------------------------------------------------

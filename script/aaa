@@ -1,0 +1,1 @@
+env https_proxy=proxy-dmz.altera.com:912 http_proxy=proxy-dmz.altera.com:912    streamlit run  --server.headless true --server.port 8599 --logger.level debug stream.py |& tee /tmp/stream.log

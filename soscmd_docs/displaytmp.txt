@@ -1,0 +1,27 @@
+----------------------------------------------------------------
+soscmd displaytmp - show/hide the unmanaged objects
+----------------------------------------------------------------
+USAGE
+    soscmd displaytmp [-show -hide]
+
+DESCRIPTION
+    Show/Hide the display of unmanaged objects in sos.
+
+ARGUMENTS
+    -show
+        Turn On the display of unmanaged objects in the
+        SOS window.
+    -hide
+        Turn Off the display of unmanaged objects in the
+        SOS window.
+
+EXAMPLES
+    soscmd displaytmp -show
+        Turn On the display of unmanaged objects in the
+        SOS window.
+
+    soscmd displaytmp -hide
+        Turn Off the display of unmanaged objects in the
+        SOS window.
+
+----------------------------------------------------------------

@@ -1,0 +1,99 @@
+-----------------------------------------------------------------------
+soscmd showdiffs - Show differences between 2 RSO's at any given time.
+-----------------------------------------------------------------------
+USAGE
+    soscmd showdiffs [-frso<labelnames>] [-ftime<time>] 
+                     [-trso<labelname>] [-ttime<time>] 
+                     [-out<output file name>]
+                     [-op<operations>] [-fmt<format>]
+                     [pathname]
+
+DESCRIPTION
+    Show differences between 2 RSO's
+    in the project if it is under SOS control.
+    The command can be run only on a single object or a pathname.
+    In case pathname/object is not specified a gui selection must be made.
+    
+
+ARGUMENTS
+    -frso<rso>
+        From rso string. List of comma separated values. 
+        If empty then current workarea rso is assumed.
+
+    -trso<rso>
+        To rso string. List of comma separated values. 
+        If empty then current workarea rso is assumed.
+
+    -out<filename>
+        The filename to dump the showdiffs report summary.
+        If a relative pathname is provided then it is assumed
+        to be relative to the root of the workarea and
+        NOT the current working directory.
+        If '-outstdout' is specified then the output is redirected
+        to stdout.
+
+    -ftime<time>
+        Time corresponding to 'from rso'.
+        If empty then current time is taken.
+
+    -ttime<time>
+        Time corresponding to 'to rso'.
+        If empty then current time is taken.
+
+    -op<operations>
+        Filter out the operations.
+        Valid options are <add,del,upd,nop,all>
+        add - Show newly added objects.
+        del - Show deleted objects.
+        upd - Show updated objects.
+        nop - Show objects that haven't changed.
+        all - Show all objects.
+        By default ONLY the differences are listed in the report. 
+
+    -fmt<format>
+        Valid format options are 'txt|csv|htm|csv:noheader"
+        Default format is txt.
+
+    pathname
+        Only 1 object can be passed as a pathname to this command.
+
+NOTES
+    If none of -frso, -trso, -ftime and -ttime are specified then the
+    difference between workarea's last updated time and current time 
+    is shown for the current workarea rso.
+
+EXAMPLES
+    soscmd showdiffs -frsomain -trsoRelease_Complete .
+        Show differences between rso's 'main' and 'Release_Complete' for 
+        the entire project at current time.
+
+    soscmd showdiffs -frsomain -trsoRelease_Complete ./access
+        Show differences between rso's 'main' and 'Release_Complete' at current 
+        time for ONLY the './access' object.
+
+    soscmd showdiffs -frsomain -trsoRelease_Complete -fmtcsv:noheader ./access 
+        Show differences between rso's 'main' and 'Release_Complete' at current 
+        time for ONLY the './access' object in csv format without headers.
+
+    soscmd showdiffs -frsomain -trsoRelease_Complete,Feature_Complete -ftime2016/04/22 -ttime2017/04/22 ./access
+        Show differences between rso's 'main' at time '2016/04/22' and 'Release_Complete,Feature_Complete' 
+        at time '2017/04/22' for ONLY the './access' object.
+
+    soscmd showdiffs -trsoFeature_Complete .
+        Show differences between the current workarea rso and 'Feature_Complete' for 
+        the entire project at current time.
+
+    soscmd showdiffs -trsoFeature_Complete -opall .
+        Show all objects for the current workarea rso and 'Feature_Complete' for 
+        the entire project at current time.
+
+    soscmd showdiffs -frsomain -trsoRelease_Complete -fmtcsv:noheader ./access -outstdout
+        Show differences between rso's 'main' and 'Release_Complete' at current
+        time for ONLY the './access' object in csv format without headers and 
+        redirect the output to stdout.
+
+    soscmd showdiffs -fmthtm -opall .
+        Show differences for workarea rso between the last updated time and the 
+        current time in html format for the entire project.
+
+----------------------------------------------------------------

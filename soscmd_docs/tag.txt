@@ -1,0 +1,116 @@
+----------------------------------------------------------------
+soscmd tag - give a symbolic name to a revision
+----------------------------------------------------------------
+USAGE
+    soscmd tag [-n<tagname>] [-ft]
+               [-B [-F]]
+               [-Na] 
+               [-q ]
+               [select options] 
+               [pathnames]
+
+DESCRIPTION
+    Gives a symbolic tag or name to the selected revisions
+    of files and directories. If a previous revision of the file
+    or directory has the same tag then the tag is 'moved' to the
+    current revision. If you do not select version nodes explicitly or
+    not specify the -F option during tagging the tags on the same branch 
+    will not move down the version history( i.e. newer to older). If the tag is
+    defined to tag ancestors automatically the tag command with that tag  will 
+    tag all the intermediate parent directories till the  project root node.
+    This ancestor tagging can be disabled by the -Na option.
+
+ARGUMENTS
+    -n<tagname>
+        Specify the name of the tag to associate with the 
+        selected revisions.
+
+        At least one tag name must be provided with the tag 
+        command. You may use multiple '-n' options.
+
+    -B
+        Back off the Tag from the selected objects.
+
+    -Na
+        Do not tag ancestor directories. This option cannot be used with the backoff (-B) option.
+
+    -q
+        Quiet or non-verbose  mode. Do not print per object tag/backoff tag  status message. Only
+        command summary is printed along with the tagged object count. 
+
+    -ft
+        Force tag even if the tag moves from newer to older version
+        on the same branch for implicitly tagged ancestor directories. 
+        This option cannot be used with the backoff (-B) option.
+     -F
+        It disassociates the tag from all the revisions of the object.
+        If a tag was associated with multiple revisions over time, SOS tracks which revision had
+        that tag at each moment in time. When the workarea is updated to a specific moment in time,
+        a tag that has been simply backed-off from an object could reappear at another revision.
+        This option, -F (Full) can only be used with the -B option. 
+
+    -
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+
+NOTES
+    To add a tag, the tag name must have been previously 
+    defined in SOS.
+
+    Tags, branches, and snapshots are in the same name space
+    and are referred to as 'labels'. So names of tags, 
+    branches, and snapshots have to be unique.
+ 
+EXAMPLES
+    soscmd tag -ngold
+        Tag the currently selected revisions of files and 
+        directories along with their ancestors in the SOS window with the name 'gold'.
+
+    soscmd tag -ntested *.v
+        Add the tag 'tested' to the current revisions (i.e.
+        revisions in your workarea) of all the files with the 
+        extension '.v' in the working directory.
+
+    soscmd tag -ngold testbench.v/main
+        Tag the latest revision of 'testbench.v' on the main
+        branch of development as 'gold'.
+
+
+    soscmd tag -ngold -ft testbench.v 
+        Tag current version  of  'testbench.v' as 'gold' even if 'gold' was already on a later
+        version on the same branch.
+
+    soscmd tag -Na -nsynthesize link.v/8 phy.v/23
+        Tag revision '8' of 'link.v' and revision '23' of 
+        'phy.v' as 'synthesize' without tagging ancestors.
+
+
+    soscmd tag -ngold -ntested .
+        Tag the current revision of the working directory both
+        'gold' and 'tested'.
+
+    soscmd tag -ngold -B testbench.v
+        Remove the tag 'gold' from the current revision of
+       'testbench.v'.
+
+    soscmd tag -ngold -B -F testbench.v
+        Remove the tag 'gold' from the all the revisions of
+       'testbench.v'.
+
+    soscmd tag -ngold -sr -ft -q usb 
+        Apply the tag 'gold' on current revision of object usb and its children recursively. 
+        If gold is set to tag ancestors, then tag the current versions of ancestor directories 
+        up to the workarea root  node as-is i.e. do not skip tagging if the tag already exists 
+        on newer version of parent directories.  Use the  quiet or non-verbose mode printing
+        only the command summary.
+        
+
+----------------------------------------------------------------

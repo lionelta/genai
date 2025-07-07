@@ -1,0 +1,38 @@
+----------------------------------------------------------------
+soscmd editreference - Sets the RSO of a sub-tree
+----------------------------------------------------------------
+USAGE
+    soscmd editreference [-p] [-w] [-l<label names>] [-reset] [path names] 
+
+DESCRIPTION
+        Sets the RSO for this sub-tree to be different from that
+        of the Project RSO. 
+
+ARGUMENTS
+    -p  Edit a reference revision search order in the project repository.
+        This will impact all user workareas.
+        
+    -w  Edit a reference revision search order in the workarea only.
+        This will impact this workarea only.
+
+        If the '-p' and '-w' options are not specified then the current
+        revision search order will be displayed.
+        
+    -l<labelname>
+        Specify the name of the tag, snapshot, or branch name to
+        be used in the revision search order.
+
+        Multiple '-l' options may be specified to create a 
+        revision search order consisting of multiple labels.
+        The order in which the labels appear on the command 
+        line will be the order in which they will be placed
+        in the revision search order.
+
+    -reset 
+        When used with -p it will reset this tree to use the default project RSO.
+        When used with -w it will reset this tree back to either the project RSO 
+        if used or the default RSO. 
+
+NOTE
+      The '-p' and '-w' options are mutually exclusive.
+      The '-l' and '-reset' options are mutually exclusive.

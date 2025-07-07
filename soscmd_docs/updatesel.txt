@@ -1,0 +1,61 @@
+----------------------------------------------------------------
+soscmd updatesel - update the selected objects in your workarea
+----------------------------------------------------------------
+USAGE
+    soscmd updatesel [-t<time>] [-ccw] [-Nr] [select options] [pathnames]
+
+DESCRIPTION
+    Bring the revisions that match your current Revision Search Order
+    of the selected files into your workarea. 
+    Repopulate selected directories so new files are brought into
+    the workarea.
+
+    You need to use this command only if you want to get new
+    revisions of only some select files without updating your
+    entire workarea.
+
+    NOTE : All selections are recursive by default. If non-recursive 
+	   behavior is desired then use the '-Nr' option.
+
+ARGUMENTS
+     -t<time>
+        Bring the selected object's revision into the
+        workarea based on the current RSO AND the time specified in 
+        the following format <YYYY/MM/DD HH:MM:SS>.
+        
+    -ccw
+        Check consistency of selected objects. This option will 
+        check for the existence and permissions of unchanged files 
+        in the workarea. You should use this option if you find 
+        files missing in your workarea.
+
+    -Nr
+        Do NOT recursively descend the directory to populate
+        the sub-directories i.e. only populate the files in the
+        selected directories.
+       
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+   
+EXAMPLES
+    soscmd updatesel
+        Bring the revisions matching RSO of files selected in
+        the SOS window into your workarea.
+
+    soscmd updatesel README
+        Apply the current Revision Search Order and get the
+        updated revision of 'README' into your workarea.
+
+    soscmd updatesel -sr DOCS_DIR
+        Update the entire dir 'DOCS_DIR'. It will
+        update the directory and all its children and populate
+        any new children added under the DOCS_DIR.
+----------------------------------------------------------------

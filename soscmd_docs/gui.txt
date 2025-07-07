@@ -1,0 +1,20 @@
+----------------------------------------------------------------
+soscmd gui - switch to GUI mode
+----------------------------------------------------------------
+USAGE
+    soscmd gui
+
+DESCRIPTION
+    If SOS is running in background mode then it will switch to
+    GUI (windows) mode. If it is already running in GUI mode this
+    will do nothing.
+
+    
+ARGUMENTS
+    none
+ 
+
+EXAMPLES
+    soscmd gui
+        Switch to GUI mode.
+----------------------------------------------------------------

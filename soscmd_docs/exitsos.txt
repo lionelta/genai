@@ -1,0 +1,35 @@
+----------------------------------------------------------------
+soscmd exitsos - exit the SOS session running in this workarea
+----------------------------------------------------------------
+USAGE
+    soscmd exitsos [-F] [-l]
+
+DESCRIPTION
+    Exits the SOS session that is running in this workarea.
+
+    You may want to use this command to exit the SOS session
+    running for this workarea on any machine.
+
+ARGUMENTS
+    -F
+        Exit even if connected to an external application
+        such as Cadence Virtuoso.
+
+    -l
+        Checkin the license without exiting SOS.
+        This is useful in a shared workarea where multiple
+        users are using the same workarea.
+        This option is not valid for the user who started
+        the SOS process.
+
+NOTES
+
+EXAMPLES
+    soscmd exitsos
+        Exit the SOS session running in this workarea if
+        it is not connected to an external application.
+
+    soscmd exitsos -F
+        Exit SOS even if Cadence Virtuoso is running and
+        connected to this session.
+----------------------------------------------------------------

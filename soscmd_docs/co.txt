@@ -1,0 +1,133 @@
+----------------------------------------------------------------
+soscmd co - check out files and directories
+----------------------------------------------------------------
+USAGE
+    soscmd co [-C]
+              [-a<attrname>=<attrvalue>]
+              [-b<branchname>]
+              [-Nlock]
+              [-Novr]
+	      [-q]
+              [select options]
+              [pathnames]
+
+DESCRIPTION
+    Checks out for editing the selected files and directories.
+    Only the latest revision on any branch may be checked out.
+
+    A check out lock is placed on the revision which keeps 
+    others from checking out the same revision of the file. 
+    When a file is checked out, write permissions are given
+    to the file in your workarea and you can now edit it.
+
+ARGUMENTS
+    -C
+        Enable concurrent checkout.
+        If you have this option then you will be able to checkout
+        a file even if someone else already has the same revision
+        checked out.
+
+    -a<attrname>=<attrvalue>
+        This option is used to specify values to attributes
+        with this command.
+        The attribute name and value are separated by the '='
+        character with no spaces in between.
+        The attribute name and value must immediately
+        follow this option with no spaces.
+        If the attribute value has spaces then you must enclose
+        the value in double quotes '"'.
+
+        Attribute names may be abbreviated provided there is no
+        ambiguity.
+
+    -b<branchname>
+        If this option is used then the latest revision on the
+        given branch is checked out. If the branch does not
+        exist on the file then a branch is created. 
+
+    -Nlock
+        Checkout without placing a lock on the file.
+        You should use this option carefully because other
+        users can edit the file since you have not locked it.
+        It can be used when the client is unable to connect to
+        the primary server due to network or other issues.
+        It may also be used when you want to make some temporary
+        modifications to the file that you plan to discard later.
+
+    -Novr
+        Do not overwrite modified file in the workarea.
+        You should use this option if the file in the workarea
+        has been modified without checking it out. SOS will not
+        restore the original file from the server.
+    -q
+        Quiet or non-verbose  mode. Do not print per object checked out  status message. Only
+        command summary is printed along with the checked out  object count. 
+
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+
+NOTES
+    If the 'change_summary' attribute in not specified but the 
+    'Log' attribute is provided  then the same value is also 
+    used for the 'change_summary'.
+
+    If a file to be checked out already has write permissions in
+    your workarea then that file is renamed by adding a '.SVM'
+    extension before checking out the file from the project.
+    A warning message is also issued to alert you.
+
+EXAMPLES
+    soscmd co
+        Check out all files and directories which are currently
+        selected in the SOS window.
+
+    soscmd co *.vhd
+        Check out all the files with the '.vhd' extension in the
+        current working directory.
+
+    soscmd co adder.vhd/main
+        Check out the latest revision of 'adder.vhd' on the main
+        development branch.
+
+    soscmd co -C adder.vhd/main
+        Check out the latest revision of 'adder.vhd' on the main
+        development branch even if someone else also has it
+        checked out.
+
+    soscmd co .
+        Check out the current directory.
+
+    soscmd co -achange_summary="Instantiate adder." top.vhd
+        Check out 'top.vhd' and assign the 'change_summary'
+        attribute the value:
+            Instantiate adder.
+
+    soscmd co -snm -aLog="Merge the 'rel1_fix' branch to main."
+        Check out all files which have unmerged branches and
+        assign the 'Log' attribute the value:
+          Merge the 'rel1_fix' branch to main.
+
+    soscmd co -snm -achange_summary="Merge rel1_fix" \
+              -aLog="Merge the 'rel1_fix' branch to main."
+        Check out all files which have unmerged branches and
+        assign the 'Log' attribute the value:
+            Merge the 'rel1_fix' branch to main.
+        and the 'change_summary' attribute the value:
+            Merge rel1_fix
+
+    soscmd co -bmain testbench.v
+        Checkout the latest revision of 'testbench.v' on the 
+        main line of development.
+
+    soscmd co -bbugfix top.v/5
+      Checkout revision '5' of 'top.v' on a branch 'bugfix'.
+      If the branch does not exist then create it.
+----------------------------------------------------------------

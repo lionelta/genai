@@ -1,0 +1,116 @@
+----------------------------------------------------------------
+soscmd newworkarea - Create a new workarea for an existing project
+----------------------------------------------------------------
+USAGE
+    soscmd newworkarea server project [pathname] [-l<labelname>]
+                       [-L<workarea type>] [-here]
+                       [-root<valid directory in the project>] [-P<projname> -l<label1> -l<label2> ... ]
+
+DESCRIPTION
+    A new workarea is created with the pathname or current directory
+    as the root for the workarea.
+
+ARGUMENTS
+    server
+        Name of the server to be used.
+    
+    project
+        Name of the project to create a workarea for.
+
+    pathname
+        Optional pathname of the directory which will be the
+        root of the workarea. If this argument is not specified
+        the workarea is created in the current directory.
+
+    -l<labelname>
+        Specify the name of the tag, snapshot or branch to be
+        used in the revision search order.
+
+        Multiple '-l' options may be specified to create a 
+        revision search order consisting of multiple labels.
+        The order in which the labels appear on the command 
+        line will be the order in which they will be placed
+        in the revision search order.
+
+        If the '-l' option is not specified then 'main'
+        revision search order will be used.
+
+    -L<workarea type>
+        Workarea type can be either CACHED, LOCAL, WRITABLE, or LATEST
+        
+        If workarea type is CACHED, the files in the new workarea
+        are created as links to the cached revisions by the cache server
+        in the cache repository.
+        
+        If workarea type is LOCAL, the files in the new workarea
+        are created as full read-only local copies.  Check out is required
+        to edit the files.
+        
+        If workarea type is WRITABLE, the files in the new workarea
+        are created as full writable local copies. Check out is not required
+        to edit the files.  Merging is required on ci if multiple users
+        make changes to the same file. This option is best suited for editing
+        text only files and is NOT recommend for working with binary data.
+        
+        If workarea type is LATEST, the files in the new workarea
+        are created as links to the cached revisions in the cache repository 
+        and auto update of files and directories is set to immediate.
+        
+        If this option is not specified, the default will be LOCAL unless a 
+        default is defined by an admin in the sosd.cfg.
+
+        LOCAL and WRITABLE are the only options supported on the Windows platform.
+
+    -root<project root>
+        Project root argument should be a valid directory existing in the
+        project. This option essentially allows the user to create a new
+        workarea with a lower level directory as the root provided that
+        directory matches the revision search order specified. If the -root
+        argument is not specified, it is set as "." which is
+        the top root directory of the project. 
+
+    -here
+       Create workarea in the 'pathname' directory without checking if
+       ancestor is a workarea.
+       This option allows creation of a workarea nested under an existing
+       workarea, similar to the sos gui option '-here'.
+
+    [-P<projname> -l<label1> -l<label2> ... ]
+       This will set the revision search order for the specified project. 
+       The -P<projectname> option should be followed by one or more -l<label1>.
+
+NOTES
+    This can only be done for a directory which is not an existing
+    SOS workarea.
+
+EXAMPLES
+    soscmd newworkarea serverPalm cray_yp
+        Create a new workarea in the current working directory
+        using the server 'serverPalm' and project 'cray_yp'.
+        The files are maintained as local copies.
+
+    soscmd newworkarea serverPalm cray_yp ./work
+        Create a new workarea in the 'work' directory using the
+        server 'serverPalm' and project 'cray_yp'.
+        The files are maintained as local copies.
+
+    soscmd newworkarea serverPalm cray_yp -LCACHED
+        Create a new workarea in the current working directory
+        using the server 'serverPalm' and project 'cray_yp'. The
+        files in the workarea will be maintained as links to the 
+        cached revisions by the cache server in the cache repository.
+
+    soscmd newworkarea serverPalm cray_yp -root./rtl -lgold -lmain
+        Create a new workarea rooted at ./rtl  directory with gold,main
+        as the revision search order.
+
+    soscmd newworkarea serverPalm cray_yp -here
+        Create a new workarea in the current working directory
+        without checking if an ancestor is already a workarea.
+        If current directory is a workarea root, then error out.
+
+    soscmd newworkarea serverPalm cray_yp -Pipcat -ldesign_done -lverif_done
+        Create a new workarea in the current working directory and for reference
+        project ipcat set the revision search order to the labels design_done followed
+        by verif_done.
+----------------------------------------------------------------

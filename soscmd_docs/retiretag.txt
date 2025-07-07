@@ -1,0 +1,36 @@
+----------------------------------------------------------------
+soscmd retiretag - retire/activate an existing tag
+----------------------------------------------------------------
+USAGE
+    soscmd retiretag [-A] [-P<project name>] <tag names>
+
+DESCRIPTION
+    Defined tags are retired. The retired tag is not seen.
+    The retired tag can be activated.
+    
+ARGUMENTS
+    -A
+        Activate a retired tag.
+
+    -P<project name>
+        Retire tags for the specified project(s).
+        If project name is the special keyword 'All', then
+        tags are retired for all projects (primary and reference).
+        Multiple '-P' options are allowed.
+        If this option is not specified, the tags will be retired
+        in the primary project.
+
+    <tag names>
+        List of space separated tag names to be retired.
+
+NOTES
+    Once a tag is retired you cannot use it in Revision Search Order
+    to update a workarea.
+
+EXAMPLES
+    soscmd retiretag tested fixed
+        The tags 'tested' and 'fixed' are retired.
+
+    soscmd retiretag -A fixed
+        The tag 'fixed' is activated.
+----------------------------------------------------------------

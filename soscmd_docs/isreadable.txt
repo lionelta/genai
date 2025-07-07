@@ -1,0 +1,31 @@
+----------------------------------------------------------------
+soscmd isreadable - Does the user have populate privileges 
+                    to the specified managed object in the 
+                    current workarea.
+----------------------------------------------------------------
+USAGE
+    soscmd isreadable [pathname]
+
+DESCRIPTION
+    This command is a ACL check. It checks if a user 
+    can "populate" a managed object path in SOS.
+    NOTE: This command does NOT check for permissions
+    on disk.   
+
+Return :
+    0 with an error message - Object does not have read access.
+    1 - Object has read access.
+
+ARGUMENTS
+    pathname
+        Name of the object to check access.
+        If no pathname is provided then the command will be performed
+        on the current selection in the SOS window.
+        Only one path or selection can be specified.
+
+EXAMPLES
+    soscmd isreadable ./alu.txt
+        Check if user running the command has SOS-ACL "populate" 
+        privileges to the file 'alu.txt'.
+
+----------------------------------------------------------------

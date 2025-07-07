@@ -1,0 +1,33 @@
+----------------------------------------------------------------
+shlcleanup - Close communication channels with the shared library.
+----------------------------------------------------------------
+USAGE
+    soscmd shlcleanup [-vk<vendor key>]
+              [-t<timeout>]
+
+DESCRIPTION
+    Close all communication with the sos shared library used by a
+    vendor tool.
+
+    This function closes the connection with a sos shared
+    library for a vendor tool and cleans up. It checks in the sos
+    license for the interface to that tool and sets the timeout
+    after which sos will exit if there is no further activity.
+
+ARGUMENTS
+
+    -vk<vendor key>
+        This is a unique integer identifying the vendor tool
+        using the sos shared library.
+
+    -t<timeout>
+        Shutdown sos after the given number of minutes if there
+        is no call to sosinit within this time. Value 0 will exit
+        sos immediately.
+
+NOTES
+
+EXAMPLES
+    soscmd shlcleanup -vk1 -t0
+
+-----------------------------------------------------------------

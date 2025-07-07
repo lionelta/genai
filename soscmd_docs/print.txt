@@ -1,0 +1,31 @@
+----------------------------------------------------------------
+soscmd print - print message in SOS window
+----------------------------------------------------------------
+USAGE
+    soscmd print [-warn | -err] [message]
+
+DESCRIPTION
+  The given message string is displayed in the SOS window.
+  The print command is NOT affected by selections. The message
+  is displayed only once irrespective of the objects selected.
+
+ARGUMENTS
+  -warn
+      The message is displayed as a warning.
+
+  -err
+      The message is displayed as an error.
+
+  message
+      The message to be displayed.
+
+EXAMPLES
+    soscmd print "Regression completed with no warnings and no errors."
+        Displays the message as a note in the SOS window.
+
+    soscmd print -warn "Regression completed with 4 warnings and no errors."
+        Displays the message as a warning in the SOS window.
+
+    soscmd print -err "Regression completed with 4 warnings and 3 errors."
+        Displays the message as an error in the SOS window.
+----------------------------------------------------------------

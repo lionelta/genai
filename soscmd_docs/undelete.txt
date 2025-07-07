@@ -1,0 +1,46 @@
+----------------------------------------------------------------
+soscmd undelete - undelete objects from a specified directory
+----------------------------------------------------------------
+USAGE
+    soscmd undelete [-d<rev_depth>] <directory pathname> 
+           <list of object names to be undeleted>
+
+DESCRIPTION
+    undeletes the specified objects from the directory.
+
+    The directory from which objects are to be undeleted must
+    be a populated directory. There should be a current version
+    in the workarea and it should be the latest revision on that
+    branch.
+
+ARGUMENTS
+    -d<rev_depth>
+        The number of revisions to search for the deleted objects.
+        This is an optional argument.
+
+        NOTE:
+        The default rev_depth is five. That is it will search 
+        the last 5 revisions to locate objects to be undeleted.
+
+    directory pathname
+        The pathname of the directory in which the given objects
+        are to be undeleted.
+
+    list of object names to be undeleted
+        Space separated list of object names to be undeleted.
+
+EXAMPLES
+    soscmd undelete alu  mult
+        undelete the 'mult' object from the 'alu' directory.
+        This will search in the last 5 revision of 'alu' from the 
+        current revision in the workarea. If 'mult' obj was deleted
+        in the last 5 revisions then it is undeleted.
+
+    soscmd undelete -d13 ./PC/dvd blueRay sdFlash
+        undelete 'blueRay' and 'sdFlash' objects from the
+        './PC/dvd' directory. This will search in the last 13
+        revision of './PC/dvd' directory from the current revision
+        in the workarea. If 'blueRay' and/or 'sdFlash' are found
+        to be deleted in the last 13 revisions then all the found
+        objects are undeleted.
+----------------------------------------------------------------

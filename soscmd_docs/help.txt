@@ -1,0 +1,26 @@
+----------------------------------------------------------------
+soscmd help - prints help for a command
+----------------------------------------------------------------
+USAGE
+    soscmd help [command names]
+
+DESCRIPTION
+    Print help about the specified commands.
+    If no arguments are given then general help about the
+    command line interface is displayed.
+
+ARGUMENTS
+    command names
+        Names of commands supported by SOS.
+        Abbreviations may be used.
+
+EXAMPLES
+    soscmd help
+        Print general help about the SOS command line interface.
+
+    soscmd help co
+        Print help about the 'co' command.
+
+    soscmd help use upd
+        Print help about the 'userev' and 'update' commands.
+----------------------------------------------------------------

@@ -1,0 +1,115 @@
+----------------------------------------------------------------
+soscmd history - show the history of changes
+----------------------------------------------------------------
+USAGE
+    soscmd history 
+      [-from<time>]
+      [-to<time>]
+      [-cmd<command name>]
+      [-user<user name>]
+      [-out<output file name>]
+      [-fs]
+      [select options] 
+      [pathnames]
+
+DESCRIPTION
+    This command displays the history of changes made to the
+    selected files. All previous check in and tag operations
+    and any current check outs will be listed.
+
+    The history of changes is listed in reverse chronological 
+    order.
+
+ARGUMENTS
+    -from<date+time>
+        The local date and time from which the history should be
+        displayed. The date and time is specified in local time
+        and converted appropriately on the server.
+        The format for specifying date+time is:
+            "YYYY/MM/DD HH:MM:SS"
+        You must start with the year but you can choose to
+        specify as little as you want. The parts not specified
+        will be assumed to be 0.
+
+        You can also specify the number of days before the 
+        current date by indicating a negative integer: "-N".
+
+        If this option is not specified then it will default
+        to start of the project.        
+
+    -to<date+time>
+        The local date and time up to which the history should be
+        displayed. The date and time is specified in local time
+        and converted appropriately on the server.
+        The format for specifying date+time is:
+            "YYYY/MM/DD HH:MM:SS"
+        You must start with the year but you can choose to
+        specify as little as you want. The parts not specified
+        will be assumed to be 0.
+
+        If this option is not specified then it will default
+        to the current time.
+
+    -cmd<command name>
+        This option is a filter to specify which command will 
+        be listed in the history output. The option can be used
+        multiple times to specify multiple commands. The following 
+	are valid command names for history command option:
+          create, co, ci, tag, termbranch
+
+        If this option is not specified then all commands are
+        listed.
+
+    -user<user name>
+        This option will show history records for a user.
+	The option can be used multiple times to specify multiple users.
+
+        If this option is not specified then all user records are
+        listed.
+
+        NOTE: if -user and -cmd is specified then the filter will 
+	      AND both the results.
+
+    -out<filename>
+        The filename to dump the history to instead of stdout.
+        If a relative pathname is provided then it is assumed
+        to be relative to the root of the workarea and
+        NOT the current working directory.
+
+    -fs
+       Format each command in a single line instead of the 
+       default multi-line format. This is useful if the file is
+       to be parsed in scripts.
+
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no pathnames are provided then the command will be 
+        performed on the current selections in the SOS window.
+
+EXAMPLES
+    soscmd history
+        Print the history of the files and directories selected
+        in the SOS window.
+
+    soscmd hist testbench.v stim.dat
+        Print history of the files 'testbench.v' and 'stim.dat'.
+
+    soscmd hist -outstim.hist stim.dat
+        Print history of the file 'stim.dat' to 'stim.hist'.
+
+    soscmd hist -cmdco -cmdci stim.dat
+        Print history of the file 'stim.dat' and show all
+	history records for 'co' or 'ci'.
+
+    soscmd hist -cmdci -usersos_user stim.dat
+        Print history of the file 'stim.dat' and show only
+	history records for cmd 'ci' and user 'sos_user'.
+
+    soscmd hist -from"2010/01/01" -to"2010/04/01" stim.dat
+        Print all the history records in Q1 2010.
+----------------------------------------------------------------

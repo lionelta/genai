@@ -1,0 +1,27 @@
+----------------------------------------------------------------
+soscmd readcfg - Reread various configuration from the server.
+----------------------------------------------------------------
+USAGE
+    soscmd readcfg [-rso]
+
+DESCRIPTION
+    Update configuration details from the server for the primary
+    project in the workarea.
+
+ARGUMENTS
+    -rso
+        Get the default revision search order for the primary
+        and reference projects from the server of the primary
+        project. If the revision search order cannot be modified
+        for a project, update the rso of the workarea for that
+        project.
+
+
+EXAMPLES
+    soscmd readcfg -rso
+        Read the revision search order for all projects from the
+        primary server. Update the RSO in workarea if a default
+        revision search order is specified and it cannot be modified
+        by the user.
+
+----------------------------------------------------------------

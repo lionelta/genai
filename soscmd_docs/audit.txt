@@ -1,0 +1,209 @@
+----------------------------------------------------------------
+soscmd audit - show the audit trail for the project
+----------------------------------------------------------------
+USAGE
+    soscmd audit [-txt |-htm |-csv |-f]
+                 [-from<time>]
+                 [-to<time>]
+                 [-snapfrom<snapshot name>]
+                 [-snapto<snapshot name>]
+                 [-cmd<command name> ...]
+                 [-sfo | -sdo]
+                 [-out<output file name>]
+                 [-P<project name>]
+                 [-ixr]
+                 [-group]
+                 [-b<branch name>]
+                 [-user<user_name>]
+
+DESCRIPTION
+    Displays the audit trail for the project in a chronological
+    ascending order.
+
+    The following columns are displayed:
+      Date
+      Time
+      Username
+      Command
+      Pathname
+      Revision
+      Change Summary
+
+ARGUMENTS
+    -txt | -htm | -csv | -f
+        These are mutually exclusive options that define the format
+        of the audit trail.
+        -txt --> Text output in columns
+        -htm --> HTML format with tables
+        -csv --> CSV format, tab spaced
+        -f   --> Custom format, will print to stdout
+                 Delimiter: '%'
+                 Valid fields: date, user, cmd, obj, rev, summary
+                 Numerical value after delimiter "%" decides field width
+                 E.g:  "%20date %-20user %summary %obj %rev %cmd" 
+
+        If no format is specified then -txt is assumed.
+
+    -from<date+time>
+        The local date and time from which the audit trail should be
+        displayed. The date and time is specified in local time
+        and converted appropriately on the server.
+        The format for specifying date+time is:
+            "YYYY/MM/DD HH:MM:SS"
+        You must start with the year but you can choose to
+        specify as little as you want. The parts not specified
+        will be assumed to be 0.
+
+        You can also specify the number of days before the 
+        current date by indicating a negative integer: "-N".
+
+        If this option is not specified then it will default
+        to the last time this workarea was updated to bring in
+        new files and directories.        
+
+    -to<date+time>
+        The local date and time up to which the audit trail should be
+        displayed. The date and time is specified in local time
+        and converted appropriately on the server.
+        The format for specifying date+time is:
+            "YYYY/MM/DD HH:MM:SS"
+        You must start with the year but you can choose to
+        specify as little as you want. The parts not specified
+        will be assumed to be 0.
+
+        If this option is not specified then it will default
+        to the current time.
+    
+    -snapfrom<snapshot name>
+        The local date and time for the snapshot from which the audit 
+        trail should be displayed.
+
+    -snapto<snapshot name>
+        The local date and time for the snapshot to which the audit 
+        trail should be displayed.
+
+    -cmd<command name> ...
+        This option is a filter to specify which commands will 
+        be listed in the audit trail. The option can be used
+        multiple times to specify multiple commands. The command
+        name string should match the command name used with
+        soscmd. Only commands that write into the repository are 
+        valid options. The following are valid options:
+          create, co, ci, discardco, tag, snapshot, delete, rename,
+          deleterev, modattr, definetag, definebranch, merge,
+          move, termbranch, addreference and editreference
+
+        If this option is not specified then all commands are
+        listed.
+
+    -sfo | -sdo
+        These are mutually exclusive options that filter the
+        audit trail to display either files or directories.
+
+        -sfo --> Display audit trail for files and packages ONLY
+        -sdo --> Display audit trail for directories ONLY
+
+        If neither option is specified then the audit trail for
+        all objects will be displayed.
+
+    -out<file name>
+        Pathname of the output file for the audit trail.
+        If a relative pathname is provided then it is assumed
+        to be relative to the root of the workarea.
+
+        If this option is not provided then the audit trail is
+        created in file (in the root of the workarea directory):
+          audit_trail.txt  --> for TEXT output
+          audit_trail.html --> for HTML output
+
+    -P<project name>
+        Passing either <path name> or <project name> is mandatory.
+        But should NOT pass both.
+
+        Get audit trail for the specified project. This can be
+        the primary project or a reference project. If this 
+        option is not specified, the audit trail will be returned
+        for the primary project.
+        Multiple '-P' options may NOT be specified.
+
+     <path name>
+        Passing either <path name> or <project name> is mandatory.
+        But should NOT pass both.
+
+        Get audit trail for the selected path in the given primary project
+        using -ixr, will report details included reference projects as well.
+
+        User can select multiple paths
+        Results for multiple files will all be displayed in one outfile
+        If top level path present, results for child path selection will 
+        be present in one top level path
+
+    -ixr
+        This option generates audit report for included external references in
+        primary project.
+
+        This option is only valid for audit trail based on paths.
+         
+    -group 
+        Will generate high level summary of all the transactions/ operations
+        Grouping them based on a given timestamp
+
+    -b<branch name>
+        Filter the audit results for a given branch. 
+        Multiple '-b' options supported
+   
+    -user<user_name>
+        Filter audit results for the given user. 
+        Multiple '-user' options supported 
+
+NOTES
+    Even if the server is in a different time zone, all times displayed
+    in the audit trail report are in the local time zone.
+    -from and -to should also be specified in local time.
+
+EXAMPLES
+    soscmd audit
+        Print out the audit trail in text format to stdout
+        listing all changes since the last time a full update
+        of the workarea was done.
+
+    soscmd audit -sfo -from-7 -cmdci -cmdcreate -cmddelete
+        List all the new files created or deleted and new file 
+        revisions checked-in in the last week
+        List only files and packages and not directories.
+
+    soscmd audit -htm -from"2005/01/01" -to "2005/03/31" -outaudit-2005-q1.html
+        List all the changes in Q1 2005 in html format and
+        redirect it to the file audit-2005-q1.html
+
+    soscmd audit -htm -from"2005/01/01" -to "2005/03/31" ./src
+        List all the changes for path ./src in Q1 2005 
+
+    soscmd audit -f "%20date %-10user %obj %rev %cmd"
+        Print out the audit trail in text format to stdout
+        listing all changes since the last time a full update
+        of the workarea was done.
+        Only the columns Date, User, Object, Revision and Command 
+        are shown. The Date column wil have a width of 20 characters
+        and the User columns of 10. The latter will be aligned to 
+        the right.
+    
+    soscmd audit -snapfrom Release0 -snapto Release1
+        List all changes done between Release0 and Release1 snapshots. 
+
+    soscmd audit -from"2005/01/01" -to "2005/03/31" -ixr
+        List all changes between 2005/01/01 to 2005/03/31. Include
+        external references in primary project.
+    
+    soscmd audit -from"2005/01/01" -to "2005/03/31" -group
+        List all changes between 2005/01/01 to 2005/03/31. group records
+        by transaction.
+
+    soscmd audit -from"2005/01/01" -to"2005/03/31" -userpenny -blow_power -bbugfix
+        List all changes done by users penny and sheldon between
+        2005/01/01 to 2005/03/31 on low_power and bugfix brances.
+
+    soscmd audit -from"2005/01/01" -to "2005/03/31" -user penny -user sheldon
+        List all changes done by users penny and sheldon between
+        2005/01/01 to 2005/03/31.
+----------------------------------------------------------------

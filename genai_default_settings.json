@@ -1,0 +1,15 @@
+{
+    "ollama_host": "asccf06294100.sc.altera.com:11434",
+
+    "_emb_model": "BAAI/bge-m3",
+    "emb_model": "/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/pretrained_models/BAAI/bge-m3",
+    "llm_model": "llama3.3",
+    "retrieve_chunks": 5,
+    "top_p": 0.8,
+    "temperature": 0.8,
+    "seed": 584,
+
+    "chunksize": 1000,
+    "chunkoverlap": 500
+
+}

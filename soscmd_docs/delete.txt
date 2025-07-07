@@ -1,0 +1,72 @@
+----------------------------------------------------------------
+soscmd delete - delete files and/or dirs from the project
+----------------------------------------------------------------
+USAGE
+    soscmd delete [-F] [-U] [-k] [-kco] [pathnames]
+
+DESCRIPTION
+    Deletes the specified files and directories from the 
+    workarea and from the project if they are under SOS control.
+
+    If a directory is deleted then the files and sub-directories
+    below will be recursively deleted. This includes files
+    and directories in this workarea sub-tree which are not
+    under SOS control.
+    
+    If the deleted object is under SOS control then it is actually
+    NOT deleted from the project repository itself. This file
+    will just not exist in the new revision of the parent
+    directory.
+
+ARGUMENTS
+    -F
+        Force deletion of object(s) even if it is checked out by
+        someone else.
+        NOTE: If the object is checked out by you '-F' will not
+              delete it.
+
+    -U
+        Delete unmanaged object(s) also from the selected directories
+        and below.
+
+    -k  
+        Keep managed data in workarea as unmanaged.
+
+    -kco   
+        Keep parent directory checked out.
+
+    pathnames
+        Names of files and directories in the workarea to be 
+        removed.
+
+NOTES
+    The object itself must NOT be checked out before delete.
+
+EXAMPLES
+    soscmd delete stim.dat
+        Delete the file 'stim.dat'.
+
+    soscmd delete *.v
+        Delete ALL the files with the '.v' extension.
+
+    soscmd delete alu
+        Delete the directory 'alu' and the files and 
+        directories under it. This will not delete any
+        unmanaged files under 'alu' directory hierarchy.
+        NOTE: Directory 'alu' is not deleted if there are
+              any objects present under it.
+
+    soscmd delete -U alu
+        Delete the directory 'alu' and the files and 
+        directories under it. This will also delete any
+        unmanaged files under 'alu' directory hierarchy.
+
+    soscmd delete -F alu
+        Delete the directory 'alu' and the files and 
+        directories under it even if any of the objects are
+        checked out by others. Objects which are checkout by
+        you are not deleted.
+
+    soscmd delete -kco ./foo/bar.txt
+        Delete the file 'bar.txt' but keep parent directory 'foo' checked out.
+----------------------------------------------------------------

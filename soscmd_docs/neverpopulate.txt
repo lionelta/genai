@@ -1,0 +1,35 @@
+----------------------------------------------------------------
+soscmd neverpopulate - never populate the specified directories
+----------------------------------------------------------------
+USAGE
+    soscmd neverpopulate [-set -unset] [directory pathnames]
+
+DESCRIPTION
+    Marks (or unmarks) the specified directory tree to never
+    be populated in this workarea.
+    None of its children will be visible in the workarea.
+ARGUMENTS
+
+    -set  -unset
+        These are mutually exclusive options.
+
+        They specify whether to mark the directories to never
+        be populated or remove (unset) the mark on marked
+        directories so they can now be populated.
+
+        Default is to mark the directories to never be
+        populated.
+
+    directory pathnames
+        The pathnames to the directories to never populate.
+        Refer to help for the 'select' command for more details.
+
+EXAMPLES
+    soscmd neverpopulate -set mult
+        Mark the 'mult' directory to never be populated in this
+        workarea.
+
+    soscmd neverpopulate -unset mult
+        Remove mark from the 'mult' directory so it or its
+        children can be populated in this workarea.
+----------------------------------------------------------------

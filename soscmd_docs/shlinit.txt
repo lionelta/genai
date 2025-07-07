@@ -1,0 +1,45 @@
+----------------------------------------------------------------
+shlinit - Initialize the shared library.
+----------------------------------------------------------------
+USAGE
+    soscmd shlinit [-vk<vendor key>]
+              [-prefix<errMsgPrefix>]
+              [-t<timeout>]
+
+DESCRIPTION
+    Establish communication with the sos shared library used by a
+    vendor tool.
+
+    This function records the connection with a sos shared
+    library for a vendor tool. It checks out the sos license for
+    the interface to that tool and returns the version number to
+    ensure the shared library and sos are compatible.
+
+ARGUMENTS
+
+    -vk<vendor key>
+        This is a unique integer identifying the vendor tool
+        using the sos shared library.
+
+    -prefix<errMsgPrefix>
+        errMsgPrefix can have values 1 or 0. If 1 is specified,
+        every sos message will be prefixed with the severity of
+        that message and returned to the tool as a formatted
+        string. Values 0 indicates the messages will be returned
+        without severity information in the message string.
+
+    -t<timeout>
+        Specify time of inactivity, in minutes, after which sos
+        should exit automatically. This should typically be set
+        to zero here, to disable the timeout, as long as the sos
+        shared library is connected to the sos session. The value
+        can be set back in shlCleanup.
+
+NOTES
+    This command returns the version number of the sos process
+    to ensure that sos and the shared library are compatible.
+
+EXAMPLES
+    soscmd shlinit -vk1 -prefix0 -t0
+
+-----------------------------------------------------------------

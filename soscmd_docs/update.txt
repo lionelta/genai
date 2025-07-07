@@ -1,0 +1,195 @@
+----------------------------------------------------------------
+soscmd update - update the workarea
+----------------------------------------------------------------
+USAGE
+    soscmd update [-l<labelname>] [-i -sfo -rso] [-Npr] 
+                  [-ccw] [-ccr] [-Npd<pathname>] [-K]
+                  [-t<[yy]yy/mm/dd [hh:mm:ss]>] [-pr]
+                  [-lco -luco -llk -lnt -lnm -lnl -lcm -lcnm]
+                  [-P<project name>]
+
+DESCRIPTION
+    Updates your workarea and synchronizes it with the project.
+    It applies your revision search order to each 'populated'
+    directory and file and if a different revision matches then
+    this revision is brought into your workarea.
+
+    The files and directories in your workarea including their
+    icons and attributes do not change until you update it.
+    This provides you with a stable work environment even though
+    other members of the team may be making changes to the
+    project. The 'update' command lets you get all the latest
+    changes into your workarea.
+
+ARGUMENTS
+    -l<labelname>
+        Specify the name of the tag, snapshot, or branch name to
+        be used in the revision search order.
+
+        Multiple '-l' options may be specified to create a 
+        revision search order consisting of multiple labels.
+        The order in which the labels appear on the command 
+        line will be the order in which they will be placed
+        in the revision search order.
+
+        If the '-l' option is not specified then the current
+        revision search order will be used for the update.
+
+    -i
+        Update all the icons and attributes of the files and
+        directories but do NOT actually change the files and
+        directories in the workarea.
+
+        This option is a convenient way to see what changes have
+        been made without actually getting them.
+
+    -sfo
+        Update only files in the workarea. Do not update directories.
+
+        This option is a convenient way to get a different
+        revision of files already existing in the workarea,
+        without getting new files or directories into the workarea.
+
+    -rso
+        Update the 'Revision Search Order' only. Do not do an 
+        actual update. This implies -i to update all the icons.
+
+    -Npr
+        Do NOT recursively populate unpopulated sub-directories.
+        If there are any new and/or unpopulated sub-directories 
+        under populated directories then they will not be populated.
+        This option is useful only if you have some directories
+        which are not recursively populated and you want to
+        keep it that way.
+
+    -Npd<pathname>
+        Do NOT populate unpopulated sub-directories under this pathname.
+        If there are any new and/or unpopulated sub-directories 
+        under this populated directory then they will not be populated.
+        This option is useful only if you have some directories
+        which are not populated and you want to keep it that way.
+
+    -ccw
+        Check workarea consistency. This option will check for the 
+        existence and permissions of unchanged files in the workarea.
+        You should use this option if you find files missing in your
+        workarea.
+
+    -ccr
+       Check consistency against the repository. An update without this
+       option is incremental and only checks and updates those objects
+       that have changed since the last update. The '-ccr' option checks
+       ALL objects without relying on the last update time. It checks
+       the workarea consistency (implicitly includes -ccw option). It also
+       verifies that the contents of the version in workarea are correct.
+       The time required to update with this option is proportional to the
+       size of the project and not the number of changes since the last update.
+
+    -t 
+        Update the workarea based on a specified time.  
+
+        Multiple '-t' options may NOT be specified.
+
+    -K 
+        Object will not be updated if revision in workarea is newer
+        than the revision matching RSO.
+
+    -pr
+        Preview what gets updated in the workarea.
+        Actual contents of the workarea will NOT get updated.
+
+    -lco
+        List all objects checked out in this workarea.
+        This option may be specified only with the '-i' option.
+
+
+    -luco
+        List all objects checked out without lock in this workarea.
+        This option may be specified only with the '-i' option.
+
+    -lcm
+        List all objects checked out and modified in this workarea.
+        This option may be specified only with the '-i' option.
+
+    -lcnm
+        List all objects checked out but not modified in this workarea.
+        This option may be specified only with the '-i' option.
+
+    -llk
+        List all objects with the lock icon i.e. objects checked out
+        by others or in other workareas.
+        This option may be specified only with the '-i' option.
+
+    -lnt
+        List all objects with the untagged icon i.e. objects whose
+        current revisions would not be picked using the revision
+        search order.
+        This option may be specified only with the '-i' option.
+
+    -lnm
+        List all objects with the unmerged icon i.e. objects whose
+        current revisions have unmerged branches.
+        This option may be specified only with the '-i' option.
+
+    -lnl
+        List all objects with the not leaf icon i.e. objects whose
+        current revisions are not the latest on its branch.
+        This option may be specified only with the '-i' option.
+
+    -P<project name>
+        Update the workarea for the specified project(s).
+        Multiple '-P' options are allowed.
+        If project name is the special keyword 'All', then 
+        all projects (primary and reference) are updated.
+        If this option is not specified, by default All projects
+        will be updated.
+NOTES
+    The '-i' and '-sfo' options are mutually exclusive.
+
+    The '-K' option is mutually exclusive with '-t' and '-l' options.
+
+    If a file or directory is checked out then the 'update' 
+    command does NOT change this file or directory.
+
+EXAMPLES
+    soscmd update
+        Update your workarea  using your current revision search
+        order for the primary and all referenced projects.
+
+    soscmd update -lsynthesize -lmain
+        Update the work area using the revision search order
+        of 'synthesize' followed by 'main'.
+
+    soscmd update -i
+        Update the icons and attributes but bring no new 
+        revisions into the workarea.
+
+    soscmd update -sfo
+        Update only the files in your workarea using your
+        current revision search order.
+
+    soscmd update -t13/04/22
+    soscmd update -t"2013/04/22 14:45:34"
+        Update the workarea by reverting the state of the workarea
+        to what it was at the specified time.
+
+    soscmd update -Npd. -Npd./docs
+        Update your workarea using your current revision search
+        order.
+        Populate any new or unpopulated directories that are
+        under populated directories in the workarea except
+        in the '.' and './docs' directories.
+
+    soscmd update -i -lnl
+        Update the icons and attributes and list all the objects
+        that have the 'not leaf' icon in the workarea i.e. objects
+        whose current revisions are not the latest on its branch.
+
+    soscmd update -rso -lsynthesize -lmain
+        Update the revision search order to 'synthesize' followed
+        by 'main'. Also updates the icons based on new RSO.
+
+    soscmd update -pr
+        Preview what is going to get updated in the workarea.
+
+----------------------------------------------------------------

@@ -1,0 +1,86 @@
+----------------------------------------------------------------
+soscmd definebranch - define/declare new branches
+----------------------------------------------------------------
+USAGE
+    soscmd definebranch [-d<description>] <branch names>
+                        [-a<Attr=Val>]
+                        [-mod] [-fbr] [-P<project name>]
+
+DESCRIPTION
+    Before you checkout a file on a branch the branch name must 
+    be defined or declared. This ensures that you do not 
+    accidentally use an incorrect name.
+
+    This command lets you define new branch names.
+    
+ARGUMENTS
+    -d<description>
+        Optional description comments to be associated with 
+        the new branches to be created.
+
+    -a<Attr=Val>
+        You can specify the following 2 attributes.
+           IgnoreIfTerm
+           Terminated
+        Both the attributes can have values "yes" or "no".
+
+    -mod
+        Use this option to modify the description of an already
+        defined branch. If this option is not present, the branch
+        will be defined.
+
+    -fbr
+        Use this option to define a "File Branching", meaning file level
+        branching is assumed. If this option is not present then
+        "Project Branching" is assumed. For Project Branching a Snapshot
+        called "BranchName_baseline" is taken with the current state of
+        the project in this workarea.
+        This option is ignored when -mod is specified.
+
+    -P<project name>
+        Define branches for the specified project(s).
+        If project name is the special keyword 'All', then
+        branches are defined for all projects (primary and reference).
+        Multiple '-P' options are allowed.
+        If this option is not specified, the branches will be defined
+        in the primary project.
+
+    <branch names>
+        List of space separated branch names to be created.
+
+NOTES
+    Once a branch is defined you can create and checkout files
+    on a branch with this name.
+
+    Branches, tags, and snapshots are in the same name space
+    and are referred to as 'labels'. So names of branches, 
+    tags, and snapshots have to be unique.
+
+EXAMPLES
+    soscmd definebranch speedopt
+        Define a branch with the name 'speedopt'.
+
+    soscmd definebranch -PAll speedopt
+        Define a branch with the name 'speedopt' for the main
+        project and all reference projects.
+
+    soscmd definebranch areaopt speedopt poweropt
+        Define three branches with the names 'areaopt', 
+        'speedopt', and 'poweropt'.
+
+    soscmd definebranch -d"Branch to do area optimizations" areaopt
+        Define a branch with the name 'areaopt' with the
+        given description.
+
+    soscmd definebranch -mod -d"Optimizations branch" areaopt
+        Description of branch name 'areaopt' is modified with the 
+        given description.
+
+    soscmd definebranch -mod -aTerminated=yes areaopt
+        The branch 'areaopt' is set to be terminated for the
+        main project
+
+    soscmd definebranch -mod -aTerminated=no areaopt -PUSB4
+        The branch 'areaopt' is set to be unterminated for the
+        USB4 project.
+----------------------------------------------------------------

@@ -1,0 +1,145 @@
+----------------------------------------------------------------
+soscmd query - get information from sos
+----------------------------------------------------------------
+USAGE
+    soscmd query [-r] [-A] [tags branches snapshots labels rso
+                            server project attributes project_path 
+                            wa_root last_update_time rollback_time
+                            is_offline is_running num_selected] 
+                 [-P<project name>] [-q]
+                 [-export]
+                 [-ucl]
+
+DESCRIPTION
+    This command queries workarea and project-specific
+    information from sos.
+
+ARGUMENTS
+    -r
+        List only the retired labels.
+        Applicable to tags, branches, snapshots and labels only.
+
+    -A
+        List all (active and retired) labels.
+        List all (primary and reference) projects.
+        Applicable to tags, branches, snapshots, labels and project only.
+
+    -q
+        List labels with qualifiers.
+        Applicable to tags, branches, snapshots and labels only.
+        Currently only the following 4 qualifiers are supported for
+        branch 'main' : file, dir, owner, group.
+        This option is used to get the labels to apply to the
+        Revision Search Order during workarea update.
+
+    -P<project name>
+        Query the specified project. This can be
+        the primary project or a reference project. If this
+        option is not specified, the query will be run
+        for the primary project.
+        Multiple '-P' options may NOT be specified.
+        Not applicable to 'project' option.
+
+    -export
+        Get only the list of exported attributes. Supported only with
+        'soscmd query attributes'. 
+  
+    -ucl
+        List all the projects available in the client without 
+        querying corresponding servers' online status.
+        Applicable only with 'soscmd query project -A'.
+
+    tags
+        Get the list of tags in the current or specified project.
+
+    branches
+        Get the list of branches in the current or specified project.
+
+    snapshots
+        Get the list of snapshots in the current or specified project.
+
+    labels
+        Get the list of tags, branches and snapshots in the
+        current or specified project.
+
+    rso
+        Get the Revision Search Order of the workarea for
+        current or specified project.
+
+    server
+        Get the name of the server used for the current or specified project.
+
+    project
+        Get the symbolic name of the project you are working on.
+
+    project_path
+        Get the absolute path to the project repository as seen
+        from the server for current or specified project.
+
+    wa_root
+        Get the absolute path of the root directory of the
+        current workarea.
+
+    last_update_time
+        Get the time of the last update in the workarea
+        for current or specified project.
+
+    rollback_time
+        Get the time to which the workarea was rolled back
+        for current or specified project.
+
+    is_offline
+        Get status whether the workarea can connect to the
+        SOS server for current or specified project.
+        Returns '0' if the server is up and sos can
+        connect to it;
+        '1' if the server is up but sos was started in offline
+         mode so cannot connect to it until restarted;
+        '2' if server is not up;
+        '3' if the server is up but sos cannot connect to
+        it due to protocol mismatch or clock skew.
+
+    is_running
+        Get status whether sos process is running in the
+        workarea.
+        Does not start sos if it is not running.
+        Returns '0' if the sos process is not running in
+        the workarea;
+        '1' if it is running.
+
+    is_nowin
+        Get mode of sos.
+        Returns '0' if sos is running in windows mode.
+        '1' if sos is running in non-windows mode but can
+         switch to windows mode.
+        '2' if sos is running in non-windows mode and cannot
+         switch to windows mode.
+        
+    num_selected
+        Get the number of selected objects.
+
+   attributes
+        Get the list of attributes. 
+
+NOTES
+    You can query only one option per invocation of this
+    command.
+    
+
+EXAMPLES
+    soscmd query tags
+        Print a list of all the tags defined for the current
+        project.
+
+    soscmd query -r tags
+        Print a list of all the retired tags defined for the
+        current project.
+
+    soscmd query rso
+        Print the revision search order of the current workarea.
+
+    soscmd query project
+        Print the symbolic name of the project you are working
+        on in this workarea.
+
+----------------------------------------------------------------

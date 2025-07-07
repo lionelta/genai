@@ -1,0 +1,57 @@
+----------------------------------------------------------------
+soscmd addreference - add a reference object to the project
+----------------------------------------------------------------
+USAGE
+    soscmd addreference -prj<project name> -ref<referenced object path> 
+                        -Np <alias pathname> -p [-l<label names>]
+
+DESCRIPTION
+    Adds the specified file, package or directory from the given project
+    to the current project with the name as "alias pathname".
+
+ARGUMENTS
+    -prj<project name>
+        This specifies the project name from which the reference is to
+        be added.
+
+    -ref<referenced object path>
+        This specifies the reference object name to be added.
+        The path has to be specified as relative path from the project
+        root directory.
+        If this is a directory the entire directory hierarchy will be
+        added as a reference.
+
+    -Np
+        Do not populate the added reference object.
+        
+    -p  Add a reference revision search order to the project repository.
+        This will affect all user workareas.
+    
+    -l<labelname>
+        Specify the name of the tag, snapshot, or branch name to
+        be used in the revision search order.
+
+        Multiple '-l' options may be specified to create a 
+        revision search order consisting of multiple labels.
+        The order in which the labels appear on the command 
+        line will be the order in which they will be placed
+        in the revision search order.
+
+    <alias pathname>
+        The reference object name as it should appear in the current project.
+        A relative path can be specified from the current directory to
+        place the reference in the directory hierarchy.
+
+EXAMPLES
+    soscmd addreference -p -prjTrinityCPU -ref./PWM_LIB/Comparator ./utility/AnalogCompare  
+        Add the directory "./PWM_LIB/Comparator" from the "TrinityCPU"
+        project to the current project under the "./utility" directory
+        with an alias name of "AnalogCompare"
+    
+    soscmd addreference -p -prjTrinityCPU -ref./PWM_LIB/Comparator -lRelease_A1 ./utility/Comparator 
+        Add the directory "./PWM_LIB/Comparator" from the "TrinityCPU"
+        project to the current project under the "./utility" directory. 
+        This object and all its children 
+        below will use "Release_A1" as their RSO.         
+
+----------------------------------------------------------------

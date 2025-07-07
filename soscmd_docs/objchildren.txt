@@ -1,0 +1,43 @@
+----------------------------------------------------------------
+soscmd objchildren - return list of objects in the specified dir
+----------------------------------------------------------------
+USAGE
+    soscmd objchildren [-sfo -sdo -stmp] [pathname]
+
+DESCRIPTION
+    This command returns the list of objects existing in the
+    directory specified by pathname.
+    By default, only objects under SOS control will be returned.
+
+ARGUMENTS
+    -sfo
+        Select only files from the pathname.
+
+    -sdo
+        Select only directories from the pathname.
+
+    -stmp
+        Include objects that are not in SOS repository in the
+        selection. By default, only objects under SOS control
+        will be selected.
+
+    pathname
+        Name of directory from which to get the objects.
+        This argument is mandatory and only one path can be
+        specified.
+
+NOTES
+
+EXAMPLES
+    soscmd objchildren .
+        Return all objects in the '.' directory that are 
+        managed by SOS.
+
+    soscmd objchildren -sdo ./libraries
+        Return all sub-directories in the 'libraries'
+        directory that are managed by SOS.
+
+    soscmd objchildren -stmp -sfo alu
+        Return all files in the 'alu' directory.
+
+----------------------------------------------------------------

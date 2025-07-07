@@ -1,0 +1,20 @@
+----------------------------------------------------------------
+soscmd nogui - switch to non-GUI mode
+----------------------------------------------------------------
+USAGE
+    soscmd nogui
+
+DESCRIPTION
+    If SOS is running in GUI (Windows) mode then it will switch
+    to background mode. If it is already running in background
+    mode this will do nothing.
+
+    
+ARGUMENTS
+    none
+ 
+
+EXAMPLES
+    soscmd nogui
+        Switch to non-GUI (background) mode.
+----------------------------------------------------------------

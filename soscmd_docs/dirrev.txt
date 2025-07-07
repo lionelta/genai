@@ -1,0 +1,27 @@
+----------------------------------------------------------------
+soscmd dirrev - show/hide the directory revisions 
+----------------------------------------------------------------
+USAGE
+    soscmd dirrev [-show -hide]
+
+DESCRIPTION
+    Show/Hide the display of directory revisions.
+
+ARGUMENTS
+    -show
+        Turn On the display of directory revisions in the
+        SOS window.
+    -hide
+        Turn Off the display of directory revisions in the
+        SOS window.
+
+EXAMPLES
+    soscmd dirrev -show
+        Turn On the display of directory revisions in the
+        SOS window.
+
+    soscmd dirrev -hide
+        Turn Off the display of directory revisions in the
+        SOS window.
+
+----------------------------------------------------------------

@@ -1,0 +1,35 @@
+----------------------------------------------------------------
+soscmd usebranch - Set a branch as project RSO
+----------------------------------------------------------------
+USAGE
+    soscmd usebranch [-P<project name>] <branchName>
+
+DESCRIPTION
+    Set the project RSO with the specified branch.
+    If the branch is a "file branch" then the branch is prepended
+    to the current RSO. If the branch is a "project branch" then
+    the RSO will be branch_name, branchName_BRANCH_baseline
+    where branchName_BRANCH_baseline is  snapshot taken when that
+    branch was defined.
+
+    
+ARGUMENTS
+    -P<project name>
+        Use branch for the specified project(s).
+        If project name is the special keyword 'All', then
+        branch is used for all projects (primary and reference).
+        Multiple '-P' options are allowed.
+        If this option is not specified, the branch will be used
+        in the primary project.
+
+    <branchName>
+        Branch name to be used for the given project.
+
+EXAMPLES
+    soscmd usebranch -PUSB3 main
+        Set RSO for project "USB3" to "main"
+
+    soscmd usebranch -PAll speedopt
+        Set RSO for all projects to "speedopt,speedopt_BRANCH_baseline"
+        assuming speedopt is a "project branch".
+----------------------------------------------------------------

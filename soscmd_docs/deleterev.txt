@@ -1,0 +1,48 @@
+----------------------------------------------------------------
+soscmd deleterev - delete the selected revision from the database
+----------------------------------------------------------------
+USAGE
+    soscmd deleterev [pathnames]
+
+DESCRIPTION
+    Delete the selected revisions of the file or directory.
+    Note that the revisions will be expunged from the SOS
+    database and you cannot get that revision back.
+
+    All tags associated with this revision will be deleted.
+    If this revision is part of a snapshot then the revision
+    cannot be deleted.
+
+    This command should be used sparingly and only to delete
+    revisions that you really do not want.
+
+    If all the revisions on a branch are deleted then the branch
+    itself will be deleted.
+
+ARGUMENTS
+    pathnames
+        Pathnames to the object revisions to be deleted.
+        Revision number is appended to the end of the
+        object name separated by a slash.
+
+        The selections in the SOS window will change to the
+        selection specified.
+
+        If no pathnames are provided then the command will 
+        be performed on the current selections
+        in the SOS window.
+
+NOTES
+    A revision cannot be deleted if it is currently checked out 
+    by anyone.
+
+EXAMPLES
+    soscmd deleterev usbcore.v/7  usbcore.scr/3
+        Get rid of revision '7' of file 'usbcore.v' and revision
+        '3' of 'usbcore.scr'.
+
+    soscmd deleterev phy.vhd/testing/1
+        Delete revision '1' of file 'phy.vhd' on branch 
+        'testing'. If this is the only revision on the branch
+        then delete the branch itself.
+----------------------------------------------------------------

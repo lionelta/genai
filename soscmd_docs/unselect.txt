@@ -1,0 +1,38 @@
+----------------------------------------------------------------
+soscmd unselect - unselect some of the current selections in sos
+----------------------------------------------------------------
+USAGE
+    soscmd unselect [select options] [pathnames]
+
+DESCRIPTION
+    The specified objects will be removed from the current
+    selections in the SOS window for this workarea.
+
+    If no arguments are provided then all current selections 
+    will be unselected.
+
+ARGUMENTS
+    [select options]
+        Refer to help for the 'select' command.
+
+    pathnames
+        Refer to help for the 'select' command.
+
+EXAMPLES
+    soscmd unselect
+        Unselect all previous selections.
+
+    soscmd unsel *.vhd
+        Unselect all the files in the current directory with
+        an extension of '.vhd'.
+
+    soscmd unsel -slk
+        Unselect all objects which are checked out by anyone
+        else or in any other workarea.
+
+    soscmd select -sr .
+    soscmd unselect -slblGOLD
+        The combination of these two commands selects all objects
+        at or below the current directory that does NOT have
+        the label GOLD.
+----------------------------------------------------------------

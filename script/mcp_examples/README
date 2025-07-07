@@ -1,0 +1,20 @@
+
+
+**This is a example of a working MCP**
+_______________________________________
+ 
+## Setup Environment
+> cd /nfs/site/disks/da_infra_1/users/yltan/venv/3.11.1_ipython/scripts
+> source ../bin/activate.csh
+
+## SSE mode
+1. Setup MCP SERVER
+    > env FASTMCP_PORT=8001 FASTMCP_DEBUG=true mcp_server2.py
+
+2. Invoke CLIENT
+    > env OLLAMA_HOST=asccf06294100.sc.altera.com:11434 aaa.py http://localhost:8001/sse
+
+## STDIO mode
+> env OLLAMA_HOST=asccf06294100.sc.altera.com:11434 aaa.py mcp_server2_stdio.py
+
+

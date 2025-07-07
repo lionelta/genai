@@ -1,0 +1,137 @@
+----------------------------------------------------------------
+soscmd - provides a command line interface to sos
+----------------------------------------------------------------
+USAGE
+    soscmd <command name> [command arguments]
+
+DESCRIPTION
+    'soscmd' takes command line arguments and submits them to
+    SOS for execution.  
+
+    'soscmd' itself does very little command processing besides
+    some simple error checking. It merely submits all the 
+    command line arguments to SOS for execution.
+
+    'soscmd' and SOS need NOT have to run on the same machine.
+    'soscmd' will communicate with an existing SOS session for
+    the current workarea no matter which machine it is 
+    running on.
+
+    If SOS is not running then 'soscmd' will attempt to invoke
+    it.
+
+    'soscmd' may be invoked ONLY from the workarea directory
+    or any of its sub-directories.
+
+
+ARGUMENTS
+    command name
+        The first argument must be a command name. Command names
+        may be abbreviated provided that there is no ambiguity.
+        The commands currently supported are:
+            addreference   - add a reference object to the project
+            audit          - show the audit trail for the project
+            ci             - Check in
+            co             - Check out
+            create         - Add new file or directory to the project
+            definebranch   - Define/declare new branches
+            definetag      - Define/declare new tags or modify tags
+            delete         - Delete existing file or directory
+            deleterev      - Permanently delete selected revision
+            deleteworkarea - Delete the SOS workarea.
+            diff           - Show the difference between 2 revisions
+            dirrev         - Show/Hide the display of directory revisions
+            discardco      - Discard check out
+            displaytmp     - Show/Hide the display of unmanaged objects
+            editreference  - Sets the RSO for this sub-tree to be different from that of the Project RSO
+            exitsos        - Exit the SOS session running in this workarea
+            exportrev      - Get selected revision under a different name
+            expand         - Expands or collapses directories in SOS
+            findwaroot     - Print the workarea root path
+            gui            - switch to GUI mode
+            help           - Print help
+            history        - Show history
+            isreadable     - Check if an object has read access.
+            iswriteable    - Check if an object has write access.
+            merge          - Merge a revision of a file into the checked out revision
+            modattr        - Modify existing attribute value or add a new attribute
+            move           - Move objects to another directory
+            neverpopulate  - Mark the specified directory to never be populated in this workarea
+            newworkarea    - Create a new workarea
+            nobjstatus     - Show status and attributes of specified objects
+            nogui          - switch to non-GUI mode
+            objstatus      - Show status and attributes of specified object
+            pack           - Manage sos package object
+            populate       - Populate the specified directory
+            preference     - Set and get user preference settings
+            print          - Print message in SOS window
+            query          - Get project-specific information from sos
+            rename         - Rename an existing file or directory
+            retirebranch   - retire/activate an existing branch
+            retiresnapshot - retire/activate an existing snapshot
+            retiretag      - retire/activate an existing tag
+            revertrev      - Revert latest rev back to a previous rev
+            select         - Select objects
+            shell          - Execute a shell command
+            showdiffs      - Show differences between 2 RSO's
+            showlabels     - Show all the revisions in the repository that match the specified labels
+            snapshot       - Take a snapshot
+            status         - Show status and version information in workarea
+            tag            - Tag revision with the given name
+            terminate      - Terminate/Activate a branch on a file or directory
+            undelete       - Undelete objects from a specified directory
+            unpopulate     - Unpopulate the specified directory
+            unselect       - Unselect from current selections
+            update         - Update the workarea
+            updatesel      - Update selected objects in the workarea
+            usebranch      - Set a branch as project RSO
+            userev         - Get selected revision in to the workarea
+
+        For more information on any command type:
+            help <command name>
+
+        To determine the version of SOS type:
+            version 
+
+    command arguments
+        Most of the commands are of the form:
+           command [options] [pathnames]
+        The 'options' and 'pathnames' may appear in any order.
+
+NOTES
+    You may use shell wildcards like '*' to specify pathnames
+    but you should remember that the shell and not 'soscmd'
+    does the wildcard substitution.
+
+    It would be convenient to setup aliases for some of the
+    common commands in your '.cshrc' file. For example:
+      alias sosco 'soscmd co'
+      alias sosci 'soscmd ci'
+
+EXAMPLES
+    soscmd update
+        Update the workarea using the current revision search
+        order.
+
+    soscmd co *.v ../top.v
+        This command checks out all the files with the extension
+        '.v' in the current directory and also the file 'top.v'
+        in the parent dir.
+
+    soscmd co alu.v/main
+        Check out the latest revision of 'alu.v' on the 'main'
+        line of development.
+
+    soscmd diff alu.v/12 alu.v/gold
+        Show the difference between revision '12' of alu.v and
+        the revision tagged 'gold'.
+
+    soscmd discardco -F /stim.dat
+        Discard the check out of file 'stim.dat' in the root
+        directory of the workarea even if it has been modified.
+
+    soscmd ci -sco -achange_su="Fixed race condition."
+        Check in ALL the checked out files with a 
+        'change_summary' of:
+            Fixed race condition.
+----------------------------------------------------------------

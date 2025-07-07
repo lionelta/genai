@@ -1,0 +1,241 @@
+----------------------------------------------------------------
+soscmd objselect - make selections in sos & print selected objects
+----------------------------------------------------------------
+USAGE
+    soscmd objselect [-A] [-sco -suco -slk -snt -snm -snl -sr -stmp
+                     -scm -scnm -sfo -sdo -sw -said -slbl<label>
+                     -satr<name|name=value> -i] [pathnames]
+
+DESCRIPTION
+    All previous selections in the SOS window for this 
+    workarea are first unselected and new selections are made
+    based on the given options and pathnames.
+
+    The selected objects are displayed along with version
+    number if a specific revision is selected.
+
+ARGUMENTS
+    -A
+        Append to the current selections. If this option
+        is not provided then previous selections are
+        unselected before new selections are made.
+
+    -sco
+        All objects checked out in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -suco
+        All objects checked out without lock in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -scm
+        All objects checked out and modified in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -scnm
+        All objects checked out but not modified in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -slk
+        All objects with the lock icon i.e. objects checked out 
+        by others or in other workareas.
+        If pathnames are specified then look only in sub-tree.
+
+    -snt
+        All objects with the untagged icon i.e. objects whose
+        current revisions would not be picked using the revision
+        search order.
+        If pathnames are specified then look only in sub-tree.
+
+    -snm
+        All objects with the unmerged icon i.e. objects whose
+        current revisions have unmerged branches.
+        If pathnames are specified then look only in sub-tree.
+
+    -snl
+        All objects with the not leaf icon i.e. objects whose
+        current revisions are not the latest on its branch.
+        If pathnames are specified then look only in sub-tree.
+
+    -sr
+        Select recursively below any pathnames provided
+        with the command.
+
+    -stmp
+        Select only files and directories that are not is SOS
+        repository. (Only available for select/objselect command.)
+
+    -sfo
+        Select only files from any pathnames provided with the
+        command.
+
+    -sdo
+        Select only directories from any pathnames provided with
+        the command.
+
+    -sw
+        Select files in the workarea which have write permissions.
+        If pathnames are specified then look only in sub-tree.
+
+    -said
+        Select all objects in a directory only. This will not
+        recursively traverse the directory. This can be used in
+        combination with -sfo or -sdo.
+
+    -slbl<label>
+        Select files or directories with revisions having the
+        specified 'label'.
+        The 'label' can be TAG, SNAPSHOT or BRANCH name.
+
+    -satr<name>
+    -satr<name=value>
+        Select files or directories with revisions having the
+        specified attribute 'name' or 'name and value'.
+        The attribute 'name' match has to be a complete string
+        but the 'value' is searched as a sub-string. Also refer
+        to '-i' option.
+
+    -i
+        Ignore case sensitivity. If the '-i' option is not present
+        string matches are case sensitive. If '-i' is present
+        then string matches are case insensitive.
+        Currently used with '-satr<name=value>' for case insensitive
+        search of the value field.
+        
+    pathnames
+        Pathnames of objects are specified just as pathnames
+        in Unix i.e. relative to the current working directory
+        where each name is separated by a '/'.
+
+        Similar to Unix pathnames the following conventions
+        are supported:
+          '.'          the current directory.
+          '..'         the parent directory.
+          Leading '/'  the ROOT directory of the WORKAREA.      
+
+        You can also select revisions and branches using the
+        same convention. The pathname must match the path to
+        the object as displayed in the tree in the SOS window.
+
+        However, you do not have to specify all levels in the
+        'revision' hierarchy. For example, to select a branch
+        or a tag you do not have to specify the intervening
+        revision number in the path.
+
+        When you select a file or directory without specifying
+        the exact revision then the 'current' revision is
+        assumed where 'current' implies the revision which is
+        being used in the workarea.
+
+        If you select a 'branch' without specifying the exact 
+        revision number then it is equivalent to the 'latest' 
+        revision of that branch.
+
+        Since the 'main' branch is not displayed as a separate
+        branch, as a special case, the 'latest' revision of the 
+        file on the main line of development is selected when
+        you specify the 'main' branch.
+
+        When you select a 'tag' then it is equivalent to 
+        selecting the revision which has the tag.
+
+NOTES
+    Icon based selection is based on the icons displayed in the
+    SOS window. These icons, except the quill icon, may be 'stale'.
+    For accurate results you should update your workarea before
+    making a flag based selection.
+
+    Revisions of directories cannot be selected unless directory
+    revision history display has been turned ON in the SOS window.
+
+EXAMPLES
+    soscmd objselect
+        Unselect all previous selections and do not select
+        anything else.
+
+    soscmd objselect mult.vhd ../alu.vhd
+        Select the file 'mult.vhd' in the current directory
+        and the file 'alu.vhd' in the parent directory.
+
+    soscmd objselect adder.vhd/4 adder.vhd/5
+        Select revisions '4' and '5' of 'adder.vhd'.
+
+    soscmd objselect div.vhd/main
+        Select the LATEST revision on the main line of 
+        development of the file 'div.vhd'.
+
+    soscmd objselect alu.v/13/bugfix_1.1
+        Select the 'bugfix_1.1' branch of the file 'alu.v'
+        which was created off revision '13'.
+
+    soscmd objselect alu.v/bugfix_1.1
+        Select the 'bugfix_1.1' branch of the file 'alu.v'
+        without specifying the intervening revision number.
+
+    soscmd objselect alu.v/13/bugfix_1.1/2/gold
+        Select the 'gold' tag which is on revision '2' of the
+        'bugfix_1.1' branch of the file 'alu.v'.
+
+    soscmd objselect alu.v/gold
+        Select the 'gold' tag without specifying exactly where
+        it is in the revision hierarchy.
+
+    soscmd objselect /top.vhd
+        Select the file 'top.vhd' in the root directory of the
+        workarea.
+
+    soscmd objselect ..
+      Select the parent directory.
+
+    soscmd objselect -sr vhdl test
+      Select the entire sub-tree including and below the 
+      sub-directories 'vhdl' and 'test'.
+
+    soscmd update -i
+    soscmd objselect -sor -sco -slk
+        Update the icons in the workarea and then select all
+        objects which are checked out by anyone.
+
+    soscmd objselect -sco cntr
+        Select all objects which are checked out by you in
+        the sub-directory 'cntr' and below.
+
+    soscmd objselect -stmp -sr ./
+        Select all objects that are not under SOS control
+        below and including the current directory.
+
+    soscmd objselect -sfo -sr .
+        Select only files in the workarea that are
+        under SOS control. 
+
+    soscmd objselect -sdo -sr .
+        Select only the sub-directories in the workarea.
+
+    soscmd objselect -sw
+        Select files in the workarea which have write permissions.
+        Useful to CI files without being Checked Out.
+
+    soscmd objselect -slblMCU_1.42
+        Select the revision of files and directories which have
+        the label 'MCU_1.42'.
+        
+    soscmd objselect -satrVersion
+        Select the revision of files and directories which have
+        the attribute name as 'Version'
+
+    soscmd objselect -satrBUG_FIX=2367 alu
+        Select the revision of files and directories in the ./alu
+        hierarchy which have the attribute name equal to 'BUG_FIX'
+        and the value for 'BUG_FIX' as '2367'. This can help in
+        selecting files which changed to fix bug number '2367'.
+        NOTE:  'BUG_FIX' is assumed to be a user defined
+               attribute.
+
+    soscmd objselect -said .
+        Select all the files and dirs in the current directory
+        only.
+
+    soscmd objselect -said -sfo ./alu
+        Select all the files in the alu directory.
+
+----------------------------------------------------------------

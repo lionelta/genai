@@ -1,0 +1,109 @@
+----------------------------------------------------------------
+soscmd snapshot - take a snapshot of the workarea
+----------------------------------------------------------------
+USAGE
+    soscmd snapshot [-F -Nr -Na -n<snapshotname> -i]
+                    [-d<description>]
+                    [-aExport="yes|no"]
+                    [select options] 
+                    [pathnames]
+
+
+DESCRIPTION
+    Takes a snapshot of the selected directories.
+    The current revisions of all the files and directories 
+    including and below the selected directories will be tagged
+    with the given snapshot name.
+
+    The snapshot can be used to recreate your workarea, exactly 
+    as it is now, at any later time.
+
+    To take a snapshot of a directory you must NOT have the
+    directory itself or any object under it checked out.
+
+    If the given snapshot name already exists then the snapshot
+    command will fail. If you want to overwrite the existing
+    snapshot then you must use the '-F' option.
+
+ARGUMENTS
+    -n<snapshotname>
+        Specify the name of the snapshot to take.
+
+        At least one snapshot name must be provided with the
+        snapshot command. You may use multiple '-n' options.
+
+    -d<description>
+        A single line description of the snapshot. If the
+        description has spaces then enclose it in 
+        double-quotes '"'.
+
+    -F
+        Overwrite the snapshot even if it exists.
+        Without this option the snapshot command will fail if
+        a snapshot with the same name already exists.
+
+    -Nr
+        Do NOT recursively include objects below selected dirs
+        in the snapshot. Only apply the snapshot to the selected
+        objects.
+
+    -Na 
+        Do NOT include ancestor objects i.e. directories above the
+        selected objects. Only apply the snapshot to the selected 
+        objects. 
+
+    -i
+        Include writeable reference projects in the snapshot. Without
+        this option the snapshot will only be applied to objects in
+        the primary project.
+        
+    -aExport="yes|no"
+        Optional attribute to indicate whether a true or false 
+        attribute is exported for this snapshot on each object. If set
+        to yes, then an attribute called Snapshot_<snapshotname> is set to 
+        "T" or "F" for true and false respectively.  
+        Default value if this option is not specified is "no".
+
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+
+NOTES
+    Tags, branches, and snapshots are in the same name space
+    and are referred to as 'labels'. So names of tags, 
+    branches, and snapshots have to be unique.
+
+EXAMPLES
+    soscmd snapshot -nsim_passed
+        Take a snapshot called 'sim_passed' for the currently
+        selected directories in the SOS window.
+
+    soscmd snapshot -ntapeout_1 -d"First tapeout on schedule!" /
+        Take a snapshot called 'tapeout_1' of the entire 
+        project tree. Associate the description:
+            First tapeout on schedule!
+        with the snapshot.
+
+    soscmd snap -nsim_passed -F .
+        Take a snapshot called 'sim_passed' of the current
+        working directory and overwrite it even if a snapshot
+        with the same name already exists.
+
+    soscmd snap -n97_Nov -d"Monthly snapshot." sim syn
+        Take a snapshot called '97_Nov' of the directories
+        'sim' and 'syn' and associate the description:
+            Monthly snapshot.
+
+    soscmd snap -nsim_passed -Nr hdl decoder.v encoder.v
+        Take a snapshot called 'sim_passed' of the directory
+        'hdl' and the files 'decoder.v' and 'encoder.v' but
+        do not include other files and directories in the 
+        'hdl' dir.
+----------------------------------------------------------------

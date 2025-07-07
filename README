@@ -1,0 +1,39 @@
+###########################################
+### HOWTO: Host Setup
+###########################################
+## Starting up ollama
+./runollama
+
+## Starting up 
+./runstream
+
+
+###########################################
+### HOWTO: Setup Python Virtual Environment
+###########################################
+>cd <to your working directory>
+>/p/psg/ctools/python/3.10.11/2/linux64/suse12/bin/python -m venv 3.10.11_sles12_sscuda
+>cd 3.10.11_sles12_sscuda
+>source bin/activate.csh
+>pip install --upgrade pip
+>pip install -r requirements.txt
+
+# Some hack is needed to make it work.
+>vi $VIRTUAL_ENV/lib/python3.10/site-packages/datasets/config.py
+... ... ...
+# Optional tools for feature decoding
+PIL_AVAILABLE = importlib.util.find_spec("PIL") is not None
+
+### Hacked by Lionel Tan.
+'''
+IS_OPUS_SUPPORTED = importlib.util.find_spec("soundfile") is not None and version.parse(
+    importlib.import_module("soundfile").__libsndfile_version__
+) >= version.parse("1.0.31")
+IS_MP3_SUPPORTED = importlib.util.find_spec("soundfile") is not None and version.parse(
+    importlib.import_module("soundfile").__libsndfile_version__
+) >= version.parse("1.1.0")
+DECORD_AVAILABLE = importlib.util.find_spec("decord") is not None
+'''
+IS_OPUS_SUPPORTED = IS_MP3_SUPPORTED = DECORD_AVAILABLE = False 
+... ... ...
+

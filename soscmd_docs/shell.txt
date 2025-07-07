@@ -1,0 +1,68 @@
+----------------------------------------------------------------
+soscmd shell - execute a shell command
+----------------------------------------------------------------
+USAGE
+    soscmd shell [command arguments]
+
+DESCRIPTION
+    Submits the given command string to SOS to be executed
+    as a shell command.
+
+    The shell command string will be executed ONCE in a Bourne
+    shell for EACH object selected in the SOS window.
+
+ARGUMENTS
+    command
+        The shell command to be executed.
+
+    arguments
+        The arguments to be passed to the command.
+
+NOTES
+    The command is submitted to SOS without any processing.
+
+    It is best to execute shell commands from the 'root' 
+    directory of the workarea because SOS is always running
+    in that directory. Any pathnames passed as arguments to
+    the command must be relative to the 'root' directory
+    because this is where the command will actually be invoked.
+
+    Be sure to escape the shell command arguments correctly so 
+    that it does NOT get interpreted by the shell from which 
+    you are invoking this command.
+
+    When 'soscmd' completes it does NOT mean that the shell
+    command has actually completed. The shell command is 
+    invoked in the background and may complete much later.
+
+EXAMPLES
+    rm -f co.lst
+    sos select -sor -sco -slk
+    soscmd shell echo '$SOS_CheckedOutBy @ $SOS_CheckOutTime  ::  $SOS_OBJ_PATH' >>co.lst
+        This sequence of commands creates a list of all files
+        in your work area which are currently locked by you or
+        anyone else and also notes who has the file checked out
+        and when the file was checked out.
+        This list is created in the file 'co.lst' in the root
+        directory of the workarea.
+
+        Note how the selections are made first before invoking
+        the shell command. Note also that the shell arguments are
+        enclosed in single quotes so it does NOT get interpreted 
+        by the shell from which you invoke this command.
+
+    echo "Snapshot report created on: `date`" >snapshot.lst
+    soscmd select -sr .
+    soscmd shell echo '$SOS_OBJ_PATH Rev: $SOS_CURRENT_REV' >>snapshot.lst
+        This sequence of commands creates a complete list of
+        all the files and directories in the project and
+        also prints out the revision, currently in use in the
+        workarea, for each one of them. The listing is stored
+        in the file 'snapshot.lst'.
+
+    Note: On Windows 'shell' will execute DOS commands.
+          
+    soscmd shell "echo %SOS_OBJ_PATH%"
+        This will print the value of the environment "SOS_OBJ_PATH".
+
+----------------------------------------------------------------

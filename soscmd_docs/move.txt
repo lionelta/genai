@@ -1,0 +1,31 @@
+-----------------------------------------------------------------------
+soscmd move - move files and directories
+-----------------------------------------------------------------------
+
+USAGE
+    soscmd move [pathname] [dir_name] 
+
+DESCRIPTION
+    Move the given file(s) or directory to a new directory.
+
+ARGUMENTS
+    pathname
+        Pathname of a file or directory. You can specify multiple
+        pathnames separated by a space.
+
+    dir_name
+        The directory name into which the file or directory is to
+        be moved.
+NOTES
+    You MUST check out the parent directory before moving any 
+    file(s)/dir(s) from it. The destination directory MUST exist and
+    MUST be checked out.
+
+EXAMPLES
+    soscmd move textfiles/ascii.txt docs
+    Move the file ascii.txt from the textfiles dir to docs dir.
+    Both textfiles and docs dirs must be checked out.
+
+    soscmd move textfiles docs/text
+    Move the textfiles directory under the docs/text directory
+----------------------------------------------------------------

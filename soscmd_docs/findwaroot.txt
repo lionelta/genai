@@ -1,0 +1,14 @@
+----------------------------------------------------------------
+soscmd findwaroot - print workarea root path
+----------------------------------------------------------------
+USAGE
+    soscmd findwaroot
+
+DESCRIPTION
+  The command can be run inside a SOS workarea. It will print
+  the root path of the current workarea.
+
+EXAMPLES
+    soscmd findwaroot
+        Displays the workarea root path.
+----------------------------------------------------------------

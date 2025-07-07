@@ -1,0 +1,50 @@
+#!/usr/bin/tcsh -f
+
+### Run this from rootdir, eg:
+### > ./unittest/manual_test_myhelper
+
+
+### User Guide
+./bin/myhelper.py -q 'what can u do?' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+./bin/myhelper.py -q 'user guide' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+
+### Automater
+./bin/myhelper.py -q 'help me automate: show me all the python files from current folder, one per line.' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+./bin/myhelper.py -q 'help me automate: print out all the lines which matches the word "myhelper.py" in file ./unittests/manual_test_myhelper' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+./bin/myhelper.py -q 'help me automate: replace all the word "myhelper" to "yourfriend" in file ./unittests/manual_test_myhelp, and save it to /tmp/a.b.c' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+
+### Explain Code
+./bin/myhelper.py -q 'explain these code in high level: ./bin/ask.py ./lib/agents/base_agent.py' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+./bin/myhelper.py -q 'explain these code in high level: ./lib/*.py' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+
+### Missing Parameters
+./bin/myhelper.py -q 'explain the code' --debug
+echo -n "<Enter to cont>"
+set input = $<
+
+### Generic Questions
+./bin/myhelper.py -q 'what is the capital of France?' --debug
+
+### RAG Question
+./bin/myhelper.py -q 'faissdbs: /nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/faissdbs/psgcth2tfm/default /nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/faissdbs/tdmainfra/default     QUERY: How to set a flow to non-gating?' --debug

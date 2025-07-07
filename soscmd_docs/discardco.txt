@@ -1,0 +1,85 @@
+----------------------------------------------------------------
+soscmd discardco - cancel check out of files and directories
+----------------------------------------------------------------
+USAGE
+    soscmd discardco [-F]
+           [-MYD -ED] [-q]
+           [select options] 
+           [pathnames]
+
+DESCRIPTION
+    Cancels the check out of the selected files and directories.
+    The check out lock placed on the file or directory is 
+    removed allowing others to check it out.
+    The permissions of the file in your workarea is changed to 
+    read only.
+
+    If a file or directory HAS been modified then it is NOT
+    discarded and a warning is issued unless the '-F' option 
+    is provided. With the '-F' option the modified file will
+    be discarded and all changes will be lost.
+
+ARGUMENTS
+    -F
+        Discard check out of the file or directory even if
+        changes have been made. The changes will be lost.
+        Without this option changed files are not discarded.
+
+    -MYD
+        Discard check outs by you in any workarea.
+
+    -ED
+        Discard check outs by everyone.
+
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+    -q
+        Quiet or non-verbose  mode. Do not print per object discarded
+	checkout  message. Only command summary is printed along with
+	the  object count. 
+
+NOTES
+    The '-MYD' and '-ED' are mutually exclusive options.
+
+    If neither option is specified, it implies discard check outs
+    by you in this workarea only.
+
+EXAMPLES
+    soscmd discardco
+        Discard the check out of all files and directories 
+        which are currently selected in the SOS window.
+
+    soscmd discard *.vhd
+        Discard all the files with the '.vhd' extension in the
+        current working directory.
+
+    soscmd disc -F *.vhd
+        Discard all the files with the '.vhd' extension in the
+        current working directory even if changes have been made.
+
+    soscmd disc -sco
+        Discard all files which are checked out in your workarea
+        but have not been changed.
+
+    soscmd discard -sco -F
+        Discard all files which are checked out in your workarea
+        regardless of any changes made i.e. throw away any 
+        changes made.
+
+    soscmd discard -MYD testbench.vhd
+        Discard checkout of the file 'testbench.vhd' from
+        any workarea owned by you.
+
+    soscmd discard -q -sfo ./analog
+        Discard checkout of all files under the ./analog
+	directory in non-verbose mode i.e print only the
+	discard command status summary. 
+----------------------------------------------------------------

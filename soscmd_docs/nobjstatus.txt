@@ -1,0 +1,84 @@
+----------------------------------------------------------------
+soscmd nobjstatus - show status and version details of the
+                    specified files and directories
+----------------------------------------------------------------
+USAGE
+    soscmd nobjstatus [-rev<version>] [-ga<attrName>]
+                     [-ucl] [-out<filename>] [pathnames]
+
+DESCRIPTION
+    This command displays the status and attributes of the files
+    and directories specified by pathname(s).
+
+    If rev option is not specified, the command returns the status
+    of the current revision in the workarea.
+
+    The status is returned in the form of 2 numbers where the first
+    indicates the state of the object and second value indicates
+    the object type.
+
+    The values for status are :
+    0 - Path does not belong in the specified workarea
+    1 - Object does not exist in the workarea
+    2 - Object exists in the workarea, but is not managed by sos
+    3 - Object is currently checked out in the workarea
+    4 - Object is currently checked out in a different workarea
+    5 - Object is currently checked in at the server
+    6 - Object is currently checked out in the workarea but not
+        locked in the server
+
+    The values for object type are :
+    0 - Object type not known
+    1 - Object is a file
+    2 - Object is a directory
+    3 - Object is a package
+
+ARGUMENTS
+    -rev
+        Specify the version of object to get information about.
+
+    -ga<attrname>
+        This option is used to specify which attributes of the
+        object should be returned by the command.
+        If this option is not specified only the object state
+        and type are returned; no attributes will be returned.
+
+        If attrname is the special keyword 'All', then all
+        available attributes are returned.
+
+        Multiple '-ga' options are allowed.
+
+    -ucl
+        This option is used for optimization. It indicates that
+        the object status should be returned from the information
+        available in the client without querying with the server.
+        This is typically used for large selections where the client
+        already has the latest information after an update of
+        flags & attributes.
+
+    -out<filename>
+         Write the status output to the file specified by filename.
+         If this option is not specified, the output is written to
+         the standard out.
+
+EXAMPLES
+    soscmd nobjstatus ./alu.txt
+        Print the status of the current version in the workarea
+        of the file 'alu.txt' to the standard output.
+
+    soscmd nobjstatus -rev2 -gaAll -outreport.out ./myObject.txt
+        Print the status and version details of revision 2 of the
+        'myObject.txt' file in the current directory to the file
+        'report.out'.
+
+    soscmd nobjstatus -rev2 -gachange_summary -gaLog ./alu.txt
+        Print the status and 'change_summary' and 'Log'
+        attributes of revision 2 of the 'alu.txt' file in the
+        current directory to stdout.
+
+    soscmd nobjstatus -ucl -gaAll -outreport.out ./docs/*
+        Print the status and version details of the current
+        versions of all objects in the 'docs' directory
+        to the file 'report.out' without querying the server
+        for details.
+----------------------------------------------------------------

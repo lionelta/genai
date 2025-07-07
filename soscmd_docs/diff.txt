@@ -1,0 +1,61 @@
+----------------------------------------------------------------
+soscmd diff - show the difference between 2 revisions of a file
+----------------------------------------------------------------
+USAGE
+    soscmd diff [-gui] [pathnames]
+
+DESCRIPTION
+    Displays the difference between two revisions of the 
+    same file.
+
+    You may specify up to two pathnames which refer to two
+    revisions of the same file.
+
+    If you specify only one pathname then the second one is
+    assumed as follows:
+        If the file is checked out then this is used.
+        If the file in not checked out then the revision 
+          currently in the workarea is used.
+
+ARGUMENTS
+    -gui
+        If DISPLAY is available, show the differences in a
+        dialog box.
+        If display is not available or this option is not
+        specified the differences are printed to the standard
+        output.
+
+    pathnames
+        The revisions of a file on which to run the diff
+        operation.
+
+        If no pathnames are provided then the command will be 
+        performed on the current selections in the SOS window.
+	
+	Pathnames can be appended with revision or label
+	(Tag, Branch or Snapshot) using "/#/" separator.
+	Revisions associated with the label will be used in
+	diff.
+
+EXAMPLES
+    soscmd diff
+        Print the difference between the revisions of the file
+        selected in the SOS window.
+
+    soscmd diff stimulus.dat/23 stimulus.dat/main
+        Compare revision '23' of stimulus.dat with the latest
+        revision.
+
+    soscmd diff stimulus.dat/#/23 stimulus.dat/#/main
+        Compare revision '23' of stimulus.dat with the latest
+        revision. The "/#/" separator can be used to force sos
+	to treat the following name as a revision or label.
+
+    soscmd diff Makefile/main
+        Compare the latest revision of the 'Makefile' with the
+        revision currently in use in the workarea.
+
+    soscmd diff mytest.v
+        If 'mytest.v' is checked out then compare the checked
+        out (and modified) file with the previous revision.
+----------------------------------------------------------------

@@ -1,0 +1,88 @@
+------------------------------------------------------------------------
+soscmd showlabels - Show all the revisions in the repository that match 
+                    the specified labels or show all the applied labels.
+-----------------------------------------------------------------------
+USAGE
+    soscmd showlabels [-l] [-show] [-Nr] [-fmt] [-out<output file name>] [pathname]
+
+DESCRIPTION
+    Show all the revisions in the repository that match 
+    the specified labels or show all the labels applied on an object.
+
+ARGUMENTS
+    -l<labelName>
+        Specify the name of the tag, snapshot, or branch name to
+        be used for displaying the revisions.
+        Multiple '-l' options may be specified to show revisions 
+        corresponding to each label.
+        
+        Other accepted values are 'tags' 'snapshots' 'branches' 'all'.
+        Only one of these special values can be specified at a time
+        and cannot be combined with actual label names through multiple
+        '-l' options.
+
+        If this argument is not provided then revisions for all tags and 
+        snapshots are displayed.
+    
+    -show
+        list of labels applied to any version of the selected object.
+
+    -Nr 
+        do not show labels applied to child objects of the selected object.
+        
+    -fmt
+        Valid format options are 'txt|csv|htm|csv:noheader"
+        Default format is txt.
+
+    -out<filename>
+        The filename to dump the showlabels report summary.
+        If a relative pathname is provided then it is assumed
+        to be relative to the root of the workarea and
+        NOT the current working directory.
+        If '-outstdout' is specified then the output is redirected
+        to stdout.
+
+    pathname
+        Only 1 object can be passed as a pathname to this command.
+
+NOTES
+    The '-l' and '-show' options are mutually exclusive.
+
+EXAMPLES
+    soscmd showlabels -lRelease_10 -lVerified5 -fmtcsv .
+        Show all the revisions that have the label 'Release_10'
+        and 'Verified' in csv format.
+
+    soscmd showlabels -fmthtm -ltags .
+        Show all the revisions that have the been tagged by any tag
+        in HTML format.
+
+    soscmd showlabels -fmtcsv:noheader -lsnapshots .
+        Show all the revisions that have the been tagged by any
+        snapshot in csv format with no header.
+
+    soscmd showlabels -fmtcsv:noheader -lbranches .
+        Show all the revisions that are created on any
+        branch in csv format with no header.
+
+    soscmd showlabels -lall .
+        Show all the revisions that correspond to any tag or snapshot
+        or are created on any branch.
+
+    soscmd showlabels -show ./libA/cellA
+        Show all the labels that have been applied to any revision
+        of cellA and any revision of all the files and sub-directories
+        under cellA. 
+
+    soscmd showlabels -show -Nr ./libA/cellA
+        Show all the labels that have been applied to any revision
+        of cellA only.
+
+    soscmd showlabels -Nr -lRelease_10,Verified5 ./libA/cellA
+        Show all the revisions of cellA only that have the label
+        'Release_10' and 'Verified5'.
+ 
+    soscmd showlabels -lRelease_10 -lVerified5 -fmtcsv . -outstdout
+        Show all the revisions that have the label 'Release_10'
+        and 'Verified' in csv format and redirect the output to stdout.
+----------------------------------------------------------------

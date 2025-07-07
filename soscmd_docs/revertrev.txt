@@ -1,0 +1,75 @@
+----------------------------------------------------------------
+soscmd revertrev - revert latest rev back to a previous rev
+----------------------------------------------------------------
+USAGE
+    soscmd revertrev [-rev<revision>]
+                     [-tci<time>]
+                     [-b<branchname>]
+                     [-a<attrname>=<attrvalue>]
+                     [pathname]
+
+DESCRIPTION
+    Revert the latest revision of a file back to a previous revision
+    without deleting intermediate revs.
+    This command basically gets a previous read-only version of
+    the file and checks it back in as the latest revision.
+
+    This command should be used sparingly since redundant 
+    revisions will get created.
+
+ARGUMENTS
+    -a<attrname>=<attrvalue>
+        This option is used to specify values to attributes
+        with this command.
+        The attribute name and value are separated by the '='
+        character with no spaces in between.
+        The attribute name and value must immediately
+        follow this option with no spaces.
+        If the attribute value has spaces then you must enclose
+        the value in double quotes '"'.
+
+        Attribute names may be abbreviated provided there is no
+        ambiguity.
+
+    -rev<revision>
+        Specify the revision of the file that you want to revert
+        back to.
+
+    -tci<time>
+        Revert back to the revision of the file with a
+        check in time just before the time specified in
+        <YYYY/MM/DD HH:MM:SS> format.
+
+    -b<branchname>
+        This option is used along with -tci option to revert
+        file back to a revision with specified checkin time 
+        on the specified branch.
+
+        This option is used only if -tci option is specified.
+
+NOTES
+    -rev and -tci options are mutually exclusive.
+
+    The revertrev operation can be performed on only one file at a
+    time.
+    A revision cannot be reverted if the file is currently checked
+    out by anyone else or you have a previous revision checked out
+    in your workarea.
+
+    The revision option or checkin time option must be specified
+    along with the pathname.
+
+EXAMPLES
+    soscmd revertrev -rev3 usbcore.v
+        Bring revision '3' of 'usbcore.scr' as the latest revision
+        on the main line.
+
+    soscmd revertrev -revtesting/2 phy.vhd
+        Make revision '2' on branch 'testing' the latest revision
+        on that branch for file 'phy.vhd'.
+
+    soscmd revertrev -btesting -tci"2012/01/05 08:00:00" netif.vhd
+        Make revision checked in before 2012/01/05 08:00:00, 
+        on branch 'testing' the latest revision on that branch
+        for file 'netif.vhd'.
+----------------------------------------------------------------

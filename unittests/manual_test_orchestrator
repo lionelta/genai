@@ -1,0 +1,17 @@
+### WORKING EXAMPLE !!! ###
+
+#../bin/orchestrator.py --debug -q 'extract out the content of line:5 to line:15 from file:./test_python_coding_agent_1.py, and write it into /tmp/liangliang.txt' 
+
+#../bin/orchestrator.py --debug -q 'list out all the files in the current directory, and write it to /tmp/liangliang.txt' 
+
+#../bin/orchestrator.py --debug -q 'help explain what the python code in ./test.py does.' 
+
+#./bin/orchestrator.py --debug -q 'replace all the matching words "import " to "get-me-this  " from file ./bin/multi_turn_chatbot.py, and write the final result into /tmp/qwe.txt'
+
+#./bin/orchestrator.py --debug -q 'run the following command: "altera_cdislookup -l tan", and from the output, get me the IDSID of "tan yoke liang"'
+
+#./bin/orchestrator.py -q 'based on all the feedback from user, which are stored in ./feedback/*/*.json, provide a summary'
+
+#./bin/orchestrator.py --debug -q 'help generate unittest for the python code in /p/cth/cad/dmx/lionel_sbox/cmx/lib/python/cmx/tnrlib/seal_file.py , and save the unittest code into /tmp/unittest.py'
+
+

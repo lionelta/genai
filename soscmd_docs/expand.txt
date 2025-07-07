@@ -1,0 +1,29 @@
+----------------------------------------------------------------
+soscmd expand - expand/collapse the directory.
+----------------------------------------------------------------
+USAGE
+    soscmd expand [-full] [-expand  -collapse] [pathnames]
+
+DESCRIPTION
+    Expands or collapses directories in SOS.
+
+ARGUMENTS
+    -expand
+        Expands the directory. If neither -expand nor -collapse
+        are given, toggle.
+
+    -collapse
+        Collapses the directory. If neither -expand nor -collapse
+        are given, toggle.
+
+    -full
+        Perform the expand or collapse of all sub-directories.
+
+EXAMPLES
+    soscmd expand -full -expand alu
+        Expands the 'alu' directory and all its child sub-directories recursively.
+
+    soscmd expand alu
+        Toggles expanded/collapsed state of the 'alu' directory.
+
+----------------------------------------------------------------

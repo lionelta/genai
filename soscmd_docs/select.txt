@@ -1,0 +1,381 @@
+----------------------------------------------------------------
+soscmd select - make selections in sos
+----------------------------------------------------------------
+USAGE
+    soscmd select [-A] [-sco -suco -slk -snt -snm -snl -sr -scm -scnm
+                        -sall -sunm -sm -sunp -sp -sncm -sne
+                        -sfo -sdo -sw -slbl<label> -sfile<file>
+                        -satr<name|name=value> -si -sor -sand -sNr
+                        -sNh -sxr -sproj -snvp -sname<pattern>]
+                  [-yscroll] [pathnames]
+
+DESCRIPTION
+    All previous selections in the SOS window for this 
+    workarea are first unselected and new selections are made
+    based on the given options and pathnames.
+
+    These selections can then be used in SOS or by commands
+    issued using 'soscmd'.
+
+NOTES
+    The '-sr' (select recursively below) option is implicit when
+    any of the other '-s' select options are specified.
+    You can override that by specifying the '-sNr' option.
+
+ARGUMENTS
+    -A
+        Append to the current selections. If this option
+        is not provided then previous selections are
+        unselected before new selections are made.
+
+    -sfile<file>
+          
+         Select objects whose paths are specified in the file
+         <file>. <file> should contain one path per line.
+         Paths in the file can be absolute or relative to the
+         workarea root. All paths should be from the same workarea. 
+
+    -sco
+        All objects checked out in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -suco
+        All objects checked out without lock in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -scm
+        All objects checked out and modified in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -scnm
+        All objects checked out but not modified in this workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -sncm
+	All objects not checked out but modified. It selects  objects that
+	satisfies the following cases:
+
+           a) If the object is a file or package it was NOT
+              checked out, but made writable and modified.
+    	   b) In this case the object - a file or a package will
+              be selected  if it is not checked out, not
+	      made writable but modified anyway. However in this case
+              the preference setting from SOS File menu should be
+              yes for check Read-only for modification.
+
+    -sne
+	All objects missing from the workarea. This will only select
+	objects that have been marked as populated but are not existing
+        in the workarea.
+
+    -slk
+        All objects with the lock icon i.e. objects checked out 
+        by others or in other workareas.
+        If pathnames are specified then look only in sub-tree.
+
+    -snt
+        All objects with the needs update icon i.e. objects whose
+        current revisions would not be picked using the revision
+        search order.
+        If pathnames are specified then look only in sub-tree.
+
+    -snm
+        All objects with the unmerged icon i.e. objects whose
+        current revisions have unmerged branches.
+        If pathnames are specified then look only in sub-tree.
+
+    -snl
+        All objects with the not leaf icon i.e. objects whose
+        current revisions are not the latest on its branch.
+        If pathnames are specified then look only in sub-tree.
+
+    -sr
+        Select recursively below any pathnames provided
+        with the command. This option is implied if any of the 
+	other options are specified.
+
+    -sname<pattern> 
+        Select based on name patterns. A glob style matching is 
+        applied to the filename or pattern. 
+
+    -sNr
+	Do not select recursively if other options are specified.
+
+    -sNh 
+        Do not expand revision histories..       
+
+    -sunm
+        Select only files and directories that are not in SOS
+        repository. (Only available for select command.)
+
+    -sunp
+        Select all objects that are unpopulated in the workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -sp
+        Select all objects that are populated in the workarea.
+        If pathnames are specified then look only in sub-tree.
+
+    -sm
+        Select files and directories that are in SOS
+        repository. This option selects both populated
+        and unpopulated objects.
+        If pathnames are specified then look only in sub-tree.
+
+    -sall
+        Select all objects in the workarea and repository. This
+        option selects all populated, unpopulated and unmanaged
+        objects.
+        If pathnames are specified then look only in sub-tree.
+
+    -sfo
+        Select only files from any pathnames provided with the
+        command.
+
+    -sdo
+        Select only directories from any pathnames provided with
+        the command.
+
+    -sw
+        Select files in the workarea which have write permissions.
+        If pathnames are specified then look only in sub-tree.
+
+    -sb
+        Select all objects in a directory only. This will not
+        recursively traverse the directory. This can be used in
+        combination with -sfo or -sdo.
+
+    -sxup 
+        Expand unpopulated directories when traversing directory
+        trees.
+
+    -slbl<label>
+        Select files or directories with revisions having the
+        specified 'label'.
+        The 'label' can be TAG, SNAPSHOT or BRANCH name.
+
+    -satr<name>
+    -satr<name=value>
+        Select files or directories with revisions having the
+        specified attribute 'name' or 'name and value'.
+        The attribute 'name' match has to be a complete string
+        but the 'value' is searched as a sub-string. Also refer
+        to '-i' option.
+
+    -si
+        Ignore case sensitivity. If the '-i' option is not present
+        string matches are case sensitive. If '-i' is present
+        then string matches are case insensitive.
+        Currently used with '-satr<name=value>' for case insensitive
+        search of the value field.
+        
+    -sor 
+	If multiple options are provided, do an 'or' of these options.
+	By default the options are 'AND'ed for all command except 'status'
+        for which the options are 'OR'ed.
+
+    -sand 
+	If multiple options are provided, do an 'and' of these options.
+	By default the options are 'AND'ed for all command except 'status'
+        for which the options are 'OR'ed.
+
+    -sxr 
+        Select external references. For directories, this option selects
+        only the top-level directory which was added as a reference. 
+
+    -snvp 
+        Select objects which have been marked as never populate.
+
+    -sproj<proj name> 
+        Select objects from only specified project.
+
+    -yscroll
+        Vertically scroll the sos gui window to display the first
+        selected object in the visible portion of the Hierarchy.
+
+    pathnames
+        Pathnames of objects are specified just as pathnames
+        in Unix i.e. relative to the current working directory
+        where each name is separated by a '/'. Absolute paths
+        can be specified with certain restrictions described 
+        later.
+
+        Similar to Unix pathnames the following conventions
+        are supported:
+          '.'          the current directory.
+          '..'         the parent directory.
+
+        You can also select revisions and branches using the
+        same convention. The pathname must match the path to
+        the object as displayed in the tree in the SOS window.
+
+        However, you do not have to specify all levels in the
+        'revision' hierarchy. For example, to select a branch
+        or a tag you do not have to specify the intervening
+        revision number in the path.
+
+        When you select a file or directory without specifying
+        the exact revision then the 'current' revision is
+        assumed where 'current' implies the revision which is
+        being used in the workarea.
+
+        If you select a 'branch' without specifying the exact 
+        revision number then it is equivalent to the 'latest' 
+        revision of that branch.
+
+        Since the 'main' branch is not displayed as a separate
+        branch, as a special case, the 'latest' revision of the 
+        file on the main line of development is selected when
+        you specify the 'main' branch.
+
+        When you select a 'tag' then it is equivalent to 
+        selecting the revision which has the tag.
+
+        The pathnames could also be absolute paths : either Unix style 
+        (starting with a "/" ) or windows style ( starting 
+        with a drive letter eg C:/..). The following rules
+        apply for absolute paths:-
+      
+        a) More than one absolute paths can be specified provided
+           they are from the SAME workarea. It is an error to 
+           specify absolute paths from different workareas. 
+        b) A mixture of absolute and relative pathnames cannot be
+           used i.e. all pathnames specified with a command should
+           be either absolute or relative but not a combination 
+	   of both.
+          
+ 
+
+NOTES
+    You may use shell wildcards like '*' to specify pathnames
+    but you should remember that the shell and not 'soscmd' 
+    does the wildcard substitution. So you CANNOT select the 
+    'gold' revision of all the files in your current directory 
+    by using '*/gold'.
+
+    Icon based selection is based on the icons displayed in the
+    SOS window. These icons, except the quill icon, may be 'stale'.
+    For accurate results you should update your workarea before
+    making a flag based selection.
+
+    Revisions of directories cannot be selected unless directory
+    revision history display has been turned ON in the SOS window.
+
+EXAMPLES
+    soscmd unselect
+        Unselect all previous selections.
+
+    soscmd select mult.vhd ../alu.vhd
+        Select the file 'mult.vhd' in the current directory
+        and the file 'alu.vhd' in the parent directory.
+
+    soscmd select adder.vhd/4 adder.vhd/5
+        Select revisions '4' and '5' of 'adder.vhd'.
+
+    soscmd select div.vhd/main
+        Select the LATEST revision on the main line of 
+        development of the file 'div.vhd'.
+
+    soscmd select alu.v/13/bugfix_1.1
+        Select the 'bugfix_1.1' branch of the file 'alu.v'
+        which was created off revision '13'.
+
+    soscmd select alu.v/bugfix_1.1
+        Select the 'bugfix_1.1' branch of the file 'alu.v'
+        without specifying the intervening revision number.
+
+    soscmd select alu.v/13/bugfix_1.1/2/gold
+        Select the 'gold' tag which is on revision '2' of the
+        'bugfix_1.1' branch of the file 'alu.v'.
+
+    soscmd select alu.v/gold
+        Select the 'gold' tag without specifying exactly where
+        it is in the revision hierarchy.
+
+    soscmd diff alu.v/12 alu.v/#/gold
+        Show the difference between revision '12' of alu.v and
+        the revision tagged 'gold'.
+
+     soscmd sel ./top.vhd
+        Select the file 'top.vhd' in the root directory of the
+        workarea.
+
+    soscmd sel ..
+      Select the parent directory.
+
+    soscmd select -sr vhdl test
+      Select the entire sub-tree including and below the 
+      sub-directories 'vhdl' and 'test'.
+
+    soscmd sel *.vhd
+      Select the files with the extension '.vhd' in the current
+      directory.
+
+    soscmd sel -A *.vhd
+      Select the files with the extension '.vhd' in the current
+      directory in addition to all the files already selected.
+
+    soscmd sel * */*
+        Select all the objects in the current directory and 
+        all the objects in the directories below it.
+
+    soscmd update -i
+    soscmd select -sor -sco -slk
+        Update the icons in the workarea and then select all
+        objects which are checked out by anyone.
+
+    soscmd select -sco cntr
+        Select all objects which are checked out by you in
+        the sub-directory 'cntr' and below.
+
+    soscmd select -stmp -sr ./
+        Select all objects that are not under SOS control
+        below and including the current directory.
+
+    soscmd select -sfo *
+        Select only files in the current directory that are
+        under SOS control. 
+
+    soscmd select -sdo *
+        Select only the sub-directories in the current directory.
+
+    soscmd select -sw
+        Select files in the workarea which have write permissions.
+        Useful to CI files without being Checked Out.
+
+    soscmd select -slblMCU_1.42
+        Select the revision of files and directories which have
+        the label 'MCU_1.42'.
+        
+    soscmd select -satrVersion
+        Select the revision of files and directories which have
+        the attribute name as 'Version'
+
+    soscmd select -satrBUG_FIX=2367 alu
+        Select the revision of files and directories in the ./alu
+        hierarchy which have the attribute name equal to 'BUG_FIX'
+        and the value for 'BUG_FIX' as '2367'. This can help in
+        selecting files which changed to fix bug number '2367'.
+        NOTE:  'BUG_FIX' is assumed to be a user defined
+               attribute.
+
+    soscmd select -sb .
+        Select all the files and dirs in the current directory
+        only.
+
+    soscmd select -sNr-sco alu/*
+        Select checked out objects in the alu directory. 
+	Do not go recursively below.
+
+    soscmd select -sor -sco -slk 
+	Select all files which are either checked out or locked.
+     
+    soscmd select ./dir/#/1 
+        Select revision '1' of the directory 'dir'. This can be used
+        to explicitly inform SOS that a revision is being selected.         
+
+    soscmd select ./file/#/1 
+        Select revision '1' of the file 'file'. This can be used
+        to explicitly inform SOS that a revision is being selected.           
+
+----------------------------------------------------------------

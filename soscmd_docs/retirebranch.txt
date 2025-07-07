@@ -1,0 +1,39 @@
+----------------------------------------------------------------
+soscmd retirebranch - retire/activate an existing branch
+----------------------------------------------------------------
+USAGE
+    soscmd retirebranch [-A] [-P<project name>] <branch names>
+
+DESCRIPTION
+    Defined branches are retired. The retired branch is not seen.
+    The retired branch can be activated.
+    
+ARGUMENTS
+    -A
+        Activate a retired branch.
+
+    -P<project name>
+        Retire branches for the specified project(s).
+        If project name is the special keyword 'All', then
+        branches are retired for all projects (primary and reference).
+        Multiple '-P' options are allowed.
+        If this option is not specified, the branches will be retired
+        in the primary project.
+
+    <branch names>
+        List of space separated branch names to be retired.
+
+NOTES
+    Once a branch is retired you cannot use it in Revision Search Order
+    to update a workarea.
+    
+    If an object in a workarea is on a retired branch, then only
+    that branch is visible.
+
+EXAMPLES
+    soscmd retirebranch BUG_1356 BUG_1732
+        The branches 'BUG_1356' and 'BUG_1732' are retired.
+
+    soscmd retirebranch -A BUG_1732
+        The branch 'BUG_1732' is activated.
+----------------------------------------------------------------

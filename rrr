@@ -1,0 +1,1 @@
+date; whoami; hostname -f; sleep 10; date

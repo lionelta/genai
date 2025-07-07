@@ -1,0 +1,71 @@
+---------------------------------------------------------------------
+soscmd merge - Merge a revision of a file into the checked out revision.
+---------------------------------------------------------------------
+USAGE
+    soscmd merge [-ma -mm -mo]
+                 [-rev<revision>] 
+                 [-rbase<base revision>] 
+                 [pathname]
+
+DESCRIPTION
+    Merge the specified revision into the checked out revision 
+    of the file.
+
+ARGUMENTS
+    -ma  -mm  -mo
+        These are mutually exclusive options. They specify what
+        sort of merge to do.
+          -ma --> Do an automatic merge with the checked out revision
+                  If conflicting changes are detected a message will
+                  be displayed. This is not allowed for symbolic links.
+          -mm --> You have already done a manual merge with the
+                  checked out revision and would just like to record
+                  that a merge was done. No modifications are
+                  made to the checked out file.
+                  For symbolic links this means to do a record merge
+                  and keep the target as it is.
+          -mo --> You would like to over write the checked out file
+                  with the contents of the specified revision and
+                  record that a merge was done.
+                  For symbolic links this means to use the target of
+                  -rev<revision> and record a merge,
+        
+    -rev<revision>
+        Specify the revision of the file that you want to merge
+        into the checked out file.
+
+    -rbase<base revision>
+        Specify the revision of the file to use as the base version
+        for the automatic merge of the two revisions. This is the
+        common ancestor revision from where the two revisions deviated.
+        This option is ignored in case of symbolic links.
+
+        The base revision is automatically determined by SOS during
+        an automatic merge. This is an optional argument and is 
+        required only if you want to override the default. 
+
+NOTES
+    The merge operation can be performed on only one file at a
+    time.
+
+    One of the mutually exclusive merge options and the
+    revision option must be specified along with the pathname.
+
+    The file must be checked out before a merge is done.
+
+EXAMPLES
+    soscmd merge -ma -rev4 -rbase4 alu/mult/booth.vhd
+        Merge revision 4 of the file 'booth.vhd' in the directory
+        'mult' contained in the directory 'alu' into the checked out
+        revision using revision 4 as the base revision.
+
+    soscmd merge -mm -revbugfix/2 top.v
+        Record merge of revision 2 on branch 'bugfix' of the
+        file 'top.v' into the checked out revision. No changes
+        are made to the file.
+
+    soscmd merge -mo -rev2 adder.vhd
+        Overwrite the checked out file 'adder.vhd' with the
+        contents of revision 2 of the file. Record that a
+        merge was done.
+----------------------------------------------------------------

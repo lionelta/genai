@@ -1,0 +1,99 @@
+----------------------------------------------------------------
+soscmd modattr - modify an existing attribute value or add
+                 a new attribute
+----------------------------------------------------------------
+USAGE
+    soscmd modattr [-a<attrname>=<attrvalue>]
+              [select options] 
+              [pathnames]
+
+DESCRIPTION
+    Changes the values of existing attributes or adds new 
+    attribute values.
+
+    The attribute must have been defined in the configuration
+    file 'setup/sos.cfg' for the project.
+
+ARGUMENTS
+    -a<attrname>=<attrvalue>
+        This option is used to specify values to attributes
+        with this command.
+        The attribute name and value are separated by the '='
+        character with no spaces in between.
+        The attribute name and value must immediately
+        follow this option with no spaces.
+        If the attribute value has spaces then you must enclose
+        the value in double quotes '"'.
+
+        Attribute names may be abbreviated provided there is no
+        ambiguity.
+
+    [select options] pathnames
+        These are selection options.
+        Refer to help for the 'select' command.
+
+        The selections in the SOS window will change to the
+        selection specified by these options.
+
+        If no selection option or pathnames are provided then
+        the command will be performed on the current selections
+        in the SOS window.
+
+
+    For setting file access control following three attributes
+    can be used.
+        1) Owner                to define the ownership of the file/dir
+        2) ReadAccess           to set read access permissions
+        3) WriteAccess          to set write access permissions
+
+NOTES
+    The same attribute values will be applied to all selected
+    objects.
+
+    The access control attribute names are case sensitive.
+
+    Owner can have any string value.
+
+    ReadAccess and WriteAccess can have only the following
+    three values  (all lower case only)
+         o owner            Only the owner has access.
+         o group            All admins and members of the
+                            group or groups the owner belongs
+                            to, have access.
+                            To define groups please refer to
+                            server configuration file "sosd.cfg".
+         o world            Any one can have access.
+
+EXAMPLES
+    soscmd modattr -awarnings=4 booth.vhd
+        Add the attribute 'warnings' and assign it the value '4'
+        to the current revision of the file 'booth'vhd'.
+
+    soscmd modattr mult.v add.v -achange_summary="Made synthesizable." \
+                                -aregression=passed
+
+        Assign the attribute
+           'change_summary' with the value 'Made synthesizable.' 
+        and the attribute 
+           'regression' with the value 'passed'
+        to the current revisions of the files mult.v and add.v.
+
+
+    soscmd modattr -aOwner="user1" mult.v
+        Assign owner to "user1" for file mult.v.
+        
+    soscmd modattr -aReadAccess="world" mult.v
+        Assign read access permissions to any user.
+        
+    soscmd modattr -aWriteAccess="group" mult.v
+        Assign write access permissions to group.
+        Assume here that the owner of mult.v is "user1" and he is
+        a MEMBER of groups 'sos_dev_grp' and 'sos_test_grp'.
+        Thus after this any MEMBER or ADMIN of either 'sos_dev_grp'
+        or 'sos_test_grp' group will have write access to mult.v
+        If "user1" does not belong to any group, then an error
+        message is displayed.
+
+    soscmd modattr -aReadAccess="owner" -aWriteAccess="owner" add.v
+        Only owner has read and write access to add.v.
+----------------------------------------------------------------

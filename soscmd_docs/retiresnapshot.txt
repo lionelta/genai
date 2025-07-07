@@ -1,0 +1,36 @@
+----------------------------------------------------------------
+soscmd retiresnapshot - retire/activate an existing snapshot
+----------------------------------------------------------------
+USAGE
+    soscmd retiresnapshot [-A] [-P<project name>] <snapshot names>
+
+DESCRIPTION
+    Defined snapshots are retired. The retired snapshot is not seen.
+    The retired snapshot can be activated.
+    
+ARGUMENTS
+    -A
+        Activate a retired snapshot.
+
+    -P<project name>
+        Retire snapshots for the specified project(s).
+        If project name is the special keyword 'All', then
+        snapshots are retired for all projects (primary and reference).
+        Multiple '-P' options are allowed.
+        If this option is not specified, the snapshots will be retired
+        in the primary project.
+
+    <snapshot names>
+        List of space separated snapshot names to be retired.
+
+NOTES
+    Once a snapshot is retired you cannot use it in Revision Search Order
+    to update a workarea.
+
+EXAMPLES
+    soscmd retiresnapshot RELEASE_1.0 REL_1.5.P1
+        The snapshots 'RELEASE_1.0' and 'REL_1.5.P1' are retired.
+
+    soscmd retiresnapshot -A REL_1.5.P1
+        The snapshot 'REL_1.5.P1' is activated.
+----------------------------------------------------------------

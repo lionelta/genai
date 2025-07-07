@@ -1,0 +1,45 @@
++-----------------------------------------------------------------------------+
+| Logfile        : NBLOG:macsec_top_wrap__gen_filelist                        |
+| Job id         : 2018684596                 Class: (SLES12&&8G&&nosusp) && (!HIGHMEM) Qslot: /PSG/Kinneloa_Mesa-HPC|
+| User           : sys_psggkadm               Full Id: altera_sc_tiers1_vp.2018684596|
+| Class Reservation : cores=1,general_ramp=1:duration=60s,memory=8            |
+| Executed on    : asccc11104310              Pool : altera_sc_nb1_ppm        |
+| Queueing time  : Mon Apr 14 00:54:08 2025                                   |
+| Starting time  : Mon Apr 14 00:54:10 2025          Qwait:   0h:00m:02s      |
+| Command        : macsec_top_wrap__gen_filelist.csh                          |
++-----------------------------------------------------------------------------+
+/p/hdk/cad/Cheetah-RTL/2024.03.sp1.p03/rtlutils/bin/cth_gen_filelist -gen
+[00:54:15 2025-04-14] [INFO ] Parsing config file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth'
+[00:54:15 2025-04-14] [INFO ] Parsing config file '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/tool.cth'
+[00:54:15 2025-04-14] [INFO ] Parsing config file '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/cfg/macsec_top_wrap.design.cfg'
+[00:54:15 2025-04-14] [INFO ] Parsing config file '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/gen_filelist/flow.cfg'
+[00:54:15 2025-04-14] [WARN ] The file path '$CTH_OVERRIDE_FILE' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/baseline_tools/nbflow/tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/baseline_tools/nbflow/macsec_top_wrap.tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/baseline_tools/nbflow/tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/baseline_tools/nbflow/macsec_top_wrap.tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/macsec_top_wrap.tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/flows/nbflow/tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/flows/nbflow/macsec_top_wrap.tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/<ACTIVITY>/nbflow/tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/<ACTIVITY>/nbflow/macsec_top_wrap.tool.cth' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '$CTH_TOOL_OVERRIDE_FILE' configured under 'Includes' section in file '/p/hdk/pu_tu/prd/global_tools/psg/latest/central_tool_order.cth' cannot be opened for reading.
+[00:54:15 2025-04-14] [WARN ] The file path '/nfs/site/disks/psg.mod.003/GK4/release/km_eth_l2p_macsec_top/km_eth_l2p_macsec_top-a0-25ww16b/baseline_tools/genfilelist/flow.cfg' configured under 'Includes' section in file '/tmp/tmpclrhuoac.cfg' cannot be opened for reading.
+[00:54:15 2025-04-14] [ERROR] Exception raised, initialising termination...
+[00:54:15 2025-04-14] [ERROR] Rtl filelist is missing for hip km_eth_l2p_macsec_rx_top
+[00:54:15 2025-04-14] [ERROR] Rtl filelist is missing for hip km_eth_l2p_macsec_rx_top
+gen_filelist execution failed
+/p/hdk/cad/Cheetah-RTL/2024.03.sp1.p03/rtlutils/Makefile.genfilelist:4: recipe for target 'gen' failed
+make: *** [gen] Error 1
++-----------------------------------------------------------------------------+
+| Exit Status    : 2                                                          |
+| Finishing time : Mon Apr 14 00:54:15 2025                                   |
+| CPU time       : Usr 3.077s  Sys 0.423s  WC  0h:00m:05s                     |
+| Rusage Stats   : Mem:49     PF:  62642/48  CSv/f:  0/0     Swaps:0          |
+|                :           Msg:    0/0     IOops:  62200/56Sigs :0          |
+| User Groups    : alynx, psgeng, psgfln, psgi10, psgwhr, soc, psgknl,        |
+|                : psgsynopsys, psgcadence, i1278proc, i1278, psgrambus,      |
+|                : intelall, psgknr, psgltm, psgltp, psghb, psgsoftip,          |
+|                : psgsiemens                                                 |
+| Actual Class Reservation : cores=1,general_ramp=1:duration=60s,memory=8     |
++-----------------------------------------------------------------------------+

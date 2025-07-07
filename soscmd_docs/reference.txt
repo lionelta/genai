@@ -1,0 +1,71 @@
+----------------------------------------------------------------
+soscmd reference - create a reference to an object in an
+                   external project
+----------------------------------------------------------------
+USAGE
+    soscmd reference -prj<project name>
+                     -ref<referenced object path>
+                     <alias pathname>
+
+DESCRIPTION
+    Creates a reference to an object in an external project.
+    The name of the external project and the pathname to
+    the object in that project defines the target object.
+    The object may be referred to with an alias name that is
+    different than the name of the target object.
+
+    This is similar in concept to creating a symbolic link
+    to an object in a different project. The object remains
+    in the external project and is referenced from the current
+    project.
+    
+ARGUMENTS
+    -prj<project name>
+        This is a required parameter and specifies the name
+        of the project where the target object exists.
+
+    -ref<referenced object path>
+        Pathname to the referenced (target) object
+        in the external project using the current RSO
+        for the external project in the current workarea.
+
+        The pathname should be the fully qualified pathname
+        starting from the root of the project.
+
+        Note that the referenced object may be a file,
+        directory, or package but may NOT be an another
+        external reference.
+
+     <alias pathname>
+        The pathname as the object should appear in the primary
+        project. The pathname should be specified relative to
+        the current working directory. The parent directory
+        of the pathname should be a managed and populated
+        directory. 
+
+        If the parent directory is NOT checked out then SOS
+        will automatically checkout the directory to record 
+        this external reference and then check it in.
+
+NOTES
+    New revisions created for the target object are available
+     to be shared by all projects referencing this object.
+
+    Even if the target object is deleted, renamed or moved in
+    the target project the projects referencing this object
+    will still have access to this object.
+
+EXAMPLES
+    soscmd reference -prjIPLIB -ref./lowpower/dff8 ./rtl/counter/reg8
+        Create a reference to the object './lowpower/dff8' in the
+        project 'IPLIB' in the managed directory './rtl/counter'
+        with the name 'reg8'. 
+
+    soscmd reference -prjIPLIB -ref./lowpower/dff8 reg8
+        Create a reference to the object './lowpower/dff8' in the
+        project 'IPLIB' in the current directory with the 
+        name 'reg8'. The current working directory must be a
+        managed and populated directory.
+----------------------------------------------------------------
+
+
