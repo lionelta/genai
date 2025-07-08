@@ -102,7 +102,7 @@ def list_all_models(repo_name):
         The models naming convention is as follows:
         <repo_name>-a0[-branchname]-<timestamp>   
         ... whereby <timestamp> is in the format of <yy>ww<ww><#>   
-        ... where <yy> is the year, ww is the week number, and <#> is running character. 
+        ... where <yy> is the year, <ww> is the week number, and <#> is running character. 
         Models without branchname are the main/master branch models, while those with branchname are the branch models.   
 
         Example:-  
