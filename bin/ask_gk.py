@@ -19,6 +19,7 @@ import time
 import subprocess
 import json
 import re
+import copy
 
 rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, rootdir)
@@ -48,6 +49,9 @@ def main(args):
     if args.debug:
         level = logging.DEBUG
         logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=level)
+    elif args.quiet:
+        level = logging.CRITICAL
+        logging.basicConfig(format='[%(levelname)s] %(message)s', level=level)
     else:
         logging.basicConfig(format='[%(levelname)s] %(message)s', level=level)
     LOGGER.setLevel(level)
@@ -66,27 +70,30 @@ def main(args):
     raw_plan_str = res.message.content
     plan_str = remove_newline_and_markdown(raw_plan_str)
     plan = json.loads(plan_str)
-    
-    gu.print_markdown(f"""
+   
+    if not args.quiet:
+        gu.print_markdown(f"""
 **+-----------------------------------------+**
 **|              Plans From LLM:            |**
 **+-----------------------------------------+**
 """, cursor_moveback=False)
-    gu.print_markdown(json.dumps(plan, indent=4), cursor_moveback=False, lexer='json')
+        gu.print_markdown(json.dumps(plan, indent=4), cursor_moveback=False, lexer='json')
 
     results = execute_plan(plan, toolagent)
     response = generate_final_response(args.query, plan, results)
 
 
 
-
-    gu.print_markdown(f"""
+    if not args.quiet:
+        gu.print_markdown(f"""
 **+-----------------------------------------+**
 **|      Final Response to User Query       |**
 **+-----------------------------------------+**
 """, cursor_moveback=False)
-    gu.print_markdown(response, cursor_moveback=False)
-    print('=================================================')
+        gu.print_markdown(response, cursor_moveback=False)
+        print('=================================================')
+    else:
+        print(response)
 
     return True   
 
@@ -116,7 +123,8 @@ def execute_plan(plan, toolagent):
         step_number = step_data["step"]
         description = step_data["description"]
         function_name = step_data.get("function_name")
-        raw_parameters = step_data.get("parameters", {})
+        #raw_parameters = step_data.get("parameters", {})
+        raw_parameters = copy.deepcopy(step_data.get("parameters", {}))  # Make a copy to avoid modifying the original
         parameters = replace_params_with_steps_output(raw_parameters, results)
         agent_to_call = step_data.get("agent_to_call")
         input_to_agent = step_data.get("input_to_agent")
@@ -273,8 +281,24 @@ if __name__ == '__main__':
     
     class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawTextHelpFormatter): pass
 
-    parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter)
-    parser.add_argument('--debug', action='store_true', default=False, help='Debug mode')
+    epilog = f"""
+
++--------------------------+
+|     Example usage:       |
++--------------------------+
+what is the latest model for bypass_reg master branch 
+what is the latest model for bypass_reg rc0.5 branch 
+what are the available branches for repo bypass_reg?
+report all failing task for bypass_reg-a0-24ww12f  
+report the job result differences between release bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
+compare baseline_tools between releases bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
+what is the baseline tools used in release bypass_reg-a0-rc-25ww27a? 
+
+    """
+
+    parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter, epilog=epilog)
+    parser.add_argument('--debug', action='store_true', default=False, help='Debug mode, which will printout all debug logs.')
+    parser.add_argument('--quiet', action='store_true', default=False, help='Quiet mode, which will suppress everything, except the final response.')
     parser.add_argument('-q', '--query', default=None, help='Query string')
     args = parser.parse_args()
 
