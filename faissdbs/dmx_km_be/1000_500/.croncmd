@@ -1,0 +1,28 @@
+#!/nfs/site/disks/da_infra_1/users/yltan/venv/3.10.11_sles12_sscuda/bin/python
+
+import os
+import sys
+
+sys.path.insert(0, '/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main')
+
+import lib.genai_utils as gu
+
+os.environ['https_proxy'] = 'proxy-dmz.altera.com:912'
+os.environ['http_proxy'] = 'proxy-dmz.altera.com:912'
+
+token = open('/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/.wiki_api_token').read().strip()
+ret = gu.get_confluence_decendants_of_page('94735431', 'yoke.liang.lionel.tan@altera.com', token)
+
+pageids = [x['id'] for x in ret['results']]
+### Remove deprecated pages
+oldpages = ['94737553', '94737536', '94737747', '94741042', '94737764']
+oldpages += ['94737790', '94742023', '94741747']  # CTH for OA
+valid_pages = [x for x in pageids if x not in oldpages]
+
+pageids_str = ' '.join(valid_pages)
+
+cmd = f'/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/bin/extract.py -cs 1000 -co 500 -p {pageids_str}  --debug -s /nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/faissdbs/dmx_km_be/1000_500'
+
+print(f"Running: {cmd}")
+
+os.system(cmd)

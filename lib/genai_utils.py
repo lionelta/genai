@@ -15,6 +15,8 @@ import lib.regex_db
 import tempfile
 import fcntl
 import re
+import base64
+import subprocess
 
 warnings.simplefilter("ignore")
 os.environ['PYTHONWARNINGS'] = 'ignore'
@@ -210,6 +212,17 @@ def extract_xml(text, tag):
         return match.group(1)
     return ""
 
+
+def get_confluence_decendants_of_page(pageid, username, token):
+    '''
+    returns the list of child page ids of the given parent_id, hierarchically.
+    '''
+    endpoint = f'https://altera-corp.atlassian.net/wiki/api/v2/pages/{pageid}/descendants?limit=250&depth=5'
+    credentials = f'{username}:{token}'
+    encoded_credentials = base64.b64encode(credentials.encode()).decode("ascii")
+    cmd = f"""curl -s -H 'Authorization: Basic {encoded_credentials}' -H 'Content-Type: application/json' {endpoint} """
+    output = subprocess.getoutput(cmd)
+    return json.loads(output)
 
 if __name__ == '__main__':
     logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=logging.DEBUG)

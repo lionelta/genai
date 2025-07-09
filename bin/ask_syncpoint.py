@@ -28,6 +28,7 @@ if 'OLLAMA_HOST' not in os.environ:
 os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['HF_DATASETS_OFFLINE'] = '1'
 
+
 from lib.agents.chatbot_agent import ChatbotAgent
 from lib.agents.sql_coding_agent import SqlCodingAgent
 from lib.agents.base_agent import BaseAgent
@@ -56,13 +57,11 @@ def main(args):
     a.kwargs['messages'] = [{'role': 'user', 'content': args.query}]
     res = a.run()
     fullres = ''
-    print('----------------------------------------')
-
-    sqlrawcmd = res.message['content']
+    sqlrawcmd = res.message.content
     output = a.execute_sql(sqlrawcmd)
 
     b = BaseAgent()
-    b.kwargs['model'] = 'llama3.3'
+    #b.kwargs['model'] = 'llama3.3'
     b.kwargs['stream'] = True 
     b.kwargs['options']['num_ctx'] = 36000
     b.kwargs['options']['temperature'] = 0.3
@@ -87,8 +86,8 @@ def main(args):
     ani.stop()
     fullres = ''
     for chunk in res:
-        print(chunk['message']['content'], end='', flush=True)
-        fullres += chunk['message']['content']
+        print(chunk, end='', flush=True)
+        fullres += chunk
         
     
     print()

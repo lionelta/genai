@@ -1,6 +1,6 @@
 {
     "_icmanage": ["icm_faq", "icm_pm_guide", "icm_protect"],
     "Project:KM(fe)": ["AideGenericTfm", "altera_fe_faq", "tdmainfra", "psgcth2tfm", "adm", "fe_static_checks", "design_intend", "vc_lp"],
-    "Project:KM(be)": ["AideGenericTfm", "KmTfmLynx", "adm", "rv", "vc_lp"],
+    "Project:KM(be)": ["AideGenericTfm", "KmTfmLynx", "adm", "rv", "vc_lp", "lv"],
     "Compute Infra": ["tdmainfra", "stod", "netbatch", "arc_faq"]
 }

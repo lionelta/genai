@@ -62,8 +62,7 @@ class SqlCodingAgent(BaseAgent):
         self.kwargs['options']['num_ctx'] = 11111
         self.kwargs['options']['temperature'] = 0.3
         self.kwargs['options']['top_p'] = 0.3
-        self.emb_model = 'llama3.3'
-        self.systemprompt = '''You are an expert in mysql. Help me to write a mysql query. I will provide you with the create table statement and the query I want to write. You will help me to write the query. You will not give me any other information. You will only give me the query. Do not give me any explanation or any other information. Just give me the SQL command directly. Do not format the SQL command using markdown or triple backticks. Return it as plain text.   
+        self.systemprompt = '''You are an expert in mysql. Help me to write a mysql query. I will provide you with the create table statement and the query I want to write. You will help me to write the query.  Do not give me any explanation or any other information. Just response with the SQL command directly. Do not format the SQL command using markdown or triple backticks. Do not put any newline character. Return it as plain text.   
 
         {table_schemas}   
         '''
@@ -71,6 +70,7 @@ class SqlCodingAgent(BaseAgent):
 
     def execute_sql(self, sql_command):
         cmd = self.get_sql_command(sql_command)
+        self.logger.debug(f'Executing SQL command: {cmd}')
         output = subprocess.getoutput(cmd)
         return output
 
@@ -79,7 +79,7 @@ class SqlCodingAgent(BaseAgent):
         self.table_schemas = self.get_create_table_statements()
         kwargs['messages'].insert(0, {'role': 'system', 'content': self.systemprompt.format(table_schemas=self.table_schemas)})
         self.logger.debug(pformat(kwargs))
-        res = ollama.chat(**kwargs)
+        res = self.chat_factory.chat(kwargs)
         return res
 
     def get_create_table_statements(self):
