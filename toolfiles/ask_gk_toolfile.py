@@ -43,6 +43,36 @@ def get_baseline_tool(modelname):
         LOGGER.debug(f"Error getting baseline tool for release model {modelname}: {e}")
         return None
 #############################################################################
+get_feeder_url_dict = {
+    'type': 'function',
+    'function': {
+        'name': 'get_feeder_url',
+        'description': 'Get the feeder URL for a release model',
+        'parameters': {
+            'type': 'object',
+            'properties': {
+                'modelname': {
+                    'type': 'string',
+                    'description': 'The release model name to get the feeder URL from',
+                    'required': True,
+                },
+            },
+        },
+    }
+}
+def get_feeder_url(modelname):
+    LOGGER.debug(f"Getting feeder URL for release model: {modelname}")
+    reponame, _ = modelname.split('-a0-')
+    try:
+        logfile = os.path.join(os.getenv('IP_MODELS', '/nfs/site/disks/psg.mod.000'), 'release', reponame, modelname, 'GATEKEEPER', 'gk-utils.log')
+        cmd = f'grep feeder {logfile} | grep URL'
+        output = subprocess.getoutput(cmd)
+        LOGGER.debug("Feeder URL retrieved successfully.")
+        return output
+    except Exception as e:
+        LOGGER.debug(f"Error getting feeder URL for release model {modelname}: {e}")
+        return None
+#############################################################################
 get_job_result_dict = {
     'type': 'function',
     'function': {
@@ -104,6 +134,8 @@ def list_all_models(repo_name):
         ... whereby <timestamp> is in the format of <yy>ww<ww><#>   
         ... where <yy> is the year, <ww> is the week number, and <#> is running character. 
         Models without branchname are the main/master branch models, while those with branchname are the branch models.   
+        - repo_name-a0-23ww11a (this is a main/master branch model)  
+        - repo_name-a0-my_little_0.2-23ww11b (this is a branch model, where my_little_0.2 is the branch name)  
 
         Example:-  
             repo_name-a0-23w01b is later than repo_name-a0-23w01a (because b > a)  

@@ -1,5 +1,5 @@
 {
-    "icmanage": ["icm_faq", "icm_pm_guide", "icm_protect"],
+    "_icmanage": ["icm_faq", "icm_pm_guide", "icm_protect"],
     "Project:KM(fe)": ["AideGenericTfm", "altera_fe_faq", "tdmainfra", "psgcth2tfm", "adm", "fe_static_checks", "design_intend"],
     "Project:KM(be)": ["AideGenericTfm", "KmTfmLynx", "adm", "rv"],
     "Compute Infra": ["tdmainfra", "stod", "netbatch", "arc_faq"]

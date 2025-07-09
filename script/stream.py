@@ -135,6 +135,8 @@ version = os.path.basename(rootdir)
 groupdb_json = os.path.join(rootdir, 'groupdb.json')
 with open(groupdb_json, 'r') as f:
     groupdb = json.load(f)
+    ### Remove keys which starts with '_'
+    groupdb = {k: v for k, v in groupdb.items() if not k.startswith('_')}
 
 
 with st.sidebar:

@@ -286,14 +286,14 @@ if __name__ == '__main__':
 +--------------------------+
 |     Example usage:       |
 +--------------------------+
-what is the latest model for bypass_reg master branch 
-what is the latest model for bypass_reg rc0.5 branch 
-what are the available branches for repo bypass_reg?
-report all failing task for bypass_reg-a0-24ww12f  
-report the job result differences between release bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
-compare baseline_tools between releases bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
-what is the baseline tools used in release bypass_reg-a0-rc-25ww27a? 
-
+- what is the latest model for bypass_reg master branch 
+- what is the latest model for bypass_reg rc0.5 branch 
+- what are the available branches for repo bypass_reg?
+- report all the tasks' fullname which are failing for bypass_reg-a0-24ww12f  
+- report the job result differences between release bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c, and report it out in tabular format. 
+- compare baseline_tools between releases bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
+- what is the baseline tools version used in release bypass_reg-a0-24ww44c? 
+- get me the feeder url from the result log of bypass_reg-a0-24ww44c
     """
 
     parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter, epilog=epilog)

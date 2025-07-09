@@ -20,7 +20,7 @@ import subprocess
 import json
 import re
 
-rootdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, rootdir)
 import lib.genai_utils as gu
 
