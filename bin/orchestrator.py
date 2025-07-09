@@ -19,6 +19,7 @@ import time
 import subprocess
 import json
 import re
+import textwrap
 
 rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, rootdir)
@@ -45,6 +46,8 @@ def main(args):
     os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
 
     level = logging.INFO # to suppress all logs
+    if args.quiet:
+        level = logging.CRITICAL
     if args.debug:
         level = logging.DEBUG
         logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=level)
@@ -66,27 +69,30 @@ def main(args):
     raw_plan_str = res.message.content
     plan_str = remove_newline_and_markdown(raw_plan_str)
     plan = json.loads(plan_str)
-    
-    gu.print_markdown(f"""
+   
+    if not args.quiet:
+        gu.print_markdown(f"""
 **+-----------------------------------------+**
 **|              Plans From LLM:            |**
 **+-----------------------------------------+**
 """, cursor_moveback=False)
-    gu.print_markdown(json.dumps(plan, indent=4), cursor_moveback=False, lexer='json')
+        gu.print_markdown(json.dumps(plan, indent=4), cursor_moveback=False, lexer='json')
 
     results = execute_plan(plan, toolagent)
     response = generate_final_response(args.query, plan, results)
 
 
 
-
-    gu.print_markdown(f"""
+    if not args.quiet:
+        gu.print_markdown(f"""
 **+-----------------------------------------+**
 **|      Final Response to User Query       |**
 **+-----------------------------------------+**
-""", cursor_moveback=False)
-    gu.print_markdown(response, cursor_moveback=False)
-    print('=================================================')
+    """, cursor_moveback=False)
+        gu.print_markdown(response, cursor_moveback=False)
+        print('=================================================')
+    else:
+        print(response)
 
     return True   
 
@@ -273,8 +279,31 @@ if __name__ == '__main__':
     
     class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawTextHelpFormatter): pass
 
-    parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter)
-    parser.add_argument('--debug', action='store_true', default=False, help='Debug mode')
+    description = textwrap.dedent(f"""This is a well-rounded AI helper script which is capable of performing automation tasks based on user queries.""")
+    epilog = textwrap.dedent(f"""
+DESCRIPTION:
+============
+This is a well-rounded AI helper script which is capable of performing automation tasks based on user queries.
+This script is able to:-
+- read a file
+- write to a file
+- generate/execute python script to fulfill a query
+- call LLM to perform a task to fulfill a query
+
+EXAMPLES:
+=========
+Here are a few examples of the query, showing how you can use this script:
+- extract out the content of line:5 to line:15 from file ./abc.txt, and write it into file ./output.txt
+- list out all the python files in the current directory hierarchically.
+- help explain what the python code in ./test.py does. 
+- replace all the matching words "abc" to "xyz" from file ./a.txt, and write the result into ./b.txt 
+- run "ls -altr" and return it in a json string, without any markdown formatting or backticks.
+- based on all the feedback from user, which are stored in ./feedback/*/*.json, provide a summary
+- help generate unittest for the python code in /p/cth/cad/dmx/lionel_sbox/cmx/lib/python/cmx/tnrlib/seal_file.py , and save the unittest code into /tmp/unittest.py
+""")
+    parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter, description=description, epilog=epilog)
+    parser.add_argument('--debug', action='store_true', default=False, help='Debug mode. Prints debug logs and more verbose output.')
+    parser.add_argument('--quiet', action='store_true', default=False, help='Quiet mode. Only prints the final response and nothing else.')
     parser.add_argument('-q', '--query', default=None, help='Query string')
     args = parser.parse_args()
 
