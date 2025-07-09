@@ -111,6 +111,8 @@ def list_all_models(repo_name):
             repo_name-a0-23w13b is later than repo_name-a0-23w01a (because week 13 > week 01)  
             repo_name-a0-24w10b is later than repo_name-a0-23w13c (because year 24 > 23)
 
+        Note: <yy> has highest priority, followed by <ww>, and then <#>.  
+
         Here is the list of models:  
         {all_models}  
         """
