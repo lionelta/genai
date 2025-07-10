@@ -48,21 +48,36 @@ def main(args):
     from langchain_core.documents import Document
 
     api_token = open(os.path.join(rootdir, '.wiki_api_token'), 'r').read().strip()
+    username = 'yoke.liang.lionel.tan@altera.com'
     url = 'https://altera-corp.atlassian.net/wiki'
     keep_markdown = False
     
     if args.method == 'markdown':
         keep_markdown = True
 
-    if args.pageids or args.wikispace:
+    pageids = None
+    if args.pageids:
+        pageids = args.pageids
+    
+    ### If pagehierarchy is provided, we will extract all pages under the given pageid
+    elif args.pagehierarchy:
+        jsondata = gu.get_confluence_decendants_of_page(args.pagehierarchy, username, api_token)
+        pageids = [x['id'] for x in jsondata['results']]
+    
+    LOGGER.debug(f"Page IDs original  ({len(pageids)}): {pageids}")
+    ### remove skippages from the pageids
+    if args.skippages:
+        pageids = [p for p in pageids if p not in args.skippages]
+    LOGGER.debug(f"Page IDs to extract({len(pageids)}): {pageids}")
+
+
+    if pageids or args.wikispace:
         loader = ConfluenceLoader(
                 url=url, 
-                username='yoke.liang.lionel.tan@altera.com', 
+                username=username, 
                 api_key=api_token,
                 space_key=args.wikispace,
-                #page_ids=['94735727', '94741250', '74294134'],
-                #page_ids=['94735506'],
-                page_ids=args.pageids,
+                page_ids=pageids,
                 content_format=confluence.ContentFormat.VIEW,
                 keep_markdown_format=keep_markdown,
                 limit=50,
@@ -227,8 +242,11 @@ if __name__ == '__main__':
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-w', '--wikispace', default=None, help='Wikispace to extract')
     group.add_argument('-p', '--pageids', nargs='*', default=None, help='Page IDs to extract. Eg: --pageids 123 456 777')
+    group.add_argument('--pagehierarchy', default=None, help='Extract all pages under the given pageid. Eg: --pagehierarchy 153')
     group.add_argument('--pdf', default=None, help='fullpath to pdf file.')
     group.add_argument('--txtdir', default=None, help='the fullpath the the directory that contains all the *.txt files.')
+
+    parser.add_argument('--skippages', nargs='*', default=None, required=False, help='Page IDs to skip. Eg: --skippages 123 456 777. This is only applicable when --pagehierarchy is used.')
 
     parser.add_argument('-m', '--method', default='recursive', choices=['recursive', 'semantic', 'markdown', 'none'], help='Method to split text.')
     parser.add_argument('--debug', action='store_true', default=False, help='Debug mode')
