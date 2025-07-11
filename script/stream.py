@@ -91,7 +91,7 @@ if 'cm' not in st.session_state:
 st.session_state.count += 1
 
 if 'userid' not in st.session_state.cm.cookies:
-    userid = st.text_input("Enter your user id")
+    userid = st.text_input("Enter your Altera Linux userid")
     password = st.text_input("Enter your password", type="password")
     authenticate(userid, password)
 ############################################################################

@@ -23,7 +23,7 @@ os.environ['PYTHONWARNINGS'] = 'ignore'
 
 PROXY_ENVVARS = ['http_proxy', 'https_proxy']
 
-LOGGER = logging.getLogger()
+LOGGER = logging.getLogger(__name__)
 
 def load_default_settings(infile=None):
     if infile is None:
@@ -220,9 +220,13 @@ def get_confluence_decendants_of_page(pageid, username, token):
     endpoint = f'https://altera-corp.atlassian.net/wiki/api/v2/pages/{pageid}/descendants?limit=250&depth=5'
     credentials = f'{username}:{token}'
     encoded_credentials = base64.b64encode(credentials.encode()).decode("ascii")
-    cmd = f"""curl -s -H 'Authorization: Basic {encoded_credentials}' -H 'Content-Type: application/json' {endpoint} """
+    cmd = f"""curl -s -H 'Authorization: Basic {encoded_credentials}' -H 'Content-Type: application/json' '{endpoint}' """
+    LOGGER.debug(f'get_confluence_decendants_of_page cmd: {cmd}')
     output = subprocess.getoutput(cmd)
-    return json.loads(output)
+    LOGGER.debug(f'get_confluence_decendants_of_page output: {output}')
+    jsondata = json.loads(output)
+    LOGGER.debug(f'get_confluence_decendants_of_page jsondata count: {len(jsondata["results"])}')
+    return jsondata
 
 if __name__ == '__main__':
     logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=logging.DEBUG)

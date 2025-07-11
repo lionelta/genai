@@ -61,10 +61,13 @@ def main(args):
     
     ### If pagehierarchy is provided, we will extract all pages under the given pageid
     elif args.pagehierarchy:
-        jsondata = gu.get_confluence_decendants_of_page(args.pagehierarchy, username, api_token)
-        pageids = [x['id'] for x in jsondata['results']]
+        pageids = args.pagehierarchy[:]
+        for pid in args.pagehierarchy:
+            jsondata = gu.get_confluence_decendants_of_page(pid, username, api_token)
+            pageids += [x['id'] for x in jsondata['results'] if x['status'] == 'current']
     
-    LOGGER.debug(f"Page IDs original  ({len(pageids)}): {pageids}")
+        LOGGER.debug(f"Page IDs original  ({len(pageids)}): {pageids}")
+   
     ### remove skippages from the pageids
     if args.skippages:
         pageids = [p for p in pageids if p not in args.skippages]
@@ -242,7 +245,7 @@ if __name__ == '__main__':
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-w', '--wikispace', default=None, help='Wikispace to extract')
     group.add_argument('-p', '--pageids', nargs='*', default=None, help='Page IDs to extract. Eg: --pageids 123 456 777')
-    group.add_argument('--pagehierarchy', default=None, help='Extract all pages under the given pageid. Eg: --pagehierarchy 153')
+    group.add_argument('--pagehierarchy', nargs='*', default=None, help='Extract all pages under the given pageid(s). Eg: --pagehierarchy 153 546 112')
     group.add_argument('--pdf', default=None, help='fullpath to pdf file.')
     group.add_argument('--txtdir', default=None, help='the fullpath the the directory that contains all the *.txt files.')
 
