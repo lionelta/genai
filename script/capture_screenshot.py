@@ -9,6 +9,7 @@ if len(sys.argv) < 2 or '-h' in ' '.join(sys.argv):
     print("Options:")
     print("  --active : Capture screenshot of the currently active window")
     print("  --screen : Capture screenshot of the entire screen")
+    print("  --manual : Capture screenshot from user bbox selection")
     sys.exit(1)
 
 if '--active' in sys.argv:
@@ -16,9 +17,14 @@ if '--active' in sys.argv:
     window = subprocess.getoutput(cmd).strip()
 elif '--screen' in sys.argv:
     window = 'root'
+elif '--manual' in sys.argv:
+    window = None
 
 print(f"window: {window}")
-cmd = f"import -window {window} screenshot.jpeg"
+if window:
+    cmd = f"import -window {window} screenshot.jpeg"
+else:
+    cmd = "import screenshot.jpeg"
 os.system(cmd)
 print("Screenshot saved as screenshot.jpeg")
 

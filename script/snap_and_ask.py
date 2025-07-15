@@ -1,0 +1,57 @@
+#!/nfs/site/disks/da_infra_1/users/yltan/venv/3.10.11_sles12_sscuda/bin/python
+
+import logging
+import os
+import sys
+import base64
+import tempfile
+sys.path.insert(0, '/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main')
+from lib.agents.base_agent import BaseAgent
+import lib.genai_utils as utils
+
+
+def main():
+
+    level = logging.INFO
+    if '--debug' in sys.argv:
+        level = logging.DEBUG
+    logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=level)
+
+    _, image_path = tempfile.mkstemp(suffix='.jpeg')
+
+    print(">>> Please draw a box around the error message you want to extract...")   
+    cmd = f'import {image_path}'
+    os.system(cmd)
+    print(f">>> Image captured: {image_path}")
+    base64_image = get_base64_image(image_path)
+
+    ### Openai format
+    prompt = f'''
+    You are a helpful assistant. Please help extract out the error message from the image, and provide and explanation of the error message.
+    '''
+    os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
+    os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
+    a = BaseAgent()
+    a.kwargs['messages'] = [
+        {"role": "user", "content": [
+            {"type": "text", "text": prompt},
+            {"type": "image_url", "image_url":{ "url": f"data:image/png;base64,{base64_image}"}},
+        ]
+         }]
+    print(">>> Waiting response from llm ...")
+    res = a.run()
+    print("======================")
+    print(res.message.content)
+
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+   
+
+def get_base64_image(image_path):
+    with open(image_path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+if __name__ == '__main__':
+    main()
+

@@ -57,21 +57,31 @@ def main(args):
 
     pageids = None
     if args.pageids:
-        pageids = args.pageids
-    
-    ### If pagehierarchy is provided, we will extract all pages under the given pageid
-    elif args.pagehierarchy:
-        pageids = args.pagehierarchy[:]
-        for pid in args.pagehierarchy:
+        ### segregate the pageids into 3 categories:
+        ### - pageids that starts with +, which means we will extract all children pages including itself
+        ### - pageids that starts with -, which means we will skip this page
+        ### - pageids that are just numbers, which means we will extract only that page itself
+        pageids = []
+        pagehierarchy = []
+        skippages = []
+        for pid in args.pageids:
+            if pid.startswith('+'):
+                pagehierarchy.append(pid[1:])
+            elif pid.startswith('-'):
+                skippages.append(pid[1:])
+            else:
+                pageids.append(pid)
+
+        for pid in pagehierarchy:
+            pageids.append(pid)
             jsondata = gu.get_confluence_decendants_of_page(pid, username, api_token)
             pageids += [x['id'] for x in jsondata['results'] if x['status'] == 'current']
-    
-        LOGGER.debug(f"Page IDs original  ({len(pageids)}): {pageids}")
-   
-    ### remove skippages from the pageids
-    if args.skippages:
-        pageids = [p for p in pageids if p not in args.skippages]
-    LOGGER.debug(f"Page IDs to extract({len(pageids)}): {pageids}")
+
+        ### remove skippages from the pageids
+        if skippages and pageids:
+            pageids = [p for p in pageids if p not in skippages]
+
+        LOGGER.debug(f"Page IDs to extract({len(pageids)}): {pageids}")
 
 
     if pageids or args.wikispace:
@@ -244,12 +254,14 @@ if __name__ == '__main__':
     
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-w', '--wikispace', default=None, help='Wikispace to extract')
-    group.add_argument('-p', '--pageids', nargs='*', default=None, help='Page IDs to extract. Eg: --pageids 123 456 777')
-    group.add_argument('--pagehierarchy', nargs='*', default=None, help='Extract all pages under the given pageid(s). Eg: --pagehierarchy 153 546 112')
+    group.add_argument('-p', '--pageids', nargs='*', default=None, help='''Page IDs to extract. Eg: --pageids 123 +456 -777.
+If the page ID starts with a + (eg: +123), all children pages including itself will be extracted.
+If the page ID starts with a - (eg: -123), it will be excluded.
+If the page ID is just a number (eg: 123), only that page itself will be extracted.
+    ''')
     group.add_argument('--pdf', default=None, help='fullpath to pdf file.')
     group.add_argument('--txtdir', default=None, help='the fullpath the the directory that contains all the *.txt files.')
 
-    parser.add_argument('--skippages', nargs='*', default=None, required=False, help='Page IDs to skip. Eg: --skippages 123 456 777. This is only applicable when --pagehierarchy is used.')
 
     parser.add_argument('-m', '--method', default='recursive', choices=['recursive', 'semantic', 'markdown', 'none'], help='Method to split text.')
     parser.add_argument('--debug', action='store_true', default=False, help='Debug mode')

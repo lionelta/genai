@@ -30,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 menu_items = {
-    'Get Help': 'https://altera-corp.atlassian.net/wiki/spaces/tdmaInfra/pages/150765584/How+To+Generate+My+Own+FAISS+DB',
+    'Get Help': 'https://go2.altera.com/aichatbot_wiki',
     'About': f"If you would like to have your wikispace added to the chatbot, please contact yoke.liang.lionel.tan@altera.com or joanne.low@altera.com",
     'Report a Bug': 'mailto:joanne.low@altera.com; yoke.liang.lionel.tan@altera.com'
 }
