@@ -300,6 +300,8 @@ Here are a few examples of the query, showing how you can use this script:
 - run "ls -altr" and return it in a json string, without any markdown formatting or backticks.
 - based on all the feedback from user, which are stored in ./feedback/*/*.json, provide a summary
 - help generate unittest for the python code in /p/cth/cad/dmx/lionel_sbox/cmx/lib/python/cmx/tnrlib/seal_file.py , and save the unittest code into /tmp/unittest.py
+- give a summary on what is the difference between these 2 files: ./a.json and ./b.json
+- give a summary on what is the difference between the output of these 2 commands: `group` and `ssh rsync.png.altera.com groups`  
 """)
     parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter, description=description, epilog=epilog)
     parser.add_argument('--debug', action='store_true', default=False, help='Debug mode. Prints debug logs and more verbose output.')

@@ -216,7 +216,13 @@ def main(args):
         from langchain_community.embeddings import HuggingFaceEmbeddings
 
         #embeddings = HuggingFaceEmbeddings(model_name=emb_model, model_kwargs={'trust_remote_code': True})
-        embeddings = HuggingFaceEmbeddings(model_name=args.emb_model)
+        #embeddings = HuggingFaceEmbeddings(model_name=args.emb_model)
+
+
+        os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
+        embeddings = gu.load_openai_embedding_model()
+
+
         db = FAISS.from_documents(chunked_docs, embeddings)
         faissdb = db
        
