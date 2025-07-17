@@ -45,6 +45,20 @@ def load_embedding_model(modelname):
     embeddings = HuggingFaceEmbeddings(model_name=modelname,  model_kwargs={'trust_remote_code': True})
     return embeddings
 
+def load_openai_embedding_model(modelname='dmai-text-embedding-3-large'):
+    from langchain_openai import AzureOpenAIEmbeddings
+    import httpx
+    proxy_client = httpx.Client(proxy='http://proxy-dmz.altera.com:912')
+    embeddings = AzureOpenAIEmbeddings(
+        openai_api_version = '2024-12-01-preview',
+        azure_endpoint = "https://dmai-aichatbot.openai.azure.com/",
+        api_key = subprocess.getoutput('/p/psg/da/infra/admin/setuid/goak'),
+        http_client = proxy_client,
+        model = modelname,
+        dimensions = 1024,
+    )
+    return embeddings
+
 def load_faiss_dbs(dbpaths, embedding_obj):
     from langchain_community.vectorstores import FAISS
     

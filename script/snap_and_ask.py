@@ -27,7 +27,11 @@ def main():
 
     ### Openai format
     prompt = f'''
-    You are a helpful assistant. Please help extract out the error message from the image, and provide and explanation of the error message.
+    You are a helpful assistant. Please help extract out the error message from the image, and provide the response in these sections:   
+    - Extracted error message  
+    - Explanation of the error message  
+    - How to resolve the error  
+
     '''
     os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
     os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
