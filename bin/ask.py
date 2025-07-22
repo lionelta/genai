@@ -54,7 +54,12 @@ def main(args):
     a = ChatbotAgent()
     a.kwargs['messages'] = [{'role': 'user', 'content': args.query}]
     if args.query == '-':
-        a.kwargs['messages'] = [{'role': 'user', 'content': sys.stdin.read()}]
+        prompt = sys.stdin.read()
+    else:
+        prompt = args.query
+    if args.pre_query:
+        prompt = args.pre_query + '  \n\n' + prompt
+    a.kwargs['messages'] = [{'role': 'user', 'content': prompt}]
     a.faiss_dbs = args.loaddb
 
     if args.scripting_mode:
@@ -87,12 +92,28 @@ if __name__ == '__main__':
     
     class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawTextHelpFormatter): pass
 
-    parser = argparse.ArgumentParser(prog='ask.py', formatter_class=MyFormatter)
+    epilog = f'''
+Example usage:
+    Generic Question
+    ================
+    {os.path.basename(__file__)} -q "What is the meaning of life?"
+
+    Internal Question(with faissdb knowledge)
+    =========================================
+    {os.path.basename(__file__)} -l my_faiss_db -q "how to resolve error W154?"
+
+    Query With Pipeline
+    ===================
+    cat test.py | {os.path.basename(__file__)} -q - -pq 'explain what this python code does'
+    ls -altr | {os.path.basename(__file__)} -q - -pq 'convert this output to json string. Do not provide any explanation, just the json string.'
+'''
+    parser = argparse.ArgumentParser(prog='ask.py', epilog=epilog, formatter_class=MyFormatter)
     parser.add_argument('--debug', action='store_true', default=False, help='Debug mode')
     parser.add_argument('--clean', action='store_true', default=True, help='Clean mode')
     
     parser.add_argument('-l', '--loaddb', default=None, nargs='+', help='Load the FAISS db')
     parser.add_argument('-q', '--query', default=None, help='Query string. If "-" is provided, will read from stdin.')
+    parser.add_argument('-pq', '--pre_query', default=None, help='Additional Query string that will be prepended to the main query.')
 
     parser.add_argument('-sm', '--scripting_mode', action='store_true', default=False, help='Will print response in non-streaming mode. Useful for scripting.')
     args = parser.parse_args()

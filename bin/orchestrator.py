@@ -78,6 +78,9 @@ def main(args):
 """, cursor_moveback=False)
         gu.print_markdown(json.dumps(plan, indent=4), cursor_moveback=False, lexer='json')
 
+    input("Do you want me to execute the plan? Press Enter to continue or Ctrl+C to exit...")
+
+
     results = execute_plan(plan, toolagent)
     response = generate_final_response(args.query, plan, results)
 

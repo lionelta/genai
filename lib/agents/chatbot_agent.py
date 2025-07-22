@@ -81,7 +81,10 @@ Source Of Information:
 
 
     def load_rag_data(self):
-        embeddings = self.genai_utils.load_embedding_model(self.emb_model)
+        #embeddings = self.genai_utils.load_embedding_model(self.emb_model)
+        os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
+        embeddings = self.genai_utils.load_openai_embedding_model()
+        self.genai_utils.proxyon()
         rag_content = ''
         rag_content_list = []
 
