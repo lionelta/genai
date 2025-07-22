@@ -1,6 +1,8 @@
 {
     "_icmanage": ["icm_faq", "icm_pm_guide", "icm_protect"],
-    "Project:KM(fe)": ["AideGenericTfm", "altera_fe_faq", "tdmainfra", "psgcth2tfm", "adm", "fe_static_checks", "design_intend", "vc_lp"],
-    "Project:KM(be)": ["AideGenericTfm", "KmTfmLynx", "adm", "rv", "vc_lp", "lv", "dmx_km_be"],
-    "Compute Infra": ["tdmainfra", "stod", "netbatch", "arc_faq"]
+    "Project:KM(fe)": ["AideGenericTfm", "altera_fe_faq", "psgcth2tfm", "adm", "fe_static_checks", 
+        "design_intend", "vc_lp", "dmzIDE", "fishtail", "pprtl", "starvision_doc", "rtl-a"],
+    "Project:KM(be)": ["AideGenericTfm", "CustomDesignPlatform", "adm", "cbb2sd", "cfa", "rv", 
+        "vc_lp", "lv", "dmx_km_be", "dmzIDE", "finale", "r2g_and_apr", "rcxt", "primelib", "primetime_ug", "starvision_doc"],
+    "Infra": ["tdmainfra", "stod", "netbatch", "arc_faq", "icm_faq"]
 }
