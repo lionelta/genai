@@ -149,10 +149,8 @@ with st.sidebar:
    
     chatversion = st.expander("Chatbot Version", expanded=False)
     chatversion.info(f"""**GenAI**: `{version}`   
-    **Emb Model**: `{llm_settings['emb_model']}`   
-    **LLM Model**: `{llm_settings['llm_model']}`  
-    **Temperature**: `{llm_settings['temperature']}`  
-    **Top P**: `{llm_settings['top_p']}`
+    **Emb Model**: `text-embedding-3-large(dimension=1024)`   
+    **LLM Model**: `gpt-4o`  
     """)
 
     chatsettings = st.expander("Chatbot Settings", expanded=False)

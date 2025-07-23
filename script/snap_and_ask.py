@@ -2,6 +2,7 @@
 
 import logging
 import os
+import argparse
 import sys
 import base64
 import tempfile
@@ -10,7 +11,7 @@ from lib.agents.base_agent import BaseAgent
 import lib.genai_utils as utils
 
 
-def main():
+def main(args):
 
     level = logging.INFO
     if '--debug' in sys.argv:
@@ -33,6 +34,9 @@ def main():
     - How to resolve the error  
 
     '''
+    if args.query:
+        prompt = args.query
+
     os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
     os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
     a = BaseAgent()
@@ -57,5 +61,18 @@ def get_base64_image(image_path):
         return base64.b64encode(image_file.read()).decode('utf-8')
 
 if __name__ == '__main__':
-    main()
+    epilog = '''
+By default, if you do not specify any query, the script will use this default prompt: 
+
+    You are a helpful assistant. Please help extract out the error message from the image, and provide the response in these sections:   
+    - Extracted error message  
+    - Explanation of the error message  
+    - How to resolve the error  
+
+If you want to specify your own query, you can use the -q or --query option:
+'''
+    parser = argparse.ArgumentParser(description='Snap and ask for help with error messages.', epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-q', '--query', type=str, required=False, default=None, help='Query to ask the agent')
+    args = parser.parse_args()
+    main(args)
 
