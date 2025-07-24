@@ -169,7 +169,8 @@ with st.sidebar:
     else:
         st.session_state.enable_chat_history = False
 
-    st.session_state.responsemode = chatsettings.radio(f"Response Mode:", ["Direct", "CoT", "ToT"], help='Check "User Guide" for details.', index=0, horizontal=True)
+    #st.session_state.responsemode = chatsettings.radio(f"Response Mode:", ["Direct", "CoT", "ToT"], help='Check "User Guide" for details.', index=0, horizontal=True)
+    st.session_state.responsemode = "Direct"
 
 
     faissdbs = []
@@ -213,6 +214,17 @@ for message in st.session_state.messages:
 # React to user input
 if prompt := st.chat_input("What's up?"):
 
+    ### Support slash commands
+    if prompt == '/clear':
+        st.session_state.messages = []
+        st.rerun()
+    elif prompt == '/help':
+        st.session_state.display_user_guide = True
+        st.rerun()
+    elif prompt == '/spaces':
+        st.markdown(f"""Selected spaces: `{', '.join(spaces)}`""")
+        st.stop()
+
     ##########################################################################
     ### Check if user has access group to respective faissdbs
     ##########################################################################
@@ -255,30 +267,32 @@ if prompt := st.chat_input("What's up?"):
             st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
-if st.session_state.get('display_user_guide', False) or not st.session_state.get('messages', False):
+if st.session_state.get('display_user_guide', False):
     st.session_state.display_user_guide = False
     st.markdown(f'''
     ## User Guide
-    - **Chatbot**: This is a GenAI chatbot by Altera DMAI Team.   
+    - **Chatbot**: This is a GenAI chatbot (https://go2.altera.com/aichatbot) by Altera DMAI Team.  
     - **User Guide**: Clicking the "User Guide" button will display this user guide.  
+    - **Wiki**: https://go2.altera.com/aichatbot_wiki
     - **Feedback**: If you have any feedback, please use the feedback form. *(at the lower left corner)*
         - click the thumb-up(:material/thumb_up:) or thumb-down(:material/thumb_down:) icon
         - type your feedback message
         - click "Send Feedback"
     - **Chatbot Settings**:
-        - **Spaces**: Select the spaces you would like the chatbot to search info from. If you are not sure, just select all. (*Selecting the accurate space(s) will help the chatbot to provide more accurate answers*)
+        - **Spaces**: Select the spaces you would like the chatbot to search info from.   
+        - **Groups**: If you select a group, the chatbot will automatically select the spaces that are defined in the group.  
         - **Clear Chat**: When Chat History is enabled, be sure to clear the chat history if you want to start a new topic of conversation. Asking a question with different topics from the previous conversation will confuse the chatbot, and result in hallucination. In short, if the chatbot is not making sense, clear the chat history. 
         - **Enable Chat History**: If enabled, the chatbot will remember the previous conversation. If disabled, the chatbot will only remember the current question.
-        - **Response Mode**: 
-            - **Direct**: This feature provides a direct answer to the query. 
-            - **CoT(Chain Of Thought)**: This feature tries to reason thru the query step-by-step before providing a final answer. *(improve accuracy, slightly longer runtime)*
-            - **ToT(Tree of Thought)**: This feature tries to reason thru the query thru 3 experts, step-by-step, before deciding on the best answer. *(improve accuracy, longer runtime)*  
     - **How To Ask (GOOD) Questions**:
         - **Avoid ambiguity**: Be clear and concise in your questions. Do not assume the Chatbot understands your context implicityly.
         - **Provide context**: If you are asking a question that requires context, provide the context.
         - **Regex Search**: Chatbot does not understand non-english words (e.g. rules code, etc). If you are looking for a specific code, use the regex search feature.
             - To use regex search, enclose the word in triple-angle-brackets. e.g. `<<<rules>>>`
             - e.g: `"Explain what does <<<D34.EN.4>>> error code means?"`
+    - **Shortcut Slash Commands**:
+        - `/clear`: Clear the chat history.
+        - `/help`: Show this user guide.
+        - `/spaces`: Show the selected spaces.
     - **Available Spaces**:
     ''')
     import pandas as pd
