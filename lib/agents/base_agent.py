@@ -40,6 +40,7 @@ rootdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, rootdir)
 import genai_utils
 import lib.chat_factory.factory
+import lib.usagelog
 
 class BaseAgent:
     def __init__(self):
@@ -58,6 +59,7 @@ class BaseAgent:
         self.logger.debug(pformat(kwargs))
 
         res = self.chat_factory.chat(kwargs)
+        lib.usagelog.UsageLog().write_log(f'/nfs/site/disks/da_scratch_1/users/yltan/genailogs/{os.getenv("EC_SITE")}/base_agent/', kwargs['messages'])
         return res
 
 

@@ -227,9 +227,11 @@ def extract_xml(text, tag):
     return ""
 
 
-def get_confluence_decendants_of_page(pageid, username, token):
+def get_confluence_decendants_of_page(pageid, username, token, ignore_title_regex=None):
     '''
     returns the list of child page ids of the given parent_id, hierarchically.
+
+    ignore_title_regex: if provided, will ignore the pages whose title matches the regex.
     '''
     endpoint = f'https://altera-corp.atlassian.net/wiki/api/v2/pages/{pageid}/descendants?limit=250&depth=5'
     credentials = f'{username}:{token}'
@@ -240,6 +242,10 @@ def get_confluence_decendants_of_page(pageid, username, token):
     LOGGER.debug(f'get_confluence_decendants_of_page output: {output}')
     jsondata = json.loads(output)
     LOGGER.debug(f'get_confluence_decendants_of_page jsondata count: {len(jsondata["results"])}')
+    if ignore_title_regex:
+        regex = re.compile(ignore_title_regex)
+        jsondata['results'] = [page for page in jsondata['results'] if not regex.search(page['title'])]
+        LOGGER.debug(f'get_confluence_decendants_of_page jsondata count(post ignore_title_regex): {len(jsondata["results"])}')
     return jsondata
 
 if __name__ == '__main__':

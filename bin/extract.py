@@ -76,7 +76,7 @@ def main(args):
 
         for pid in pagehierarchy:
             pageids.append(pid)
-            jsondata = gu.get_confluence_decendants_of_page(pid, username, api_token)
+            jsondata = gu.get_confluence_decendants_of_page(pid, username, api_token, ignore_title_regex='(?i)deprecated')
             pageids += [x['id'] for x in jsondata['results'] if x['status'] == 'current']
 
         ### remove skippages from the pageids
@@ -84,7 +84,6 @@ def main(args):
             pageids = [p for p in pageids if p not in skippages]
 
         LOGGER.debug(f"Page IDs to extract({len(pageids)}): {pageids}")
-
 
     if pageids or args.wikispace:
         loader = ConfluenceLoader(

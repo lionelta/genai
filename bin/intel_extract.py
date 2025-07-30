@@ -1,12 +1,8 @@
 #!/nfs/site/disks/da_infra_1/users/yltan/venv/3.10.11_sles12_sscuda/bin/python
 
 '''
-This script demonstrates how to use the RAG model for question answering.
-The source of the tutorial is from:
-    https://huggingface.co/learn/cookbook/en/rag_zephyr_langchain
-
-Need to re-install this to workaround running in non CUDA environment:
-    >pip install --force-reinstall 'https://github.com/bitsandbytes-foundation/bitsandbytes/releases/download/continuous-release_multi-backend-refactor/bitsandbytes-0.44.1.dev0-py3-none-manylinux_2_24_x86_64.whl'
+USAGE:
+    >env AZURE_OPENAI_API_KEY='show me the money' INTEL_USERNAME=lionelta INTEL_PASSWORD='<password>' ./intel_extract.py -p +3438494351 --debug -s /nfs/site/disks/psg_data_1/lionelta/shy/faiss1
 '''
 import os
 import sys
@@ -15,6 +11,8 @@ import warnings
 import re
 from pprint import pprint, pformat
 import argparse
+import subprocess
+import json
 
 rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, rootdir)
@@ -28,6 +26,8 @@ gu.proxyon()
 warnings.simplefilter("ignore")
 os.environ['PYTHONWARNINGS'] = 'ignore'
 
+LOGGER = logging.getLogger(__name__)
+
 def main(args):
 
     if args.debug:
@@ -36,7 +36,6 @@ def main(args):
     if args.chunksize > 15000:
         raise ValueError("Chunksize cannot be more than 15000")
 
-    LOGGER = logging.getLogger(__name__)
     level = logging.INFO
     if args.debug:
         level = logging.DEBUG
@@ -49,6 +48,7 @@ def main(args):
 
     api_token = open(os.path.join(rootdir, '.wiki_api_token'), 'r').read().strip()
     username = 'yoke.liang.lionel.tan@altera.com'
+
     url = 'https://altera-corp.atlassian.net/wiki'
     keep_markdown = False
     
@@ -74,8 +74,10 @@ def main(args):
 
         for pid in pagehierarchy:
             pageids.append(pid)
-            jsondata = gu.get_confluence_decendants_of_page(pid, username, api_token)
+            jsondata = get_confluence_decendants_of_page(pid, 'username', 'api_token')
             pageids += [x['id'] for x in jsondata['results'] if x['status'] == 'current']
+        LOGGER.debug(f"Page hierarchy: {pagehierarchy}")
+        LOGGER.debug(f'pageids: {pageids}')
 
         ### remove skippages from the pageids
         if skippages and pageids:
@@ -84,8 +86,8 @@ def main(args):
         LOGGER.debug(f"Page IDs to extract({len(pageids)}): {pageids}")
 
 
-    username = os.getenv("INTEL_USERNAME")
-    api_token = os.getenv("INTEL_PASSWORD")
+    username = os.getenv("INTEL_USERNAME")  # eg: lionelta
+    api_token = os.getenv("INTEL_PASSWORD") # eg: linux password
     url = 'https://wiki.ith.intel.com/'
     if pageids or args.wikispace:
         loader = ConfluenceLoader(
@@ -220,7 +222,9 @@ def main(args):
         from langchain_community.embeddings import HuggingFaceEmbeddings
 
         #embeddings = HuggingFaceEmbeddings(model_name=emb_model, model_kwargs={'trust_remote_code': True})
-        embeddings = HuggingFaceEmbeddings(model_name=args.emb_model)
+        #embeddings = HuggingFaceEmbeddings(model_name=args.emb_model)
+        embeddings = gu.load_openai_embedding_model()
+        
         db = FAISS.from_documents(chunked_docs, embeddings)
         faissdb = db
        
@@ -250,10 +254,38 @@ def main(args):
     return faissdb
 
 
+def get_confluence_decendants_of_page(page_id, username, api_token):
+    ''' how to generate the authorization token:
+    > echo -n 'userid:password' | base64
+    > echo -n 'lionelta:password' | base64
+    '''
+    cmd = f"""curl -s -H 'Authorization: Basic bGlvbmVsdGE6TmFsYS4xMjMxMjMxMjM=' -H 'Content-Type: application/json' 'https://wiki.ith.intel.com/rest/api/content/{page_id}/child/page?limit=9999'"""
+    LOGGER.debug(f'get_confluence_decendants_of_page cmd: {cmd}')
+    
+    gu.proxyoff()
+    output = subprocess.getoutput(cmd)
+    gu.proxyon()
+    LOGGER.debug(f'get_confluence_decendants_of_page output: {output}')
+    jsondata = json.loads(output)
+    LOGGER.debug(f'get_confluence_decendants_of_page jsondata count: {len(jsondata["results"])}')
+
+    return jsondata
+
+
 if __name__ == '__main__':
     settings = gu.load_default_settings()
 
-    parser = argparse.ArgumentParser(prog='extract.py', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    epilog = '''
+    =============================
+    USAGE:
+    =============================
+    This intel_extract.py usage is special. You need to use it like this:-
+
+    >env AZURE_OPENAI_API_KEY='show me the money' INTEL_USERNAME=lionelta INTEL_PASSWORD='<password>' ./intel_extract.py -p +3438494351 --debug -s /nfs/site/disks/psg_data_1/lionelta/shy/faiss1
+    
+    '''
+
+    parser = argparse.ArgumentParser(prog='extract.py', epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-cs', '--chunksize', type=int, default=settings['chunksize'], help='Size of each chunk')
     parser.add_argument('-co', '--chunkoverlap', type=int, default=settings['chunkoverlap'], help='Overlap between chunks')
     
