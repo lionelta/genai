@@ -15,6 +15,46 @@ from lib.agents.python_coding_agent import PythonCodingAgent
 LOGGER = logging.getLogger()
 
 #############################################################################
+get_tag_diff_dict = {
+    'type': 'function',
+    'function': {
+        'name': 'get_tag_diff',
+        'description': 'Get the the tag difference by providing two release model or ip model',
+        'parameters': {
+            'type': 'object',
+            'properties': {
+                'modelname1': {
+                    'type': 'string',
+                    'description': 'The release model name to get tag differences',
+                    'required': True,
+                },
+                'modelname2': {
+                    'type': 'string',
+                    'description': 'The release model name to get tag differences',
+                    'required': True,
+                },
+            },
+        },
+    }
+}
+def get_tag_diff(modelname1, modelname2):
+    LOGGER.debug(f"Getting tag diff for release model: {modelname1} {modelname2}")
+    reponame1, _ = modelname1.split('-a0-')
+    reponame2, _ = modelname2.split('-a0-')
+    if reponame1 != reponame2:
+        LOGGER.debug(f"{modelname1} and {modelname2} is not under same IP")
+        return None
+    try:
+        git_repo_path = os.path.realpath(os.path.join(os.getenv('GIT_REPOS', '/nfs/site/disks/psg.git.001'), 'git_repos', reponame1))
+        cmd = f'cd {git_repo_path}; git diff {modelname1} {modelname2} '
+        output = subprocess.getoutput(cmd)
+        LOGGER.debug("Git diff retrieved successfully.")
+        return output 
+    except Exception as e:
+        LOGGER.debug(f"Error getting git diff for release model {modelname1} and {modelname2}")
+        return None
+
+#############################################################################
 get_baseline_tool_dict = {
     'type': 'function',
     'function': {

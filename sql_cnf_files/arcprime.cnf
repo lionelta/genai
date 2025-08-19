@@ -1,6 +1,0 @@
-[client]
-host=ascyv00020.sc.altera.com
-port=3306
-user=llm_ro
-password=lLm_r0
-database=syncpoint

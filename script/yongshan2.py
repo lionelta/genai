@@ -66,6 +66,8 @@ Let's think step by step to solve the problem.
 2. You need to generate a attribute yaml data based on the parameter yaml information.  
 3. Do not provide any explanation or comments in the output.
 4. The output should be in the format of a YAML string, without any markdown formatting.
+5. If the parameter yaml contain bcm_submodules then only add them into output yaml. 
+6. Do not add bcm_submodules if the parameter yaml do not have it.
 
 Here's is an example:  
 
@@ -134,6 +136,9 @@ parameters:
     data_members:
       - NONINVERT
       - INVERT
+bcm_submodules:
+  bypass_pnr_reg_fp: u_0
+  bypass_reg_8: u_1
 
 ** Example Attribute YAML: **
 bcm_attributes:
@@ -214,7 +219,9 @@ bcm_attributes:
     affects_timing: false
     affects_power: false
     settings: [NONINVERT, INVERT]
-
+bcm_submodules:
+  bypass_pnr_reg_fp: u_0
+  bypass_reg_8: u_1
 
 Here's the parameter yaml data you need to use:  
 **Parameter YAML:**

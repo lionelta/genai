@@ -186,11 +186,13 @@ with st.sidebar:
             now = datetime.datetime.now()
             yyyymm = now.strftime("%Y%m")
             feedback_dir = os.path.join(rootdir, 'feedback', yyyymm)
-            os.system(f"mkdir -p {feedback_dir}")
+            feedback_dir = f'/nfs/site/disks/da_scratch_1/users/yltan/genailogs/altera_sc/aichatbot_feedback/{yyyymm}'
+            os.system(f"mkdir -p {feedback_dir}; chmod 777 {feedback_dir}")
 
             ### Write feedback to json file
             feedback_json = os.path.join(feedback_dir, f"{now.strftime('%Y%m%d%H%M%S')}.json")
             data = {
+                "userid": st.session_state.cm.cookies['userid'],
                 "version": version,
                 "thumb": feedback_thumb,
                 "feedback": feedback_text,
@@ -201,6 +203,7 @@ with st.sidebar:
             with open(feedback_json, 'w') as f:
                 json.dump(data, f, indent=4)
                 st.toast("Feedback submitted, Thank you!", icon=':material/cloud_upload:')
+            os.system(f"chmod 777 {feedback_json}")
 
 
 if "messages" not in st.session_state:
@@ -212,7 +215,18 @@ for message in st.session_state.messages:
 
 
 # React to user input
-if prompt := st.chat_input("What's up?"):
+if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jpg', 'jpeg']):
+
+    imageIO = False
+    if prompt['files']:
+        print(f"Files: {prompt['files']}")
+        print(f"Files[0]: {prompt['files'][0]}")
+        if prompt['files'][0].name.endswith(('.png', '.jpg', '.jpeg')):
+            imageIO = prompt['files'][0]
+            st.image(imageIO)
+    
+    prompt = prompt.text
+
 
     ### Support slash commands
     if prompt == '/clear':
@@ -249,6 +263,11 @@ if prompt := st.chat_input("What's up?"):
         a.kwargs['messages'] = copy.deepcopy(st.session_state.messages)
     else:
         a.kwargs['messages'] =  [copy.deepcopy(st.session_state.messages)[-1]]
+
+    if imageIO:
+        import base64
+        base64_image = base64.b64encode(imageIO.getvalue()).decode('utf-8')
+        a.kwargs['messages'].insert(-1, {"role": "user", "content": [{"type": "image_url", "image_url":{ "url": f"data:image/png;base64,{base64_image}"}}]})
 
     a.faiss_dbs = faissdbs
     a.responsemode = st.session_state.responsemode

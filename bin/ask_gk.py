@@ -294,6 +294,8 @@ if __name__ == '__main__':
 - compare baseline_tools between releases bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
 - what is the baseline tools version used in release bypass_reg-a0-24ww44c? 
 - get me the feeder url from the result log of bypass_reg-a0-24ww44c
+- get me git diff summary of each files in  cd_lib-a0-b0.5_rel24ww510a-25ww22a and cd_lib-a0-b0.5_rel24ww510a-25ww24b
+
     """
 
     parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter, epilog=epilog)

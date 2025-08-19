@@ -14,6 +14,7 @@ import os
 import argparse
 import logging
 import subprocess
+import time
 
 import warnings
 warnings.simplefilter("ignore")
@@ -22,6 +23,7 @@ os.environ['PYTHONWARNINGS'] = 'ignore'
 rootdir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, rootdir)
 import lib.genai_utils as gu
+import lib.usagelog
 
 LOGGER = logging.getLogger()
 
@@ -31,24 +33,48 @@ class OpenaiChatFactory:
 
     def chat(self, ollama_kwargs):
         from openai import AzureOpenAI
-        kwargs = self.convert_ollama_kwargs_to_openai(ollama_kwargs)
+        self._kwargs = self.convert_ollama_kwargs_to_openai(ollama_kwargs)
         client = self.get_azure_openai_client()
-        response = client.chat.completions.create(**kwargs)
+        
+        self._starttime = time.time()
+        response = client.chat.completions.create(**self._kwargs)
+        self._endtime = time.time()
 
-        if 'stream' not in kwargs or not kwargs['stream']:
+        if 'stream' not in self._kwargs or not self._kwargs['stream']:
+            self._response_string = response.choices[0].message.content
+            self._log_usage(response)
             return self.convert_openai_response_to_ollama(response)
         else:
             return self.stream_generator(response)
 
 
     def stream_generator(self, response):
+        self._starttime = time.time()
+        self._response_string = ''
         for chunk in response:
             try:
                 content = chunk.choices[0].delta.content
                 if content is not None:
+                    self._response_string += content
                     yield content
             except:
                 pass
+        self._endtime = time.time()
+        self._log_usage(chunk)
+
+
+    def _log_usage(self, response):
+        data = {
+            'model': response.model,
+            'prompt_tokens': response.usage.prompt_tokens,
+            'completion_tokens': response.usage.completion_tokens,
+            'total_tokens': response.usage.total_tokens,
+            'elapsed_time': self._endtime - self._starttime,
+            'response_string': self._response_string,
+            'messages': self._kwargs['messages'],
+        }
+        lib.usagelog.UsageLog().write_log(f'/nfs/site/disks/da_scratch_1/users/yltan/genailogs/{os.getenv("EC_SITE")}/base_agent/', data)
+
 
     def get_azure_openai_key(self):
         cmd = '/p/psg/da/infra/admin/setuid/goak'
@@ -70,6 +96,8 @@ class OpenaiChatFactory:
         openai_kwargs['messages'] = kwargs['messages']
         if 'stream' in kwargs:
             openai_kwargs['stream'] = kwargs['stream']
+            if openai_kwargs['stream']:
+                openai_kwargs['stream_options'] = {'include_usage': True}
         if 'options' in kwargs:
             if 'top_p' in kwargs['options']:
                 openai_kwargs['top_p'] = kwargs['options']['top_p']

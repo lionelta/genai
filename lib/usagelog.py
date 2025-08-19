@@ -38,6 +38,7 @@ import logging
 import psutil
 import json
 import warnings
+import shlex
 warnings.simplefilter("ignore")
 os.environ['PYTHONWARNINGS'] = 'ignore'
 
@@ -59,11 +60,12 @@ class UsageLog:
         self.info['cmdline'] = self.get_process_cmdline()
         self.info['user'] = os.getenv('USER', 'unknown_user')
         self.info['host'] = os.uname().nodename
+        self.info['version'] = os.path.basename(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
         ### Make sure logdir is group writable
         try:
             os.system('mkdir -p ' + logdir)
-            os.system(f'chmod 777 {logdir}')
+            os.system(f'chmod -f 777 {logdir}')
         except Exception as e:
             pass
         if extra_yyyymm_dir:
@@ -72,7 +74,7 @@ class UsageLog:
         ### mkdir to ensure logdir exists
         try:
             os.system('mkdir -p ' + logdir)
-            os.system('chmod 777 ' + logdir)
+            os.system('chmod -f 777 ' + logdir)
         except Exception as e:
             self.logger.error(f"Failed to create UsageLog directory {logdir}: {e}")
             return
@@ -87,7 +89,7 @@ class UsageLog:
                 json.dump(self.info, f, indent=4)
                 f.write('\n')
             self.logger.debug(f"Log written to {logfilepath}")
-            os.system("chmod 777 " + logfilepath)
+            os.system("chmod -f 777 " + logfilepath)
         except Exception as e:
             self.logger.error(f"Failed to write UsageLog: {e}")
             return
@@ -97,7 +99,7 @@ class UsageLog:
         return datetime.utcnow().isoformat() + 'Z'
 
     def get_process_cmdline(self):
-        return ' '.join(psutil.Process().cmdline())
+        return ' '.join([shlex.quote(c) for c in psutil.Process().cmdline()])
 
     def get_stack_trace_cmdline(self):
         return [' '.join(x.cmdline()) for x in psutil.Process().parents()]
