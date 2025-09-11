@@ -41,6 +41,10 @@ def main(args):
 
     os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
     os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
+    os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4.1'
+    mymodel = os.getenv('AZURE_OPENAI_MODEL', False)
+    if mymodel:
+        os.environ['AZURE_OPENAI_MODEL'] = mymodel
 
     level = logging.CRITICAL # to suppress all logs
     if args.debug:
@@ -137,8 +141,8 @@ parameters:
       - NONINVERT
       - INVERT
 bcm_submodules:
-  bypass_pnr_reg_fp: u_0
-  bypass_reg_8: u_1
+  u_0: bypass_pnr_reg_fp
+  u_1: bypass_reg_8
 
 ** Example Attribute YAML: **
 bcm_attributes:
@@ -220,8 +224,8 @@ bcm_attributes:
     affects_power: false
     settings: [NONINVERT, INVERT]
 bcm_submodules:
-  bypass_pnr_reg_fp: u_0
-  bypass_reg_8: u_1
+  u_0: bypass_pnr_reg_fp
+  u_1: bypass_reg_8
 
 Here's the parameter yaml data you need to use:  
 **Parameter YAML:**

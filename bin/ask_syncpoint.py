@@ -27,6 +27,7 @@ if 'OLLAMA_HOST' not in os.environ:
 
 os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['HF_DATASETS_OFFLINE'] = '1'
+os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
 
 
 from lib.agents.chatbot_agent import ChatbotAgent
@@ -41,6 +42,10 @@ stop_animation = False
 
 def main(args):
 
+    if args.examples:
+        print_examples()
+        return True
+
     LOGGER = logging.getLogger()
     level = logging.CRITICAL # to suppress all logs
     if args.debug:
@@ -48,21 +53,28 @@ def main(args):
     logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=level)
     LOGGER.setLevel(level)
 
-    ani = LoadingAnimation()
-    ani.run()
+    if not args.quiet:
+        ani = LoadingAnimation()
+        ani.run()
 
     a = SqlCodingAgent()
     a.cnffile = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'sql_cnf_files', 'syncpoint.cnf'))
-    a.tables = ['syncpoint_syncpoint', 'syncpoint_release'] 
+    a.tables = ['cth_syncpoints', 'cth_syncpoint_releases', 'cth_syncpoint_users', 'end_users'] 
     a.kwargs['messages'] = [{'role': 'user', 'content': args.query}]
     res = a.run()
     fullres = ''
     sqlrawcmd = res.message.content
-    output = a.execute_sql(sqlrawcmd)
+    output = a.execute_sql(sqlrawcmd, output_format='table')
+
+    if args.quiet:
+        print(output)
+        return 0
 
     b = BaseAgent()
     #b.kwargs['model'] = 'llama3.3'
     b.kwargs['stream'] = True 
+    if args.quiet:
+        b.kwargs['stream'] = False
     b.kwargs['options']['num_ctx'] = 36000
     b.kwargs['options']['temperature'] = 0.3
     b.kwargs['options']['top_p'] = 0.3
@@ -83,7 +95,13 @@ def main(args):
     '''}]
     LOGGER.debug(b.kwargs['messages'])
     res = b.run()
-    ani.stop()
+    if not args.quiet:
+        ani.stop()
+
+    if args.quiet:
+        print(res.message.content)
+        return 0
+
     fullres = ''
     for chunk in res:
         print(chunk, end='', flush=True)
@@ -107,8 +125,9 @@ def main(args):
         print(f"cmd: {cmd}")
     os.system(cmd)
 
+'''
 def get_create_table_statement(cnffile):
-    tables = ['syncpoint_syncpoint', 'syncpoint_release']
+    tables = ['cth_syncpoints', 'cth_syncpoint_releases']
     ret = ''
     for table in tables:
         cmd = f"mysql --defaults-file={cnffile} -e 'desc {table}'"
@@ -116,7 +135,24 @@ def get_create_table_statement(cnffile):
         output = subprocess.getoutput(cmd)
         ret += f"\n\n**Create Table Statement: {table}**: {output}\n\n  "
     return ret
+'''
 
+def examples():
+    examples = """
+- List all syncpoints created in the last 7 months.
+- Show me all the release data for syncpoint:QPDS0.5KMLUDO
+- what is the tag for (ip:cc_alb deliverable:timemod) in syncpoint:QPDS0.5KMLUDO
+- list all syncpoint which matches "LUDO"
+- list all syncpoints created by user:lionelta
+- list all (ip,deliverable) which has empty tag from syncpoint:KM6A0QPDS0.5P_LUDO
+- list all releases in syncpoint:QPDS0.5KMLUDO where ip=cc_* and deliverable=timemod
+- list all releases in syncpoint:QPDS0.5KMLUDO where releaser:jiajunch
+- list all releases in syncpoint:QPDS0.5KMLUDO which was updated on day:2025-07-23
+"""
+    return examples
+
+def print_examples():
+    print(examples())
 
 if __name__ == '__main__':
     settings = gu.load_default_settings()
@@ -125,7 +161,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(prog='ask.py', formatter_class=MyFormatter)
     parser.add_argument('--debug', action='store_true', default=False, help='Debug mode')
-    
+    parser.add_argument('--quiet', action='store_true', default=False, help='Quiet mode (no stream)')
+    parser.add_argument('--examples', action='store_true', default=False, help='Print examples of queries and exit.')
     parser.add_argument('-q', '--query', default=None, help='Query string')
 
     args = parser.parse_args()

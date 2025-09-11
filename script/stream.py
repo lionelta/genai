@@ -25,6 +25,7 @@ import time
 import requests
 import pwd
 import grp
+import subprocess
 
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -99,6 +100,44 @@ if 'userid' not in st.session_state.cm.cookies:
 ############################################################################
     
 
+def convert_mysql_table_to_markdown(text):
+    '''
+    Convert MySQL text table to markdown table
+    '''
+    lines = text.split('\n')
+    md_lines = []
+    for i, line in enumerate(lines):
+        if line.startswith('+') and line.endswith('+'):
+            continue
+        elif line.startswith('|') and line.endswith('|'):
+            cols = [col.strip() for col in line.split('|')[1:-1]]
+            md_line = '| ' + ' | '.join(cols) + ' |'
+            md_lines.append(md_line)
+            if i == 1:
+                md_lines.append('|' + ' --- |' * len(cols))
+    return '\n'.join(md_lines)
+
+def convert_mysql_table_to_panda_dataframe(text):
+    '''
+    Convert MySQL text table to panda dataframe
+    '''
+    import pandas as pd
+    from io import StringIO
+
+    lines = text.split('\n')
+    data = []
+    columns = []
+    for i, line in enumerate(lines):
+        if line.startswith('+') and line.endswith('+'):
+            continue
+        elif line.startswith('|') and line.endswith('|'):
+            cols = [col.strip() for col in line.split('|')[1:-1]]
+            if i == 1:
+                columns = cols
+            else:
+                data.append(cols)
+    df = pd.DataFrame(data, columns=columns)
+    return df
 
 
 ############################################################################
@@ -150,7 +189,7 @@ with st.sidebar:
     chatversion = st.expander("Chatbot Version", expanded=False)
     chatversion.info(f"""**GenAI**: `{version}`   
     **Emb Model**: `text-embedding-3-large(dimension=1024)`   
-    **LLM Model**: `gpt-4o`  
+    **LLM Model**: `{os.getenv("AZURE_OPENAI_MODEL", "N/A")}`  
     """)
 
     chatsettings = st.expander("Chatbot Settings", expanded=False)
@@ -211,21 +250,40 @@ if "messages" not in st.session_state:
 
 for message in st.session_state.messages:
     with st.chat_message(message['role']):
-        st.markdown(message['content'])
+        ### To support /sp command, because /sp output is in dataframe format
+        if message['role'] == 'assistant' and message['content'].startswith('+') and message['content'].endswith('+'):
+            st.dataframe(convert_mysql_table_to_panda_dataframe(message['content']))
+        else:
+            st.markdown(message['content'])
 
 
 # React to user input
-if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jpg', 'jpeg']):
+if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jpg', 'jpeg', 'txt', 'log', 'pdf']):
 
-    imageIO = False
+    attached_filetype = None    # txt, image
+    attached_string = None
     if prompt['files']:
-        print(f"Files: {prompt['files']}")
-        print(f"Files[0]: {prompt['files'][0]}")
         if prompt['files'][0].name.endswith(('.png', '.jpg', '.jpeg')):
             imageIO = prompt['files'][0]
             st.image(imageIO)
-    
-    prompt = prompt.text
+            
+            import base64
+            attached_string = base64.b64encode(imageIO.getvalue()).decode('utf-8')
+            attached_filetype = 'image'
+
+        elif prompt['files'][0].name.endswith(('.txt', '.log')):
+            textIO = prompt['files'][0]
+            attached_string = textIO.getvalue().decode('utf-8')
+            attached_filetype = 'txt'
+
+        elif prompt['files'][0].name.endswith('.pdf'):
+            pdfIO = prompt['files'][0]
+            from pypdf import PdfReader
+            reader = PdfReader(pdfIO)
+            attached_string = "\n".join([page.extract_text() for page in reader.pages])
+            attached_filetype = 'txt'
+
+    prompt = prompt.text.strip()
 
 
     ### Support slash commands
@@ -238,6 +296,19 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
     elif prompt == '/spaces':
         st.markdown(f"""Selected spaces: `{', '.join(spaces)}`""")
         st.stop()
+    elif prompt == '/gkhelp':
+        cmd = f'ask_gk.py --examples'
+        exitcode, stdout = subprocess.getstatusoutput(cmd)
+        st.markdown(f"""# Examples Of Supported GK Queries    
+        {stdout}""")
+        st.stop()
+    elif prompt == '/sphelp':
+        cmd = f'ask_syncpoint.py --examples'
+        exitcode, stdout = subprocess.getstatusoutput(cmd)
+        st.markdown(f"""# Examples Of Supported Syncpoint Queries    
+        {stdout}""")
+        st.stop()
+
 
     ##########################################################################
     ### Check if user has access group to respective faissdbs
@@ -264,10 +335,11 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
     else:
         a.kwargs['messages'] =  [copy.deepcopy(st.session_state.messages)[-1]]
 
-    if imageIO:
-        import base64
-        base64_image = base64.b64encode(imageIO.getvalue()).decode('utf-8')
-        a.kwargs['messages'].insert(-1, {"role": "user", "content": [{"type": "image_url", "image_url":{ "url": f"data:image/png;base64,{base64_image}"}}]})
+    if attached_filetype and attached_string:
+        if attached_filetype == 'txt':
+            a.kwargs['messages'].insert(-1, {"role": "user", "content": f"**User Attached File**:  \n{attached_string}"})
+        elif attached_filetype == 'image':
+            a.kwargs['messages'].insert(-1, {"role": "user", "content": [{"type": "image_url", "image_url":{ "url": f"data:image/png;base64,{attached_string}"}}]})
 
     a.faiss_dbs = faissdbs
     a.responsemode = st.session_state.responsemode
@@ -280,10 +352,23 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
             yield chunk
 
     with st.spinner("Thinking ... "):
-        res = a.run()
-        with st.chat_message("assistant"):
-            full_response = st.write_stream(llm_generator())
-            st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
+        if prompt.startswith('/gk '):
+            cmd = """ask_gk.py --quiet --query {}""".format(gu.quotify(prompt[4:]))
+            exitcode, full_response = subprocess.getstatusoutput(cmd)
+            with st.chat_message("assistant"):
+                st.markdown(full_response)
+                st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
+        elif prompt.startswith('/sp'):
+            cmd = """ask_syncpoint.py --quiet --query {}""".format(gu.quotify(prompt[4:]))
+            exitcode, full_response = subprocess.getstatusoutput(cmd)
+            with st.chat_message("assistant"):
+                st.dataframe(convert_mysql_table_to_panda_dataframe(full_response))
+                st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
+        else:
+            res = a.run()
+            with st.chat_message("assistant"):
+                full_response = st.write_stream(llm_generator())
+                st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 if st.session_state.get('display_user_guide', False):
@@ -293,31 +378,48 @@ if st.session_state.get('display_user_guide', False):
     - **Chatbot**: This is a GenAI chatbot (https://go2.altera.com/aichatbot) by Altera DMAI Team.  
     - **User Guide**: Clicking the "User Guide" button will display this user guide.  
     - **Wiki**: https://go2.altera.com/aichatbot_wiki
-    - **Feedback**: If you have any feedback, please use the feedback form. *(at the lower left corner)*
-        - click the thumb-up(:material/thumb_up:) or thumb-down(:material/thumb_down:) icon
-        - type your feedback message
-        - click "Send Feedback"
     - **Chatbot Settings**:
         - **Spaces**: Select the spaces you would like the chatbot to search info from.   
         - **Groups**: If you select a group, the chatbot will automatically select the spaces that are defined in the group.  
         - **Clear Chat**: When Chat History is enabled, be sure to clear the chat history if you want to start a new topic of conversation. Asking a question with different topics from the previous conversation will confuse the chatbot, and result in hallucination. In short, if the chatbot is not making sense, clear the chat history. 
         - **Enable Chat History**: If enabled, the chatbot will remember the previous conversation. If disabled, the chatbot will only remember the current question.
-    - **How To Ask (GOOD) Questions**:
-        - **Avoid ambiguity**: Be clear and concise in your questions. Do not assume the Chatbot understands your context implicityly.
-        - **Provide context**: If you are asking a question that requires context, provide the context.
-        - **Regex Search**: Chatbot does not understand non-english words (e.g. rules code, etc). If you are looking for a specific code, use the regex search feature.
+    - **Regex Search**:
+        - Chatbot does not understand non-english words (e.g. rules code, etc). If you are looking for a specific code, use the regex search feature.
             - To use regex search, enclose the word in triple-angle-brackets. e.g. `<<<rules>>>`
             - e.g: `"Explain what does <<<D34.EN.4>>> error code means?"`
     - **Shortcut Slash Commands**:
-        - `/clear`: Clear the chat history.
-        - `/help`: Show this user guide.
-        - `/spaces`: Show the selected spaces.
+        - _GENERAL Commands_:
+            - `/clear`: Clear the chat history.
+            - `/help`: Show this user guide.
+            - `/spaces`: Show the selected spaces.
+        - _GateKeeper Commands_:
+            - `/gkhelp`: Show examples of supported GateKeeper queries.
+            - `/gk <query>`: Ask a question to the GateKeeper system. e.g. `/gk What is the latest model for bypass_reg?`
+        - _Syncpoint Commands_:
+            - `/sphelp`: Show examples of supported Syncpoint queries.
+            - `/sp <query>`: Ask a question to the Syncpoint system. e.g. `/sp Show me all syncpoints created in the past 1 month.`
     - **Available Spaces**:
     ''')
-    import pandas as pd
-    pdt = pd.DataFrame(faiss_dbs).T
-    for key in ['dbpath', 'acg', 'croncmd', 'emails']:
-        del pdt[key]
-    st.table(pdt)
+
+    with st.expander("Available Spaces"):
+        st.markdown(f"Total {len(faiss_dbs)} spaces available.")
+        st.markdown("You can select the spaces you would like the chatbot to search info from in the sidebar.")
+        import pandas as pd
+        pdt = pd.DataFrame(faiss_dbs).T
+        for key in ['dbpath', 'acg', 'croncmd', 'emails']:
+            del pdt[key]
+
+        # Create a dictionary to configurre the columns
+        column_configuration = {
+            pdt.columns[0]: st.column_config.Column(
+                "Space Name",
+                width= "medium",    #  "small", "medium", "large", or a specific number in pixels
+            )
+        }
+
+        # Display Dataframe with column configuration
+        # st.dataframe(pdt, column_config=column_configuration)
+        st.dataframe(pdt)
+        #st.table(pdt)
 
 

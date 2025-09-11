@@ -36,9 +36,7 @@ warnings.simplefilter("ignore")
 os.environ['PYTHONWARNINGS'] = 'ignore'
 
 os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
-mymodel = os.getenv('AZURE_OPENAI_MODEL', 'gpt-4.1')
-os.environ['AZURE_OPENAI_MODEL'] = mymodel
-
+os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
 
 def main(args):
     if args.debug:
@@ -97,29 +95,20 @@ def main(args):
     ### Uniqifying the FAISS dbs
     a.faiss_dbs = list(set(a.faiss_dbs))
 
-    if args.scripting_mode:
-        a.kwargs['stream'] = False
-        res = a.run()
-        print(res.message.content)
-        return
+    embeddings = gu.load_openai_embedding_model()
 
-
-    ani = lib.loading_animation.LoadingAnimation()
-    ani.run()
-    res = a.run()
-    ani.stop()
-    time.sleep(1)
-    fullres = ''
-    for chunk in res:
-        print(chunk, end='', flush=True)
-        fullres += chunk
-
-    time.sleep(1)   # wait for the last chunk to finish
-    print()
-    print('==================================================')
-    print("(Markdown format)")
-    print('--------------------------------------------------')
-    gu.print_markdown(fullres, cursor_moveback=False)
+    vectorstore = gu.load_faiss_dbs(a.faiss_dbs, embeddings)
+    retriever = vectorstore.as_retriever(search_type='similarity', search_kwargs={'k': 3})
+    query = prompt
+    logging.debug("simsearch Query: %s", query)
+    docs = vectorstore.similarity_search_with_score(query, k=10)
+    #docs = retriever.invoke(query)
+    for i, [d, score] in enumerate(docs):
+        print(f"[Chunk {i+1}] - (Score: {score:.4f})")
+        print(f"Source: {d.metadata.get('source', 'N/A')}")
+        print(f"Content: {d.page_content}\n")
+        print("=" * 80)
+    sys.exit()
 
 
 def get_base64_image(image_path):

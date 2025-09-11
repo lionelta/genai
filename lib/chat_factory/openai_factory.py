@@ -90,7 +90,7 @@ class OpenaiChatFactory:
         #openai_kwargs['model'] = 'gpt-4.1-nano'
         model = kwargs['model']
         if not model.startswith('gpt'):
-            model = 'gpt-4.1-nano'
+            model = 'gpt-4.1'
         openai_kwargs['model'] = os.environ.get('AZURE_OPENAI_MODEL', model)
 
         openai_kwargs['messages'] = kwargs['messages']

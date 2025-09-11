@@ -42,8 +42,13 @@ LOGGER = logging.getLogger()
 
 def main(args):
 
+    if args.examples:
+        print_examples()
+        return True
+
     os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
-    os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
+    if 'AZURE_OPENAI_MODEL' not in os.environ:
+        os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4.1'
 
     level = logging.INFO # to suppress all logs
     if args.debug:
@@ -276,6 +281,23 @@ def orchestrator_prompt(user_query, available_functions):
     Your Plan (in JSON format):
     """
 
+def print_examples():
+    print(examples())
+
+def examples():
+    examples = """
+- what is the latest model for bypass_reg master branch 
+- what is the latest model for bypass_reg rc0.5 branch 
+- what are the available branches for repo bypass_reg?
+- report all the tasks' fullname which are failing for bypass_reg-a0-24ww12f  
+- report the job result differences between release bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c, and report it out in tabular format. 
+- compare baseline_tools between releases bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
+- what is the baseline tools version used in release bypass_reg-a0-24ww44c? 
+- get me the feeder url from the result log of bypass_reg-a0-24ww44c
+- get me git diff summary of each files in  cd_lib-a0-b0.5_rel24ww510a-25ww22a and cd_lib-a0-b0.5_rel24ww510a-25ww24b
+"""
+    return examples
+
 if __name__ == '__main__':
     settings = gu.load_default_settings()
     
@@ -286,21 +308,13 @@ if __name__ == '__main__':
 +--------------------------+
 |     Example usage:       |
 +--------------------------+
-- what is the latest model for bypass_reg master branch 
-- what is the latest model for bypass_reg rc0.5 branch 
-- what are the available branches for repo bypass_reg?
-- report all the tasks' fullname which are failing for bypass_reg-a0-24ww12f  
-- report the job result differences between release bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c, and report it out in tabular format. 
-- compare baseline_tools between releases bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
-- what is the baseline tools version used in release bypass_reg-a0-24ww44c? 
-- get me the feeder url from the result log of bypass_reg-a0-24ww44c
-- get me git diff summary of each files in  cd_lib-a0-b0.5_rel24ww510a-25ww22a and cd_lib-a0-b0.5_rel24ww510a-25ww24b
-
+{examples()}
     """
 
     parser = argparse.ArgumentParser(prog='orchestrator.py', formatter_class=MyFormatter, epilog=epilog)
     parser.add_argument('--debug', action='store_true', default=False, help='Debug mode, which will printout all debug logs.')
     parser.add_argument('--quiet', action='store_true', default=False, help='Quiet mode, which will suppress everything, except the final response.')
+    parser.add_argument('--examples', action='store_true', default=False, help='Print examples of queries and exit.')
     parser.add_argument('-q', '--query', default=None, help='Query string')
     args = parser.parse_args()
 

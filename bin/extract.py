@@ -99,6 +99,20 @@ def main(args):
         )
         documents = loader.load()
 
+        ### Remove documents that has 'deprecated' in the title
+        filtered_documents = [d for d in documents if re.search('(?i)deprecated', d.metadata.get('title', ''))]
+        documents = [d for d in documents if not re.search('(?i)deprecated', d.metadata.get('title', ''))]
+        
+        # print out the title of filtered_documents for debugging
+        print("========================================================")
+        print("Filtered documents:")
+        for i, d in enumerate(filtered_documents):
+            print(f"{i+1}. {d.metadata.get('title', 'No Title')} (ID: {d.metadata.get('id', 'No ID')})")
+        print("========================================================")
+        print(f"Document count: {len(documents)}")
+        print(f"Filtered Document count: {len(filtered_documents)}")
+
+
     elif args.pdf:
         loader = PyPDFLoader(args.pdf)
         documents = loader.load()
@@ -203,8 +217,8 @@ def main(args):
 
 
     print("========================== Chunked Docs ==========================")
-    print(documents)
-    pprint(chunked_docs)
+    #print(documents)
+    #pprint(chunked_docs)
     print(f"Document count: {len(chunked_docs)}")
     print("==================================================================")
 

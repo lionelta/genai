@@ -43,7 +43,8 @@ LOGGER = logging.getLogger()
 def main(args):
 
     os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
-    os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4o'
+    if 'AZURE_OPENAI_MODEL' not in os.environ:
+        os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4.1'
 
     level = logging.INFO # to suppress all logs
     if args.quiet:

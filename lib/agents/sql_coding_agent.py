@@ -68,8 +68,8 @@ class SqlCodingAgent(BaseAgent):
         '''
         self.table_schemas = ''
 
-    def execute_sql(self, sql_command):
-        cmd = self.get_sql_command(sql_command)
+    def execute_sql(self, sql_command, output_format=None):
+        cmd = self.get_sql_command(sql_command, output_format=output_format)
         self.logger.debug(f'Executing SQL command: {cmd}')
         output = subprocess.getoutput(cmd)
         return output
@@ -91,8 +91,12 @@ class SqlCodingAgent(BaseAgent):
             ret += f"\n\n**Create Table Statement: {table}**: {output}\n\n  "
         return ret
     
-    def get_sql_command(self, sql_command):
-        cmd = "{} --defaults-file={} -se {}".format(self.sqlexe, self.cnffile, gu.quotify(sql_command))
+    def get_sql_command(self, sql_command, output_format=None):
+        options = ''
+        if output_format:
+            options = '--table'
+
+        cmd = "{} --defaults-file={} {} -se {}".format(self.sqlexe, self.cnffile, options, gu.quotify(sql_command))
         return cmd 
 
 if __name__ == '__main__':
