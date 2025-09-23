@@ -5,6 +5,6 @@
         "ippwrmod"],
     "Project:KM(be)": ["AideGenericTfm", "CustomDesignPlatform", "adm", "cbb2sd", "cfa", "rv", 
         "vc_lp", "lv", "dmx_km_be", "dmzIDE", "finale", "r2g_and_apr", "rcxt", "primelib", "primetime_ug", "starvision_doc",
-        "third_party_ip_stdcell_km", "ippwrmod", "fev", "sta", "cktsim", "perc", "powertable", "pd_fc_mlmp"],
+        "third_party_ip_stdcell_km", "ippwrmod", "fev", "sta", "cktsim", "perc", "powertable", "pd_fc_mlmp", "custom_layout"],
     "Infra": ["tdmainfra", "stod", "netbatch", "arc_faq", "icm_faq"]
 }

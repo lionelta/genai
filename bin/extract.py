@@ -128,6 +128,17 @@ def main(args):
                 documents.extend(TextLoader(filepath).load())
 
 
+    elif args.docx:
+        # 1. convert docx to markdown using markitdown
+        outdir = os.path.realpath(args.save)
+        os.system(f"mkdir -p {outdir}")
+        outfile = os.path.join(outdir, 'converted.md')
+        infile = os.path.realpath(args.docx)
+        cmd = f'cd {outdir}; /nfs/site/disks/da_infra_1/users/yltan/venv/3.10.11_sles12_sscuda/bin/markitdown {infile} -o {outfile}'
+        os.system(cmd)
+        documents = TextLoader(outfile).load()
+
+
     ###########################################################################################
     ### Preprocessing for text_splitting operation
     ###########################################################################################
@@ -280,6 +291,7 @@ If the page ID is just a number (eg: 123), only that page itself will be extract
     ''')
     group.add_argument('--pdf', default=None, help='fullpath to pdf file.')
     group.add_argument('--txtdir', default=None, help='the fullpath the the directory that contains all the *.txt files.')
+    group.add_argument('--docx', default=None, help='fullpath to docx file.')
 
 
     parser.add_argument('-m', '--method', default='recursive', choices=['recursive', 'semantic', 'markdown', 'none'], help='Method to split text.')

@@ -19,29 +19,28 @@ import time
 import subprocess
 import json
 
-rootdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, rootdir)
 import lib.genai_utils as gu
 
 if 'OLLAMA_HOST' not in os.environ:
     os.environ['OLLAMA_HOST'] = gu.load_default_settings()['ollama_host']
 
-os.environ['HF_HUB_OFFLINE'] = '1'
-os.environ['HF_DATASETS_OFFLINE'] = '1'
-
 from lib.agents.tool_agent import ToolAgent
 from lib.agents.chatbot_agent import ChatbotAgent
-from lib.loading_animation import LoadingAnimation
 
 warnings.simplefilter("ignore")
 os.environ['PYTHONWARNINGS'] = 'ignore'
 
-stop_animation = False
 
 def main(args):
 
-    os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
-    os.environ['AZURE_OPENAI_MODEL'] = 'gpt-4.1-nano'
+    if args.examples:
+        print_examples()
+        return True
+
+    os.environ['AZURE_OPENAI_API_KEY'] = os.getenv("AZURE_OPENAI_API_KEY", 'show me the money')
+    os.environ['AZURE_OPENAI_MODEL'] = os.getenv("AZURE_OPENAI_MODEL", 'gpt-4.1')
 
     LOGGER = logging.getLogger()
     level = logging.CRITICAL # to suppress all logs
@@ -50,11 +49,8 @@ def main(args):
     logging.basicConfig(format='[%(asctime)s] - %(levelname)s-[%(module)s]: %(message)s', level=level)
     LOGGER.setLevel(level)
 
-    #ani = LoadingAnimation()
-    #ani.run()
-
     a = ToolAgent()
-    a.toolfile = os.path.join(rootdir, 'toolfiles', 'calculator_toolfile.py')
+    a.toolfile = os.path.join(rootdir, 'toolfiles', 'userinfo_toolfile.py')
     a.kwargs['messages'] = [{'role': 'user', 'content': args.query}]
 
     ### Print out all the toolfile loaded agents
@@ -77,7 +73,8 @@ def main(args):
   
     ### Dispatch query to chatbot agent if no matching tool calls are found
     called_tool = a.get_called_tools(res)
-    print(f"called_tool: {pformat(called_tool)}")
+    if args.debug:
+        print(f"called_tool: {pformat(called_tool)}")
     if not called_tool or not a.is_function_name_in_loaded_tools(called_tool['function']):
         dispatch_to_chatbot_agent(args.query)
         sys.exit()
@@ -90,12 +87,15 @@ def main(args):
 
     #pprint(a.kwargs['messages'])
     res = a.run()
-    print(f"Response from tool: {res}")
+    if args.debug:
+        print(f"Response from tool: {res}")
 
     reslist = a.call_tool(res)
     if args.debug:
         print(f"Response from execute tool: {reslist}")
         print("=================================================")
+    
+    print(reslist)
 
 
 def dispatch_to_chatbot_agent(query):
@@ -108,15 +108,30 @@ def dispatch_to_chatbot_agent(query):
     print(res.message.content)
     return res.message.content
 
+def examples():
+    examples = """
+- linux groups of user wplim
+- what is the email of user chin yin 
+- what is chin yin userid
+- what is chin yin wwid
+- show me details of wwid:12128309
+- Let us think step by step. Provide the reporting structure of Lionel all the way up to Arvind.
+"""
+    return examples
+
+def print_examples():
+    print(examples())
+
 
 if __name__ == '__main__':
     settings = gu.load_default_settings()
     
     class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawTextHelpFormatter): pass
 
-    parser = argparse.ArgumentParser(prog='adm_helper.py', formatter_class=MyFormatter)
+    parser = argparse.ArgumentParser(prog='adm_userinfo.py', formatter_class=MyFormatter)
     parser.add_argument('--debug', action='store_true', default=False, help='Debug mode')
     parser.add_argument('-q', '--query', default=None, help='Query string')
+    parser.add_argument('--examples', default=False, action='store_true', help='Show example queries')
     args = parser.parse_args()
 
     main(args)

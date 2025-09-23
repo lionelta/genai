@@ -23,11 +23,9 @@ import copy
 import extra_streamlit_components as stx
 import time
 import requests
-import re
 import pwd
 import grp
 import subprocess
-import base64
 
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -37,8 +35,8 @@ menu_items = {
     'About': f"If you would like to have your wikispace added to the chatbot, please contact yoke.liang.lionel.tan@altera.com or joanne.low@altera.com",
     'Report a Bug': 'mailto:joanne.low@altera.com; yoke.liang.lionel.tan@altera.com'
 }
-st.set_page_config(page_title='Chatbot', layout='wide', menu_items=menu_items)
-st.title('AI Chatbot - Alpha Version')
+st.set_page_config(page_title='TEST', layout='wide', menu_items=menu_items)
+st.title('TEST')
 
 ############################################################################
 ######## START: USER AUTHENTICATION ########################################
@@ -250,27 +248,14 @@ with st.sidebar:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-def img_to_html(imgfile):
-    with open(imgfile, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-    img_html = "<img src='data:image/png;base64,{}' />".format(encoded_string)
-    return img_html
-
-def replace_imgsrc_with_base64(full_response):
-    matches = re.findall(r'imgsrc="([^"]+)"', full_response)
-    for imgfile in matches:
-        img_html = img_to_html(imgfile)
-        full_response = full_response.replace(f'imgsrc="{imgfile}"', img_html)
-    return full_response
-
 for message in st.session_state.messages:
     with st.chat_message(message['role']):
         ### To support /sp command, because /sp output is in dataframe format
         if message['role'] == 'assistant' and message['content'].startswith('+') and message['content'].endswith('+'):
             st.dataframe(convert_mysql_table_to_panda_dataframe(message['content']))
         else:
-            full_response = replace_imgsrc_with_base64(message['content'])
-            st.markdown(full_response, unsafe_allow_html=True)
+            st.markdown(message['content'])
+
 
 # React to user input
 if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jpg', 'jpeg', 'txt', 'log', 'pdf']):
@@ -282,6 +267,7 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
             imageIO = prompt['files'][0]
             st.image(imageIO)
             
+            import base64
             attached_string = base64.b64encode(imageIO.getvalue()).decode('utf-8')
             attached_filetype = 'image'
 
@@ -370,10 +356,7 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
     a.responsemode = st.session_state.responsemode
     if not a.faiss_dbs:
         a.systemprompt = ''
-    else:
-        a.systemprompt = a.systemprompt + '  \n\n' + """If there are relavant imgsrc urls from the same chunk, include those original strings in the response, following the origina schema. without any formatting or modification. """
-   
-
+    
     def llm_generator():
         for chunk in res:
             #yield chunk['message']['content']
@@ -405,15 +388,9 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
                 st.markdown(full_response)
                 st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
         else:
-            a.kwargs['stream'] = False
             res = a.run()
             with st.chat_message("assistant"):
-                #full_response = st.write_stream(llm_generator())
-                full_response = res.message.content
-                
-                # Replace imgsrc with base64 image
-                full_response = replace_imgsrc_with_base64(full_response)
-                st.markdown(full_response, unsafe_allow_html=True)
+                full_response = st.write_stream(llm_generator())
                 st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
@@ -472,3 +449,31 @@ if st.session_state.get('display_user_guide', False):
         #st.table(pdt)
 
 
+
+def img_to_html(imgfile):
+    import base64
+    with open(imgfile, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+    img_html = "<img src='data:image/png;base64,{}' />".format(encoded_string)
+    return img_html
+
+
+with st.chat_message("assistant"):
+    st.markdown(f"""
+
+    LLM Model: `{os.getenv("AZURE_OPENAI_MODEL", "N/A")}`  
+
+    {img_to_html("/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/rubbish/images/image_1.png")}
+
+    ===============================
+
+    {img_to_html("./aidash.png")}
+
+    ==============================
+    {img_to_html("/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/faissdbs/kmmas/images/image_7.emf")}
+    {img_to_html("/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main/faissdbs/kmmas/images/image_7.jpg")}
+
+    hahahaha
+
+""", unsafe_allow_html=True)
+    

@@ -39,6 +39,7 @@ import psutil
 import json
 import warnings
 import shlex
+from datetime import datetime
 warnings.simplefilter("ignore")
 os.environ['PYTHONWARNINGS'] = 'ignore'
 
@@ -69,8 +70,14 @@ class UsageLog:
         except Exception as e:
             pass
         if extra_yyyymm_dir:
+            '''
             yyyymm = self.info['timestamp'][:7].replace('-', '')
             logdir = os.path.join(logdir, yyyymm)
+            '''
+            ### Change the folder from yyyymm to <yyyy>WW<ww>
+            workweek = datetime.now().isocalendar()[1]
+            yyyyww = f"{self.info['timestamp'][:4]}WW{workweek:02d}"
+            logdir = os.path.join(logdir, yyyyww)
         ### mkdir to ensure logdir exists
         try:
             os.system('mkdir -p ' + logdir)
@@ -95,7 +102,6 @@ class UsageLog:
             return
 
     def get_timestamp(self):
-        from datetime import datetime
         return datetime.utcnow().isoformat() + 'Z'
 
     def get_process_cmdline(self):
