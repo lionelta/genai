@@ -68,6 +68,7 @@ Data and Metadata: If there are any visible labels, part numbers, company logos,
 
 The description should be clear, detailed, and directly related to the semiconductor and microelectronics domain."
 
+If the image is a table, chart, or graph related to semiconductor data (e.g., performance metrics, market trends), describe the type of data presented, the axes, and any significant trends or insights visible.  
         '''
     
     def get_base64_image(self, image_path):
@@ -89,7 +90,10 @@ The description should be clear, detailed, and directly related to the semicondu
 
 if __name__ == '__main__':
     os.environ['AZURE_OPENAI_API_KEY'] = 'show me the money'
-    logging.basicConfig(level=logging.DEBUG)
+    level = logging.INFO
+    if '--debug' in sys.argv:
+        level = logging.DEBUG
+    logging.basicConfig(level=level)
     a = ImageToTextAgent()
     a.imagepath = sys.argv[1]
     res = a.run()

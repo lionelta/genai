@@ -15,44 +15,196 @@ from lib.agents.python_coding_agent import PythonCodingAgent
 LOGGER = logging.getLogger()
 
 #############################################################################
-get_tag_diff_dict = {
+# get_preserved_models
+#
+# This tool executes the following command to retrieve the list of preserved
+# models (both dropbox and syncpoint) in JSON format, then normalizes and
+# returns a unified JSON string that an LLM can easily consume:
+#   /p/cth/cad/dmx/km6fe/cmx/bin/adm preserve \
+#       --report --include-syncpoint --include-dropbox --json
+#
+# Returned structure (as stringified JSON) example:
+# {
+#   "summary": {"dropbox_models": 123, "syncpoint_models": 45, "unified_models": 130},
+#   "models": [
+#       {"name": "foo-a0-25ww10a", "domain": "DV", "milestone": "0.5a", "syncpoint_tag": "dropbox__DV__0.5a", "sources": ["dropbox","syncpoint"]},
+#       {"name": "bar-a0-25ww11b", "domain": "Logical_FC_LUDO", "milestone": "0.5a", "sources": ["dropbox"]}
+#   ]
+# }
+#
+# Optional filters allow narrowing the results.
+#############################################################################
+get_preserved_models_dict = {
     'type': 'function',
     'function': {
-        'name': 'get_tag_diff',
-        'description': 'Get the the tag difference by providing two release model or ip model',
+        'name': 'get_preserved_models',
+        'description': 'Return a unified list of preserved models (dropbox + syncpoint) with optional filters.',
         'parameters': {
             'type': 'object',
             'properties': {
-                'modelname1': {
+                'filter_domain': {
                     'type': 'string',
-                    'description': 'The release model name to get tag differences',
-                    'required': True,
+                    'description': 'Only include models whose domain matches (substring, case-insensitive).',
                 },
-                'modelname2': {
+                'filter_milestone': {
                     'type': 'string',
-                    'description': 'The release model name to get tag differences',
-                    'required': True,
+                    'description': 'Only include models whose milestone matches (substring, case-insensitive).',
                 },
+                'filter_name': {
+                    'type': 'string',
+                    'description': 'Only include models whose name contains this substring (case-insensitive).',
+                },
+                'source': {
+                    'type': 'string',
+                    'description': 'Limit to a specific source: dropbox | syncpoint | both (default both).',
+                },
+                'limit': {
+                    'type': 'string',
+                    'description': 'Maximum number of models to return (after filtering). Provide a numeric string (e.g. "25").',
+                }
             },
         },
     }
 }
-def get_tag_diff(modelname1, modelname2):
-    LOGGER.debug(f"Getting tag diff for release model: {modelname1} {modelname2}")
-    reponame1, _ = modelname1.split('-a0-')
-    reponame2, _ = modelname2.split('-a0-')
-    if reponame1 != reponame2:
-        LOGGER.debug(f"{modelname1} and {modelname2} is not under same IP")
-        return None
+def get_preserved_models(filter_domain: str = None,
+                         filter_milestone: str = None,
+                         filter_name: str = None,
+                         source: str = 'both',
+                         limit: str = None):
+    """Fetch and return preserved models with optional filtering.
+
+    Parameters mirror the tool schema. Returns a JSON string (not a Python
+    object) so that downstream LLMs can easily consume / display it.
+    """
+    cmd = [
+        '/p/cth/cad/dmx/wplim_dev/cmx/bin/adm', 'preserve', '--report',
+        '--include-syncpoint', '--include-dropbox', '--json'
+    ]
     try:
-        git_repo_path = os.path.realpath(os.path.join(os.getenv('GIT_REPOS', '/nfs/site/disks/psg.git.001'), 'git_repos', reponame1))
-        cmd = f'cd {git_repo_path}; git diff {modelname1} {modelname2} '
-        output = subprocess.getoutput(cmd)
-        LOGGER.debug("Git diff retrieved successfully.")
-        return output 
+        raw = subprocess.check_output(cmd, text=True)
     except Exception as e:
-        LOGGER.debug(f"Error getting git diff for release model {modelname1} and {modelname2}")
-        return None
+        return json.dumps({'error': f'Failed running preserve command: {e}'})
+
+    try:
+        data = json.loads(raw)
+    except Exception as e:
+        return json.dumps({'error': f'Failed parsing JSON output: {e}'})
+
+    dropbox_models = data.get('dropbox', {}).get('models', {})  # name -> {domain, milestone}
+    syncpoint_models = data.get('syncpoint', {}).get('models', {})  # name -> tag string
+    # Waiver information (top-level)
+    waiver_file = data.get('waiver_file')
+    waivers_list = data.get('waivers', []) or []  # list of model names waived
+    waivers_set = set(waivers_list)
+
+    unified = {}
+    # Incorporate dropbox first
+    for name, meta in dropbox_models.items():
+        unified[name] = {
+            'name': name,
+            'domain': meta.get('domain'),
+            'milestone': meta.get('milestone'),
+            'syncpoint_tag': None,
+            'sources': ['dropbox'],  # waiver now modeled as an additional source label 'waiver'
+        }
+    # Merge syncpoint
+    for name, tag in syncpoint_models.items():
+        if not name:
+            continue  # skip empty key if present
+        entry = unified.get(name)
+        if entry is None:
+            entry = {
+                'name': name,
+                'domain': None,
+                'milestone': None,
+                'syncpoint_tag': None,
+                'sources': ['syncpoint'],
+            }
+            unified[name] = entry
+        if tag:
+            entry['syncpoint_tag'] = tag
+        if 'syncpoint' not in entry['sources']:
+            entry['sources'].append('syncpoint')
+
+    # Add waiver as a distinct source if applicable
+    for wname in waivers_set:
+        entry = unified.get(wname)
+        if entry is None:
+            # A waived model that isn't in dropbox or syncpoint lists
+            unified[wname] = {
+                'name': wname,
+                'domain': None,
+                'milestone': None,
+                'syncpoint_tag': None,
+                'sources': ['waiver'],
+            }
+        else:
+            if 'waiver' not in entry['sources']:
+                entry['sources'].append('waiver')
+
+    # Apply filters
+    def _match(val, pattern):
+        if pattern is None:
+            return True
+        if val is None:
+            return False
+        return pattern.lower() in str(val).lower()
+
+    src_filter = (source or 'both').lower()
+    filtered = []
+    for m in unified.values():
+        if src_filter != 'both':
+            if src_filter == 'dropbox' and 'dropbox' not in m['sources']:
+                continue
+            if src_filter == 'syncpoint' and 'syncpoint' not in m['sources']:
+                continue
+        if not _match(m.get('domain'), filter_domain):
+            continue
+        if not _match(m.get('milestone'), filter_milestone):
+            continue
+        if not _match(m.get('name'), filter_name):
+            continue
+        filtered.append(m)
+
+    # Sort deterministically by name
+    filtered.sort(key=lambda x: x['name'])
+
+    if limit is not None:
+        try:
+            l = int(limit)
+            if l >= 0:
+                filtered = filtered[:l]
+        except ValueError:
+            pass
+
+    returned_waived_models = sum(1 for m in filtered if 'waiver' in m.get('sources', []))
+
+    result = {
+        'summary': {
+            'dropbox_models': len(dropbox_models),
+            'syncpoint_models': len(syncpoint_models),
+            'unified_models': len(unified),
+            'returned_models': len(filtered),
+            'total_waived_models': data.get('total_waived_models', len(waivers_set)),
+            'returned_waived_models': returned_waived_models,
+            'waiver_file': waiver_file,
+            'filters': {
+                'filter_domain': filter_domain,
+                'filter_milestone': filter_milestone,
+                'filter_name': filter_name,
+                'source': src_filter,
+                'limit': limit,
+            }
+        },
+    'models': filtered,
+    'waivers': waivers_list,  # echo original list for transparency; waiver treated as a source label
+    }
+    try:
+        return json.dumps(result, indent=2)
+    except Exception:
+        # Fallback minimal serialization
+        return json.dumps({'error': 'Serialization failure'})
+
 
 #############################################################################
 get_baseline_tool_dict = {
@@ -245,6 +397,85 @@ def llm(query):
     ba.kwargs['stream'] = False
     res = ba.run()
     return res.message.content
+
+#############################################################################
+git_compare_dict = {
+    'type': 'function',
+    'function': {
+        'name': 'git_compare',
+        'description': 'Compare two git directories and provide a summary of changes between them. Automatically extracts the model name from directory names and uses the IP_MODELS environment variable as the base path.',
+        'parameters': {
+            'type': 'object',
+            'properties': {
+                'dir1': {
+                    'type': 'string',
+                    'description': 'First directory name (e.g., bypass_pnr_reg-a0-25ww39e)',
+                    'required': True,
+                },
+                'dir2': {
+                    'type': 'string',
+                    'description': 'Second directory name (e.g., bypass_pnr_reg-a0-25ww39f)',
+                    'required': True,
+                },
+                'base_path': {
+                    'type': 'string',
+                    'description': 'Base path (default: IP_MODELS + "/release"; if IP_MODELS is not set the script falls back to /nfs/site/disks/psg.mod.000)',
+                },
+            },
+        },
+    }
+}
+def git_compare(dir1, dir2, base_path=None):
+    """Compare two git directories using the git_compare.py script.
+
+    This function calls the git_compare.py script located in the compare_model directory
+    and returns the comparison results.
+
+    Args:
+        dir1: First directory name
+        dir2: Second directory name
+        base_path: Optional base path. If omitted, the script will use the
+                   environment variable IP_MODELS with "/release" appended
+                   (or the script's own fallback of '/nfs/site/disks/psg.mod.000' if IP_MODELS is unset).
+
+    Returns:
+        String containing the comparison results or error message
+    """
+    LOGGER.debug(f"Comparing git directories: {dir1} vs {dir2}")
+    
+    try:
+        # Path to the git_compare.py script
+        script_path = "/p/psg/da/infra/utils/bin/git_compare_models"
+        
+        # Build the command. Only pass --base-path when explicitly provided by caller.
+        cmd = [script_path, dir1, dir2]
+        if base_path:
+            cmd.extend(['--base-path', base_path])
+        
+        # Execute the script
+        result = subprocess.run(
+            cmd, 
+            capture_output=True, 
+            text=True,
+            timeout=300  # 5 minute timeout
+        )
+        
+        if result.returncode == 0:
+            LOGGER.debug("Git comparison completed successfully.")
+            return result.stdout
+        else:
+            error_msg = f"Git comparison failed with return code {result.returncode}:\n{result.stderr}"
+            LOGGER.debug(error_msg)
+            return error_msg
+            
+    except subprocess.TimeoutExpired:
+        error_msg = "Git comparison timed out after 5 minutes"
+        LOGGER.debug(error_msg)
+        return error_msg
+    except Exception as e:
+        error_msg = f"Error running git comparison: {e}"
+        LOGGER.debug(error_msg)
+        return error_msg
 
 #############################################################################
 #############################################################################

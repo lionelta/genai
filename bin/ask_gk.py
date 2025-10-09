@@ -294,7 +294,8 @@ def examples():
 - compare baseline_tools between releases bypass_reg-a0-24ww32b and bypass_reg-a0-24ww44c 
 - what is the baseline tools version used in release bypass_reg-a0-24ww44c? 
 - get me the feeder url from the result log of bypass_reg-a0-24ww44c
-- get me git diff summary of each files in  cd_lib-a0-b0.5_rel24ww510a-25ww22a and cd_lib-a0-b0.5_rel24ww510a-25ww24b
+- compare cd_lib-a0-b0.5_rel24ww510a-25ww22a and cd_lib-a0-b0.5_rel24ww510a-25ww24b
+- is cl_lib-a0-qpds0p5a-25ww23c a preserved model
 """
     return examples
 

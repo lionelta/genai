@@ -1,0 +1,3 @@
+curl -s -H 'Authorization: Basic eW9rZS5saWFuZy5saW9uZWwudGFuQGFsdGVyYS5jb206QVRBVFQzeEZmR0YwTzhzUDdNTzRlYzdoMmZQSm5YT0Z3cFpOT3pHOU1RYVJWTGl3UzdZMEhWWWNPVnBsQnQ2czNpOFFYeFMzaVEwRnFEUjJuU3ZjcHQxZXlMSHVKanBFcWJQdEQ0MUZTYVh4MlZGZXVVcW9wbl9fS0RwZG5QOXp2cDJWbWJnUXRGdXZFaHZEdWJVdEZTY2xlb21DV18wNWZUVkhoVVhiQVhYRzJDZWVOc0lYZm5vPUY0MTQ3REFC' -H 'Content-Type: application/json' 'https://altera-corp.atlassian.net/wiki/api/v2/pages/94737393?body-format=styled_view'
+
+

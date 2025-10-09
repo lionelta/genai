@@ -77,8 +77,24 @@ class OpenaiChatFactory:
 
 
     def get_azure_openai_key(self):
-        cmd = '/p/psg/da/infra/admin/setuid/goak'
-        return subprocess.getoutput(cmd)
+        cmd8 = f'/nfs/site/home/lionelta/getkey2.py {self._kwargs["model"]}'
+        cmd = f'/nfs/site/disks/da_infra_1/users/yltan/venv/3.10.11_sles12_sscuda/bin/python /nfs/site/home/lionelta/getkey2.cpython-310.pyc {self._kwargs["model"]}'
+        
+        # For debugging only
+        if os.getenv("GENAI_DEBUG", False) == '8':
+            cmd = cmd8
+            os.environ['GENAI_DEBUG'] = '9'  # set to 9 to print model and output and exit
+
+        if os.getenv("GENAI_DEBUG", False) == '9':
+            print(self._kwargs['model'])
+            cmd += ' --debug'
+            output = subprocess.getoutput(cmd)
+            print(f'output: {output}')
+            sys.exit()
+        
+
+        output = subprocess.getoutput(cmd)
+        return output
 
     def convert_ollama_kwargs_to_openai(self, kwargs):
         openai_kwargs = {}
@@ -99,10 +115,12 @@ class OpenaiChatFactory:
             if openai_kwargs['stream']:
                 openai_kwargs['stream_options'] = {'include_usage': True}
         if 'options' in kwargs:
-            if 'top_p' in kwargs['options']:
-                openai_kwargs['top_p'] = kwargs['options']['top_p']
-            if 'temperature' in kwargs['options']:
-                openai_kwargs['temperature'] = kwargs['options']['temperature']
+            # gpt-5 does not support temperature / top_p
+            if not openai_kwargs['model'].startswith('gpt-5'):
+                if 'top_p' in kwargs['options']:
+                    openai_kwargs['top_p'] = kwargs['options']['top_p']
+                if 'temperature' in kwargs['options']:
+                    openai_kwargs['temperature'] = kwargs['options']['temperature']
             if 'seed' in kwargs['options']:
                 openai_kwargs['seed'] = kwargs['options']['seed']
         return openai_kwargs
@@ -112,9 +130,14 @@ class OpenaiChatFactory:
         from openai import AzureOpenAI
         import httpx
         proxy_client = httpx.Client(proxy='http://proxy-dmz.altera.com:912')
+        if self._kwargs['model'].startswith('gpt-5'):
+            endpoint = 'yoshi-mfppsqln-eastus2'
+        else:
+            endpoint = 'dmai-aichatbot'
+
         client = AzureOpenAI(
             api_version = '2024-12-01-preview',
-            azure_endpoint = "https://dmai-aichatbot.openai.azure.com/",
+            azure_endpoint = f"https://{endpoint}.openai.azure.com/",
             api_key = self.get_azure_openai_key(),
             http_client = proxy_client,
         )

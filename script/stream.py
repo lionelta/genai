@@ -257,10 +257,28 @@ def img_to_html(imgfile):
     return img_html
 
 def replace_imgsrc_with_base64(full_response):
-    matches = re.findall(r'imgsrc="([^"]+)"', full_response)
+    ''' 
+    (<imgsrc=\"/nfs/site/disks/da_scratch_1/users/pitlow/llm_experiment/aichatbot/vectordb/powertable/artifacts/images/image2018-11-2_10-3-45.png\">)
+    '''
+    pattern = r'imgsrc\s*=\s*"?(/[^"\s>]+?\.(?:png|jpg|jpeg))"?'
+    matches = re.findall(pattern, full_response, flags=re.IGNORECASE)
+    st.logger.get_logger("").info(f"Found imgsrc matches: {matches}")
+
     for imgfile in matches:
+        
+        # Only process if file exists
+        if not os.path.isfile(imgfile):
+            continue
+        
+        # Only proceed if file is image
+        if not imgfile.lower().endswith(('.png', '.jpg', '.jpeg')):
+            continue
+
         img_html = img_to_html(imgfile)
-        full_response = full_response.replace(f'imgsrc="{imgfile}"', img_html)
+        #st.logger.get_logger("").info(f"Replacing imgsrc {imgfile} with base64 image {img_html}")
+        #full_response = full_response.replace(imgfile, img_html)
+        full_response = re.sub(r'imgsrc\s*=\s*"?{}"?'.format(re.escape(imgfile)), img_html, full_response)
+
     return full_response
 
 for message in st.session_state.messages:
@@ -317,9 +335,15 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
         {stdout}""")
         st.stop()
     elif prompt == '/ddvhelp':
-        cmd = f'/nfs/site/disks/da_infra_1/users/wplim/depot/da/infra/genai/main/bin/ask_ddv.py --examples'
+        cmd = f'ask_ddv.py --examples'
         exitcode, stdout = subprocess.getstatusoutput(cmd)
         st.markdown(f"""# Examples Of Supported DDV Queries    
+        {stdout}""")
+        st.stop()
+    elif prompt == '/admhelp':
+        cmd = f'ask_adm.py --examples'
+        exitcode, stdout = subprocess.getstatusoutput(cmd)
+        st.markdown(f"""# Examples Of Supported ADM Queries    
         {stdout}""")
         st.stop()
     elif prompt == '/sphelp':
@@ -371,7 +395,7 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
     if not a.faiss_dbs:
         a.systemprompt = ''
     else:
-        a.systemprompt = a.systemprompt + '  \n\n' + """If there are relavant imgsrc urls from the same chunk, include those original strings in the response, following the origina schema. without any formatting or modification. """
+        a.systemprompt = a.systemprompt + '  \n\n' + """If there are relavant imgsrc urls from the same chunk, include those original strings in the response, in their original location, following the origina schema. without any formatting or modification. """
    
 
     def llm_generator():
@@ -399,11 +423,19 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
                 st.dataframe(convert_mysql_table_to_panda_dataframe(full_response))
                 st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
         elif prompt.startswith('/ddv '):
-            cmd = """/nfs/site/disks/da_infra_1/users/wplim/depot/da/infra/genai/main/bin/ask_ddv.py --query {}""".format(gu.quotify(prompt[6:]))
+            cmd = """ask_ddv.py --query {}""".format(gu.quotify(prompt[6:]))
             exitcode, full_response = subprocess.getstatusoutput(cmd)
             with st.chat_message("assistant"):
                 st.markdown(full_response)
                 st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
+        elif prompt.startswith('/adm '):
+            cmd = """ask_adm.py --query {}""".format(gu.quotify(prompt[6:]))
+            exitcode, full_response = subprocess.getstatusoutput(cmd)
+            with st.chat_message("assistant"):
+                st.markdown(full_response)
+                st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
+
+
         else:
             a.kwargs['stream'] = False
             res = a.run()
@@ -444,6 +476,18 @@ if st.session_state.get('display_user_guide', False):
         - _Syncpoint Commands_:
             - `/sphelp`: Show examples of supported Syncpoint queries.
             - `/sp <query>`: Ask a question to the Syncpoint system. e.g. `/sp Show me all syncpoints created in the past 1 month.`
+        - _ADM Commands_:
+            - `/admhelp`: Show examples of supported ADM queries.
+            - `/adm <query>`: Ask a question to the ADM system. e.g. `/adm List all preserved model.`
+        - _DDV Commands_:
+            - `/ddvhelp`: Show examples of supported DDV queries. Support KM6 only for now.
+            - `/ddv <query>`: Ask a question to the DDV system. e.g. `/ddv List all checkers in RTL0.3.`
+        - _Syncpoint Commands_:
+            - `/sphelp`: Show examples of supported Syncpoint queries.
+            - `/sp <query>`: Ask a question to the Syncpoint system. e.g. `/sp Show me all syncpoints created in the past 1 month.`
+
+
+
         - _User Info Commands_:
             - `/userhelp`: Show examples of supported User Info queries.
             - `/user <query>`: Ask a question to the User Info system. e.g. `/user get me email address of Joanne Low`
