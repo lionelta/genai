@@ -31,14 +31,15 @@ import base64
 
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+version = os.path.basename(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 menu_items = {
     'Get Help': 'https://go2.altera.com/aichatbot_wiki',
     'About': f"If you would like to have your wikispace added to the chatbot, please contact yoke.liang.lionel.tan@altera.com or joanne.low@altera.com",
     'Report a Bug': 'mailto:joanne.low@altera.com; yoke.liang.lionel.tan@altera.com'
 }
-st.set_page_config(page_title='Chatbot', layout='wide', menu_items=menu_items)
-st.title('AI Chatbot - Alpha Version')
+st.set_page_config(page_title=f'AiChatbot({version})', layout='wide', menu_items=menu_items)
+st.title(f'AI Chatbot - Version ({version})')
 
 ############################################################################
 ######## START: USER AUTHENTICATION ########################################
@@ -169,8 +170,6 @@ for k in faiss_dbs:
         faiss_dbs_keys.insert(0, k)
     else:
         faiss_dbs_keys.append(k)
-
-version = os.path.basename(rootdir)
 
 ### Load groupdb.json file
 groupdb_json = os.path.join(rootdir, 'groupdb.json')
