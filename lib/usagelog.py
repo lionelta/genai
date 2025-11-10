@@ -43,8 +43,6 @@ from datetime import datetime
 warnings.simplefilter("ignore")
 os.environ['PYTHONWARNINGS'] = 'ignore'
 
-ROOTDIR = '/nfs/site/disks/da_scratch_1/users/yltan/depot/da/infra/genai/main'
-
 class UsageLog:
 
     def __init__(self):
@@ -59,6 +57,7 @@ class UsageLog:
         self.info['timestamp'] = self.get_timestamp()
         self.info['data'] = data
         self.info['cmdline'] = self.get_process_cmdline()
+        self.info['cwd'] = os.getcwd()
         self.info['user'] = os.getenv('USER', 'unknown_user')
         self.info['host'] = os.uname().nodename
         self.info['version'] = os.path.basename(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))

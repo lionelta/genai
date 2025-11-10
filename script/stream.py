@@ -339,6 +339,12 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
         st.markdown(f"""# Examples Of Supported DDV Queries    
         {stdout}""")
         st.stop()
+    elif prompt == '/pddhelp':
+        cmd = f'ask_pdd.py --examples'
+        exitcode, stdout = subprocess.getstatusoutput(cmd)
+        st.markdown(f"""# Examples Of Supported DDV Queries    
+        {stdout}""")
+        st.stop()
     elif prompt == '/admhelp':
         cmd = f'ask_adm.py --examples'
         exitcode, stdout = subprocess.getstatusoutput(cmd)
@@ -408,6 +414,11 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
             exitcode, full_response = subprocess.getstatusoutput(cmd)
             with st.chat_message("assistant"):
                 st.markdown(full_response)
+        elif prompt.startswith('/pdd '):
+            cmd = """ask_pdd.py --quiet --query {}""".format(gu.quotify(prompt[4:]))
+            exitcode, full_response = subprocess.getstatusoutput(cmd)
+            with st.chat_message("assistant"):
+                st.markdown(full_response)
                 st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
         elif prompt.startswith('/user '):
             cmd = """ask_userinfo.py --query {}""".format(gu.quotify(prompt[6:]))
@@ -445,7 +456,7 @@ if prompt := st.chat_input("What's up?", accept_file=True, file_type=['png', 'jp
                 # Replace imgsrc with base64 image
                 full_response = replace_imgsrc_with_base64(full_response)
                 st.markdown(full_response, unsafe_allow_html=True)
-                st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nAnswer: {full_response}''')
+                st.logger.get_logger("").info(f'''Question[{st.session_state.cm.cookies['userid']}]: {prompt}\nSpaces: {spaces}\nAnswer: {full_response}''')
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 if st.session_state.get('display_user_guide', False):
@@ -481,12 +492,9 @@ if st.session_state.get('display_user_guide', False):
         - _DDV Commands_:
             - `/ddvhelp`: Show examples of supported DDV queries. Support KM6 only for now.
             - `/ddv <query>`: Ask a question to the DDV system. e.g. `/ddv List all checkers in RTL0.3.`
-        - _Syncpoint Commands_:
-            - `/sphelp`: Show examples of supported Syncpoint queries.
-            - `/sp <query>`: Ask a question to the Syncpoint system. e.g. `/sp Show me all syncpoints created in the past 1 month.`
-
-
-
+        - _PDD Commands_:
+            - `/pddhelp`: Show examples of supported PDD queries.
+            - `/pdd <query>`: Ask a question to the PDD system. e.g. `/gk get me executive summary?`
         - _User Info Commands_:
             - `/userhelp`: Show examples of supported User Info queries.
             - `/user <query>`: Ask a question to the User Info system. e.g. `/user get me email address of Joanne Low`
@@ -498,15 +506,21 @@ if st.session_state.get('display_user_guide', False):
         st.markdown("You can select the spaces you would like the chatbot to search info from in the sidebar.")
         import pandas as pd
         pdt = pd.DataFrame(faiss_dbs).T
-        for key in ['dbpath', 'acg', 'croncmd', 'emails']:
+        #for key in ['dbpath', 'acg', 'croncmd', 'emails']:
+        for key in ['dbpath', 'croncmd', 'emails']:
             del pdt[key]
 
-        # Create a dictionary to configurre the columns
+        pdt.rename(columns={'acg': 'Access Group'}, inplace=True)
+        # Create a dictionary to configure the columns
         column_configuration = {
             pdt.columns[0]: st.column_config.Column(
                 "Space Name",
                 width= "medium",    #  "small", "medium", "large", or a specific number in pixels
-            )
+            ),
+            pdt.columns[1]: st.column_config.Column(
+                "Access Group",
+                width= "small",    #  "small", "medium", "large", or a specific number in pixels
+            ),
         }
 
         # Display Dataframe with column configuration

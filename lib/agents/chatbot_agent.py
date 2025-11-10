@@ -9,9 +9,10 @@ import ollama
 import re
 from pprint import pprint
 
-rootdir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+rootdir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.insert(0, rootdir)
 from lib.agents.base_agent import BaseAgent
+from lib.agents.promptboost_agent import PromptboostAgent
 from lib.regex_db import RegexDB
 
 
@@ -78,7 +79,8 @@ Source Of Information:
         self.retrieve_chunks = self.default_settings['retrieve_chunks']
         self.faiss_dbs = []
         self.responsemode = 'Direct'
-
+        self.promptboost = True # Prompt boost by default
+        self.chunks = []
 
     def load_rag_data(self):
         #embeddings = self.genai_utils.load_embedding_model(self.emb_model)
@@ -133,6 +135,7 @@ Source Of Information:
         return False
 
     def _add_rag_data(self, index, context, source, rag_content):
+        self.chunks.append({'source': source, 'content': context})
         return f'''{rag_content}   
 [Chunk {index}]  
 Source: {source}  
@@ -142,6 +145,15 @@ Content: {context}
 
 
     def run(self):
+
+        if self.promptboost:
+            pba = PromptboostAgent()
+            original_prompt = self.kwargs['messages'][-1]['content']
+            pba.kwargs['messages'] = [{"role": "user", "content": original_prompt}]
+            res = pba.run()
+            self.kwargs['messages'][-1]['content'] = res.message.content
+
+
         """ Override default run() , because we need to insert rag data into chat """
         if self.faiss_dbs:
             rag_content = self.load_rag_data()

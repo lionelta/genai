@@ -77,7 +77,10 @@ def main(args):
         documents = loader.load()
         # Add page numbers to metadata
         for i, doc in enumerate(documents):
-            doc.metadata["source"] = f"{args.pdf}:page{i+1}"
+            if args.source is None:
+                doc.metadata['source'] = f"{args.pdf}:page{i+1}"
+            else:
+                doc.metadata['source'] = f"{args.source}:page{i+1}"
 
     elif args.txtdir:
         documents = []
@@ -86,13 +89,24 @@ def main(args):
                 filepath = os.path.join(root, filename)
                 documents.extend(TextLoader(filepath).load())
 
+    elif args.txt:
+        filepath = os.path.abspath(args.txt)
+        documents = TextLoader(filepath).load()
+        for doc in documents:
+            if args.source is None:
+                doc.metadata['source'] = f"{filepath}"
+            else:
+                doc.metadata['source'] = f"{args.source}"
 
-    elif args.docx:
-        from lib.document_loaders.docx_loader import DocxLoader
-        loader = DocxLoader()
-        loader.docxfile = args.docx
+    elif args.msftx:
+        from lib.document_loaders.msftx_loader import MsftxLoader
+        loader = MsftxLoader()
+        loader.msftxfile = args.msftx
         loader.savedir = args.save if args.save else None
         documents = loader.load()
+        if args.source is not None:
+            for doc in documents:
+                doc.metadata['source'] = args.source
 
     ###########################################################################################
     ### Preprocessing for text_splitting operation
@@ -179,7 +193,10 @@ def main(args):
 
             if 'source' in doc.metadata:
                 ### If the source is already set, append the page number
-                doc.metadata['source'] = f"{doc.metadata['source']}:page{pagenum}"
+                if args.source is None:
+                    doc.metadata['source'] = f"{doc.metadata['source']}:page{pagenum}"
+                else:
+                    doc.metadata['source'] = f"{args.source}:page{pagenum}"
 
 
     print("========================== Chunked Docs ==========================")
@@ -246,7 +263,8 @@ If the page ID is just a number (eg: 123), only that page itself will be extract
     ''')
     group.add_argument('--pdf', default=None, help='fullpath to pdf file.')
     group.add_argument('--txtdir', default=None, help='the fullpath the the directory that contains all the *.txt files.')
-    group.add_argument('--docx', default=None, help='fullpath to docx file.')
+    group.add_argument('--txt', default=None, help='the text or MD file.')
+    group.add_argument('--msftx', default=None, help='fullpath to msftx file. Currently only supports .docx and .pptx')
 
 
     parser.add_argument('-m', '--method', default='recursive', choices=['recursive', 'semantic', 'markdown', 'none'], help='Method to split text.')
@@ -256,6 +274,7 @@ If the page ID is just a number (eg: 123), only that page itself will be extract
 
     parser.add_argument('--disable_faissdb', action='store_true', default=False, help='Disable FAISS db creation')
     parser.add_argument('--disable_regexdb', action='store_true', default=False, help='Disable regex db creation')
+    parser.add_argument('--source', default=None, help='Override the metadata with this given Source path. If not provided, will use the default source path.')
     args = parser.parse_args()
     
     sys.exit(main(args))

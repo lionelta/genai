@@ -58,15 +58,17 @@ def main(args):
     LOGGER.addHandler(handler)
 
     a = ChatbotAgent()
+    if args.promptboost_disable:
+        a.promptboost = False
     prompt = args.query + '  \n\n'
     if args.pipe:
         prompt += sys.stdin.read()
-   
+        a.promptboost = False   # disable promptboost when using pipe
     if args.snap:
         if args.loaddb or args.spaces:
             print("ERROR: The --snap option does not work with --loaddb or --spaces options. Please remove them.")
             return
-
+        a.promptboost = False   # disable promptboost when using snap
         _, image_path = tempfile.mkstemp(suffix='.jpeg')
         print(">>> Please draw a box around the error message you want to extract...")   
         cmd = f'import {image_path}'
@@ -102,7 +104,16 @@ def main(args):
         res = a.run()
         print(res.message.content)
         return
-
+    if args.json_output:
+        a.kwargs['stream'] = False
+        res = a.run()
+        import json
+        output = {
+            'response': res.message.content,
+            'chunks': a.chunks
+        }
+        print(json.dumps(output))
+        return
 
     ani = lib.loading_animation.LoadingAnimation()
     ani.run()
@@ -114,12 +125,13 @@ def main(args):
         print(chunk, end='', flush=True)
         fullres += chunk
 
-    time.sleep(1)   # wait for the last chunk to finish
-    print()
-    print('==================================================')
-    print("(Markdown format)")
-    print('--------------------------------------------------')
-    gu.print_markdown(fullres, cursor_moveback=False)
+    if not args.disable_markdown:
+        time.sleep(1)   # wait for the last chunk to finish
+        print()
+        print('==================================================')
+        print("(Markdown format)")
+        print('--------------------------------------------------')
+        gu.print_markdown(fullres, cursor_moveback=False)
 
 
 def get_base64_image(image_path):
@@ -167,7 +179,11 @@ Example usage:
     parser.add_argument('--pipe', action='store_true', default=False, help='Will read from stdin and pipe/append the output to the query.')
     parser.add_argument('--snap', action='store_true', default=False, help='Will take a snapshot of from a user defined box and append it to the query. (Currently only works without --loaddb and --spaces options)')
 
+    parser.add_argument('-p', '--promptboost_disable', action='store_true', default=False, help='Will turn off promptboost agent that enhance the prompt before sending to LLM. promptboost is enabled by default, but will be always disabled when --pipe/--snap is used.')
     parser.add_argument('-sm', '--scripting_mode', action='store_true', default=False, help='Will print response in non-streaming mode. Useful for scripting.')
+    parser.add_argument('--json_output', action='store_true', default=False, help='Will output the final response and chunks in JSON format.')
+    parser.add_argument('--disable_markdown', action='store_true', default=False, help='Will disable markdown rendering in the final output.')
+
     args = parser.parse_args()
 
     main(args)

@@ -33,7 +33,8 @@ def main(args):
 
     emb_model = gu.load_default_settings()['emb_model']
     LOGGER.info(f'emb_model: {emb_model}')
-    emb_obj = gu.load_embedding_model(emb_model)
+    #emb_obj = gu.load_embedding_model(emb_model)
+    emb_obj = gu.load_openai_embedding_model()
     vectorstore = gu.load_faiss_dbs(args.input_dbs, emb_obj)
     vectorstore.save_local(args.output_dbs)
     LOGGER.info(f'Output Faiss-db saved to: {args.output_dbs}')

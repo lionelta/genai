@@ -60,7 +60,14 @@ def main(args):
     a = SqlCodingAgent()
     a.cnffile = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'sql_cnf_files', 'syncpoint.cnf'))
     a.tables = ['cth_syncpoints', 'cth_syncpoint_releases', 'cth_syncpoint_users', 'end_users'] 
-    a.kwargs['messages'] = [{'role': 'user', 'content': args.query}]
+    a.kwargs['messages'] = [
+        {'role': 'user', 'content': '''These terms are used interchangeably in the context of the syncpoint database:  
+        - ip / dut / cell / block  
+        - deliverable / stage / bundle  
+        - bom / tag / label  
+        '''},
+        {'role': 'user', 'content': args.query}
+    ]
     res = a.run()
     fullres = ''
     sqlrawcmd = res.message.content
@@ -148,6 +155,7 @@ def examples():
 - list all releases in syncpoint:QPDS0.5KMLUDO where ip=cc_* and deliverable=timemod
 - list all releases in syncpoint:QPDS0.5KMLUDO where releaser:jiajunch
 - list all releases in syncpoint:QPDS0.5KMLUDO which was updated on day:2025-07-23
+- list all syncpoints which has ip:dfx_common deliverable:cthfe tag:dfx_common-a0-25ww38a 
 """
     return examples
 
